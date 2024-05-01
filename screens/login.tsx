@@ -6,6 +6,7 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 //네이게이터(이동)
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import BoldText from "../src/components/common/BoldText";
 
 export type RootStackParam = {
   Home: undefined;
@@ -19,8 +20,7 @@ function Login () {
     <View style={styles.container}>
       {/* 앱 문장 */}
       <View style={styles.infoT}>
-        <AppText style={{fontSize:25}}>여행의 시작,</AppText>
-        <AppText style={{fontSize:25}}>플래닝과 함께해요!</AppText>
+        <BoldText>{"여행의 시작,\n플래닝과 함께해요!"}</BoldText>
       </View>
       {/* 아이디랑 비번 입력창... safearea 써야된다는 거 같기도..? */}
       <View style={styles.login}>
@@ -46,12 +46,16 @@ function Login () {
             {/* 이미지 버튼으로... */}
             <Image style={{width:340,height:51}} source={require('../src/assets/kakao_login_medium_wide.png')} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.loginbutton}>
-            <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>로그인</Text>
-          </TouchableOpacity>
+          
         </View>
           
       </View>
+      <View style={{flex:1,justifyContent: 'flex-end',marginBottom:50}}>
+      <TouchableOpacity style={styles.loginbutton}>
+            <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>로그인</Text>
+          </TouchableOpacity>
+      </View>
+      
     </View>
   );
 }
@@ -61,6 +65,7 @@ const maincol="#005bea"
 
 const styles = StyleSheet.create({
   container: {
+    flex:1,
     margin:25,
     backgroundColor: "#FFFFF",
   },
@@ -103,7 +108,6 @@ const styles = StyleSheet.create({
     alignItems:"center",
   },
   loginbutton:{
-    transform : [{translateY:60}],
     backgroundColor:maincol,
     height:61,
     borderRadius:10,

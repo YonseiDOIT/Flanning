@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet,TouchableOpacity, Animated } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 import AppText from "../src/components/common/AppText";
+import BoldText from "../src/components/common/BoldText";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
@@ -10,128 +11,167 @@ export type RootStackParam = {
   Test: undefined;
 };
 
-
 function Signup() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
 
-  const [check_terms, setcheck]= useState([]);
-  
-  const options=['아','제발','되라','흑'];
-  
+  const [checkboxStates, setCheckboxStates] = useState({
+    allAgree: false,
+    overFourteen: false,
+    termsAgree: false,
+    privacyPolicy: false,
+    personalInfo: false,
+    marketing: false,
+  });
 
-  // function pickcheck(selectedCheck){
-  //   // const index= check_terms.findIndex(Check => Check == selectedCheck)
-    
-  //   if(check_terms.includes(selectedCheck)) {
-  //     setcheck(check_terms.filter(Check=> Check !== selectedCheck))
-      
-  //     return;
-  //   }
-    
-  //   setcheck(Check=>Check.concat(selectedCheck),styles.checkbox={backgroundColor:maincol,
-  //     borderColor:maincol,
-  //     borderWidth:1,
-  //     borderRadius:50,
-  //     height:15,
-  //     width: 15,})
 
-  // }
-  
+  const handlePress = (checkbox) => {
+    if (checkbox === 'allAgree') {
+      const newState = !checkboxStates.allAgree; //모두 동의의 상태 변수
+      //업데이트 부분
+      setCheckboxStates({
+        allAgree: newState,
+        overFourteen: newState,
+        termsAgree: newState,
+        privacyPolicy: newState,
+        personalInfo: newState,
+        marketing: newState,
+      });
+    } else {
+      //prevState는 현재 체크박스상태
+      setCheckboxStates((prevState) => ({
+        ...prevState,
+        [checkbox]: !prevState[checkbox],
+        allAgree: false, // Deselect "allAgree" if any other checkbox is toggled
+      }));
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <View style={{height:4,backgroundColor:"#C1C1C1",marginTop:20,borderRadius:40}}>
-        <View style={{backgroundColor:maincol,width:80,height:4,borderRadius:40}}/>
+      <View style={{height: 4, backgroundColor: "#C1C1C1", marginTop: 26, borderRadius: 40}}>
+        <View style={{backgroundColor: maincol, width: "25%", height: 4, borderRadius: 40}}/>
       </View>
-      <View style={{paddingTop:50}}>
-        <AppText style={{fontSize:25}}>약관에 동의해주세요</AppText>
+      <View style={{marginTop: 70}}>
+        <BoldText>약관에 동의해주세요</BoldText>
       </View>
       <View style={styles.box}>
-        <AppText>모두 동의</AppText>
-        <Text style={{fontSize:13,color:'#717171',fontFamily:"Pretendard-Regular"}}>서비스 이용을 위해 약관에 모두 동의합니다.</Text>
-        
-        <View style={styles.somting}>
-          <TouchableOpacity style={styles.checkbox}></TouchableOpacity>
-          <View style={styles.check_l}>
-            <AppText>만 14세 이상입니다.</AppText>
-          </View>
-          <View style={styles.check_l}>
-            <AppText>서비스 이용약관 동의</AppText>
-          </View>
-          <View style={styles.check_l}>
-            <AppText>개인정보 처리방침 동의</AppText>
-          </View>
-          <View style={styles.check_l}>
-            <AppText>개인 정보 수집 및 이용 동의</AppText>
-          </View>
-          <View style={styles.check_l}>
-            <AppText>마케팅 수신 동의(선택)</AppText>
-          </View>
-          
-        
-       
-
+        <View style={styles.check_l}>
+          <TouchableOpacity
+            style={[styles.checkbox, checkboxStates.allAgree ? styles.check : null]}
+            onPress={() => handlePress('allAgree')}>
+            {checkboxStates.allAgree && <Text style={styles.checkmark}>✔</Text>}
+          </TouchableOpacity>
+          <AppText style={{paddingLeft: 20}}>모두 동의</AppText>
         </View>
-          
-        
-        
+        <Text style={styles.checkboxText}>서비스 이용을 위해 약관에 모두 동의합니다.</Text>
 
+        <View style={styles.somting}>
+          <View style={styles.check_l}>
+            <TouchableOpacity
+              style={[styles.checkbox, checkboxStates.overFourteen ? styles.check : null]}
+              onPress={() => handlePress('overFourteen')}>
+              {checkboxStates.overFourteen && <Text style={styles.checkmark}>✔</Text>}
+            </TouchableOpacity>
+            <AppText style={{paddingLeft: 20}}>만 14세 이상입니다.</AppText>
+          </View>
+          <View style={styles.check_l}>
+            <TouchableOpacity
+              style={[styles.checkbox, checkboxStates.termsAgree ? styles.check : null]}
+              onPress={() => handlePress('termsAgree')}>
+              {checkboxStates.termsAgree && <Text style={styles.checkmark}>✔</Text>}
+            </TouchableOpacity>
+            <AppText style={{paddingLeft: 20}}>서비스 이용약관 동의</AppText>
+          </View>
+          <View style={styles.check_l}>
+            <TouchableOpacity
+              style={[styles.checkbox, checkboxStates.privacyPolicy ? styles.check : null]}
+              onPress={() => handlePress('privacyPolicy')}>
+              {checkboxStates.privacyPolicy && <Text style={styles.checkmark}>✔</Text>}
+            </TouchableOpacity>
+            <AppText style={{paddingLeft: 20}}>개인정보 처리방침 동의</AppText>
+          </View>
+          <View style={styles.check_l}>
+            <TouchableOpacity
+              style={[styles.checkbox, checkboxStates.personalInfo ? styles.check : null]}
+              onPress={() => handlePress('personalInfo')}>
+              {checkboxStates.personalInfo && <Text style={styles.checkmark}>✔</Text>}
+            </TouchableOpacity>
+            <AppText style={{paddingLeft: 20}}>개인 정보 수집 및 이용 동의</AppText>
+          </View>
+          <View style={styles.check_l}>
+            <TouchableOpacity
+              style={[styles.checkbox, checkboxStates.marketing ? styles.check : null]}
+              onPress={() => handlePress('marketing')}>
+              {checkboxStates.marketing && <Text style={styles.checkmark}>✔</Text>}
+            </TouchableOpacity>
+            <AppText style={{paddingLeft: 20}}>마케팅 수신 동의(선택)</AppText>
+          </View>
+        </View>
       </View>
-      <TouchableOpacity style={styles.nextbutton}
-      onPress={() => navigation.navigate('idnpass')}>
-        <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>다음</Text>
-      </TouchableOpacity>
-    </View>);
+
+      <View style={{flex: 1, justifyContent: 'flex-end', marginBottom: 50}}>
+        <TouchableOpacity style={styles.nextbutton}
+          onPress={() => navigation.navigate('idnpass')}>
+          <Text style={{color: 'white', fontFamily: "Pretendard-Regular"}}>다음</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 }
 
-const maincol="#005bea"
+const maincol = "#005bea";
 
 const styles = StyleSheet.create({
-
   container: {
-    margin:25,
+    flex: 1,
+    margin: 25,
     backgroundColor: "#FFFFF",
   },
-  box:{
-    marginTop:60,
-    marginBottom:60,
-    borderColor:"#C1C1C1",
-    borderWidth:1,
-    borderRadius:10,
-    padding:20
+  box: {
+    marginTop: 60,
+    marginBottom: 60,
+    borderColor: "#C1C1C1",
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 20
   },
-  nextbutton:{
-    transform : [{translateY:60}],
-    backgroundColor:maincol,
-    height:61,
-    borderRadius:10,
-    justifyContent: 'center',
-    alignItems:"center",
+  somting: {
+    marginTop: 25,
+    marginBottom: 25
   },
-  somting:{
-    marginTop:25,
-    marginBottom:25
+  check_l: {
+    marginTop: 10,
+    flexDirection: 'row'
   },
-  check_l:{
-    marginTop:10
-  },
-  checkbox:{
-    borderColor:maincol,
-    borderWidth:1,
-    borderRadius:50,
-    height:15,
+  checkbox: {
+    borderColor: maincol,
+    borderWidth: 1,
+    borderRadius: 50,
+    height: 15,
     width: 15,
   },
-  checkboxText:{
-    fontFamily:"Pretendard-Regular",
-    marginLeft:10,
+  check: {
+    backgroundColor: maincol
   },
-  check:{
-    alignSelf:'center',
-    color:'white',
-    fontSize:8,
-    backgroundColor:maincol,
+  checkmark: {
+    color: 'white',
+    fontSize: 10,
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+  checkboxText: {
+    paddingLeft: 35,
+    fontSize: 13,
+    color: '#717171',
+    fontFamily: "Pretendard-Regular",
+  },
+  nextbutton: {
+    backgroundColor: maincol,
+    height: 61,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: "center",
   }
-
 })
 
 export default Signup;
