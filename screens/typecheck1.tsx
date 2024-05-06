@@ -11,9 +11,15 @@ export type RootStackParam = {
     Test: undefined;
   };
 
+//취향부분 동작 대충...
+//버튼 각 항목 부분 별로 인덱스 5 정도로 변수 만듦
+//데이터 연동 시키면... 인덱스 번호에 맞게끔 저장해서
+//그거 토대로 취향 분석 결과 짜란..? 
+
 
 function Typecheck1() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
+
     
     return (
     <GestureHandlerRootView style={{ flex: 1}}>
@@ -25,7 +31,7 @@ function Typecheck1() {
             <BoldText>여행 취향을 알려주세요</BoldText>
             <Text style={{fontSize:14,fontFamily:"Pretendard-Regular"}}>플래닝이 여러분의 여행을 도울게요</Text>
         </View>
-
+        
         <View style={styles.layout}>
             <AppText>어떤 여행지를 선호하시나요?</AppText>
             <View style={{flexDirection:"row"}}>

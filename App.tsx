@@ -8,6 +8,7 @@ import Typecheck2 from './screens/typecheck2';
 import TestScreen from './screens/TestScreen';
 import Appinfo from './screens/appinfo';
 
+
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Stack.Screen name="typecheck1" component={Typecheck1} />
         <Stack.Screen name="typecheck2" component={Typecheck2} />
         <Stack.Screen name="appinfo" component={Appinfo} />
+        <Stack.Screen name="test" component={TestScreen} />
                 {/* 추가 스크린은 여기에 계속해서 등록하면 됩니다. */}
       </Stack.Navigator>
     </NavigationContainer>

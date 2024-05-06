@@ -141,7 +141,9 @@ const styles = StyleSheet.create({
   },
   check_l: {
     marginTop: 10,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    alignItems: 'center',
+
   },
   checkbox: {
     borderColor: maincol,
@@ -149,15 +151,17 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     height: 15,
     width: 15,
+    alignItems: 'center',
+    
   },
   check: {
     backgroundColor: maincol
   },
   checkmark: {
     color: 'white',
-    fontSize: 10,
+    fontSize: 8,
     justifyContent: 'center',
-    alignContent: 'center'
+    alignItems: 'center'
   },
   checkboxText: {
     paddingLeft: 35,
