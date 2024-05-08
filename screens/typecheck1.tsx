@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import AppText from "../src/components/common/AppText";
 import BoldText from "../src/components/common/BoldText";
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+import database from '@react-native-firebase/database';
 
 export type RootStackParam = {
     Home: undefined;
@@ -20,6 +22,24 @@ export type RootStackParam = {
 function Typecheck1() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
 
+    const [selectedCheckbox, setSelectedCheckbox] = useState<string | null>(null);
+    
+    // 클릭 이벤트
+    const handlePress = (clickbox) => {
+        setSelectedCheckbox(prevState => prevState === clickbox ? null : clickbox);
+    };
+
+    // Firebase Realtime Database에 데이터 쓰기
+    const add_db = (db) => {
+        // 선택된 버튼 이름을 경로에 설정하여 데이터베이스에 저장
+        database()
+        .ref(`/회원/ㅇㅇㅇ/선호여행지/${db ? db : 'none'}`)
+        .set(db ? true : false)
+        .then(() => console.log(`Data set for ${db}.`))
+        .catch(error => console.error('Error writing to Firebase', error));
+    };
+
+    
     
     return (
     <GestureHandlerRootView style={{ flex: 1}}>
@@ -33,18 +53,16 @@ function Typecheck1() {
         </View>
         
         <View style={styles.layout}>
-            <AppText>어떤 여행지를 선호하시나요?</AppText>
-            <View style={{flexDirection:"row"}}>
-            <TouchableOpacity style={styles.clickbox} />
-            <TouchableOpacity style={styles.clickbox} />
-            <TouchableOpacity style={styles.clickbox} />
-            <TouchableOpacity style={styles.clickbox} />
-            <TouchableOpacity style={styles.clickbox} />
-            </View>
-            <View style={{flexDirection:"row", margin:5}}>
-                <AppText style={{fontSize:10, flex:7}}>핫플레이스</AppText>
-                <AppText style={{fontSize:10, flex:1}}>로컬 장소</AppText>
-            </View>
+                    <AppText>어떤 여행지를 선호하시나요?</AppText>
+                    <View style={{ flexDirection: "row" }}>
+                        {['prefer1', 'prefer2', 'prefer3', 'prefer4', 'prefer5'].map(id => (
+                            <TouchableOpacity 
+                                key={id}
+                                style={[styles.clickbox, selectedCheckbox === id ? styles.click : null]} 
+                                onPress={() => [handlePress(id),add_db(id)]}
+                            />
+                        ))}
+                    </View>
         </View>
 
         {/* 여행태그 */}
@@ -143,6 +161,9 @@ const styles = StyleSheet.create({
         paddingLeft:20,
         paddingRight:20,
         borderColor:"#C1C1C1",
+    },
+    click:{
+        backgroundColor: maincol
     },
     nextbutton:{
         

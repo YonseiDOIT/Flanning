@@ -29,7 +29,7 @@ function Appinfo() {
             {/* 다음 버튼 */}
             <View style={{flex:1,justifyContent: 'flex-end',marginBottom:50}}>
                 <TouchableOpacity style={styles.nextbutton}
-                onPress={() => navigation.navigate('test')}>
+                onPress={() => navigation.navigate('main')}>
                         <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>시작하기</Text>
                 </TouchableOpacity>
 

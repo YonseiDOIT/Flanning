@@ -1,8 +1,19 @@
 import React from 'react';
 import { Button, View } from 'react-native';
 import database from '@react-native-firebase/database';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-const TestScreen = () => {
+export type RootStackParam = {
+  Home: undefined;
+  Test: undefined;
+};
+
+
+
+function TestScreen ()  {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
+  
   const addFruitToDatabase = () => {
     // Firebase Realtime Database의 특정 경로에 데이터 쓰기
     database()
@@ -18,6 +29,10 @@ const TestScreen = () => {
       <Button
         title="데이터 추가!"
         onPress={addFruitToDatabase}
+      />
+      <Button
+        title="메인으로"
+        onPress={() => navigation.navigate('main')}
       />
     </View>
   );
