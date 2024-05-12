@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { AppRegistry, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import AppText from "../src/components/common/AppText";
-import { Colors } from "react-native/Libraries/NewAppScreen";
+import fcolor from '../src/assets/colors/fcolors';
 
 //네이게이터(이동)
 import { useNavigation } from '@react-navigation/native';
@@ -20,7 +20,9 @@ function Login () {
     <View style={styles.container}>
       {/* 앱 문장 */}
       <View style={styles.infoT}>
-        <BoldText>{"여행의 시작,\n플래닝과 함께해요!"}</BoldText>
+        <BoldText>{"여행의 시작,\n"}<BoldText color={fcolor.blue}>플래닝</BoldText>과 함께해요!</BoldText>
+       
+
       </View>
       {/* 아이디랑 비번 입력창... safearea 써야된다는 거 같기도..? */}
       <View style={styles.login}>
@@ -32,15 +34,15 @@ function Login () {
         />
         <View style={styles.rowbutton}>
           <TouchableOpacity style={styles.smallbutton}>
-            <AppText>비밀번호 찾기</AppText>
+            <Text style={{color:fcolor.gray4,fontFamily:"Pretendard-Medium",fontSize:13}}>비밀번호 찾기</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.smallbutton} 
             onPress={() => navigation.navigate('signup')}>
-            <AppText>회원가입</AppText>
+            <Text style={{color:fcolor.gray4,fontFamily:"Pretendard-Medium",fontSize:13}}>회원가입</Text>
           </TouchableOpacity>
         </View>
-        <View style={{marginTop:25, height:1, backgroundColor:"#C1C1C1"}}/>
+        <View style={{marginTop:25, height:2, backgroundColor:fcolor.blue}}/>
         <View>
           <TouchableOpacity style={styles.kakaobutton}>
             {/* 이미지 버튼으로... */}
@@ -66,8 +68,8 @@ const maincol="#005bea"
 const styles = StyleSheet.create({
   container: {
     flex:1,
-    margin:25,
-    backgroundColor: "#FFFFF",
+    padding:25,
+    backgroundColor: fcolor.white,
   },
   infoT:{
     marginTop:100
@@ -80,9 +82,10 @@ const styles = StyleSheet.create({
     marginTop:25,
     height:62,
     borderWidth:1,
-    borderColor:"#C1C1C1",
+    borderColor:fcolor.gray1,
     borderRadius:10,
-    padding:20
+    padding:20,
+    backgroundColor:fcolor.gray1
   },
   rowbutton:{
     flexDirection:'row',
@@ -93,16 +96,17 @@ const styles = StyleSheet.create({
     height:42,
     width:165,
     borderWidth:1,
-    borderColor:"#C1C1C1",
+    borderColor:fcolor.gray1,
     borderRadius:10,
     justifyContent: 'center',
     alignItems:"center",
+    backgroundColor:fcolor.gray1
 
   },
   kakaobutton:{
     marginTop:25,
     // backgroundColor:'#fee500',
-    height:51,
+    height:45,
     // borderRadius:7,
     justifyContent: 'center',
     alignItems:"center",

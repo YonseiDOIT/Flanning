@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
+import React, { useRef } from 'react';
+import { Button, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import database from '@react-native-firebase/database';
 import { GestureHandlerRootView, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -86,45 +86,47 @@ const data=[
 
 const LIMIT = 5;
 
-export function Main() {
+export function Plan() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
+
+  const isOpend=useRef(false);
+//   const transYCamera=useShredValue(0);
+
+  function handlePress(){
+    if(isOpend.current){
+
+    }else{
+
+    }
+    
+  }
   
   return (
     <GestureHandlerRootView style={{ flex: 1}}>
       <View style={styles.container}>
       <View style={styles.imagebanner}>
-        <View style={{flexDirection:'row',justifyContent:'flex-end',paddingBottom:20}}>
-          <TouchableOpacity onPress={() => navigation.navigate('friend')}><Icon style={{marginRight:15}}name='group-add' size={28} color="#717171"/></TouchableOpacity>
-          <TouchableOpacity><Icon name='settings' size={28} color="#717171"/></TouchableOpacity>
-        </View>
-        <View style={{flexDirection:'row', justifyContent:'center', paddingBottom:10}}>
-          <TouchableOpacity>
-            <Icons name='image-outline' size={28} color="#717171"></Icons>
-          </TouchableOpacity>
-        </View>
-        <BoldText color='white'>여행 제목</BoldText>
+        
       </View>
         
       <View style={styles.white}>
-          <View style={styles.travelplane}>
             <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                 <Text style={{fontFamily:"Pretendard-SemiBold",fontSize:20,color:"black"}}>여행 일정</Text>
-                  <TouchableOpacity onPress={()=>navigation.navigate('plan')}><Text>상세보기{'>'}</Text></TouchableOpacity>
-                </View>
-                <View style={styles.planecontent}>
-                  {/* 일정 종류 */}
+            </View>
+            <View style={styles.planecontent}>
+                {/* 일정 종류 */}
 
-                  <FlatList
+                <FlatList
                     data={data}
                     renderItem={renderItem}
                     keyExtractor={(item) => String(item.id)}
-                  />
-
-                </View>
-                  
-                
+                />
+                <Pressable 
+                    onPress={handlePress}
+                    style={({pressed})=> pressed ? [styles.fab,{transform: [{scale:0.9}]} ] : [styles.fab]}>
+                    <Icon name='edit' size={28} color="#717171"/>
+                </Pressable>
             </View>
-          </View> 
+        </View>
       </View>
       
       <View style={styles.bottombar}>
@@ -167,9 +169,12 @@ const styles = StyleSheet.create({
     paddingRight:30,
     paddingBottom:10
   },
+
   white:{
     width:'100%',
-    height:550,
+    height:470,
+    padding:30,
+    paddingTop:50,
     backgroundColor:fcolor.white,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -187,7 +192,6 @@ const styles = StyleSheet.create({
   },
   //일정내용
   planecontent:{
-    height:'95%',
     paddingTop:20,
     flexDirection:'column'
   },
@@ -195,6 +199,19 @@ const styles = StyleSheet.create({
     width:1,
     height:100,
     backgroundColor:fcolor.gray4
+  },
+
+  //플로팅 버튼
+  fab:{
+    width: 56,
+    height:56,
+    backgroundColor:fcolor.gray2,
+    borderRadius:30,
+    alignItems:'center',
+    justifyContent:'center',
+    position:'absolute',
+    right:0,
+    bottom:0
   },
 
   // 바텀바
@@ -221,4 +238,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default Main;
+export default Plan;

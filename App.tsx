@@ -8,6 +8,9 @@ import Typecheck2 from './screens/typecheck2';
 import TestScreen from './screens/TestScreen';
 import Appinfo from './screens/appinfo';
 import Main from './screens/main';
+import FriendList from './screens/frienlist';
+import Main1 from './screens/main1';
+import Plan from './screens/plan';
 
 
 const Stack = createNativeStackNavigator();
@@ -23,8 +26,11 @@ function App() {
         <Stack.Screen name="typecheck2" component={Typecheck2} />
         <Stack.Screen name="appinfo" component={Appinfo} />
         <Stack.Screen name="test" component={TestScreen} />
-        <Stack.Screen name="main" component={Main} />
-                {/* 추가 스크린은 여기에 계속해서 등록하면 됩니다. */}
+        {/* 아래는 일정 없는 홈과 일정 있는 홈 잠시 나눔 */}
+        <Stack.Screen name="main" component={Main1} /> 
+        <Stack.Screen name="main1" component={Main} /> 
+        <Stack.Screen name="friend" component={FriendList} />
+        <Stack.Screen name="plan" component={Plan} />
       </Stack.Navigator>
     </NavigationContainer>
   );

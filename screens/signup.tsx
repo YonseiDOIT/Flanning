@@ -5,6 +5,8 @@ import AppText from "../src/components/common/AppText";
 import BoldText from "../src/components/common/BoldText";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import fcolor from "../src/assets/colors/fcolors";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export type RootStackParam = {
   Home: undefined;
@@ -48,20 +50,21 @@ function Signup() {
 
   return (
     <View style={styles.container}>
-      <View style={{height: 4, backgroundColor: "#C1C1C1", marginTop: 26, borderRadius: 40}}>
-        <View style={{backgroundColor: maincol, width: "25%", height: 4, borderRadius: 40}}/>
+      <View style={{height: 4, backgroundColor: fcolor.skyblue, marginTop: 26, borderRadius: 40}}>
+        <View style={{backgroundColor: fcolor.blue, width: "25%", height: 4, borderRadius: 40}}/>
       </View>
       <View style={{marginTop: 70}}>
-        <BoldText>약관에 동의해주세요</BoldText>
+        <BoldText><BoldText color={fcolor.blue}>약관</BoldText>에 <BoldText color={fcolor.blue}>동의</BoldText>해주세요</BoldText>
+        <Text style={{color:fcolor.gray3,fontFamily:"Pretendard-Medium",fontSize:13}}>플래닝이 여러분의 소중한 개인정보를 지킬게요</Text>
       </View>
       <View style={styles.box}>
         <View style={styles.check_l}>
           <TouchableOpacity
             style={[styles.checkbox, checkboxStates.allAgree ? styles.check : null]}
             onPress={() => handlePress('allAgree')}>
-            {checkboxStates.allAgree && <Text style={styles.checkmark}>✔</Text>}
+            {checkboxStates.allAgree && <Icon name="check" size={10} color={fcolor.white}/>}
           </TouchableOpacity>
-          <AppText style={{paddingLeft: 20}}>모두 동의</AppText>
+          <AppText style={{paddingLeft: 20,}}>모두 동의</AppText>
         </View>
         <Text style={styles.checkboxText}>서비스 이용을 위해 약관에 모두 동의합니다.</Text>
 
@@ -70,15 +73,16 @@ function Signup() {
             <TouchableOpacity
               style={[styles.checkbox, checkboxStates.overFourteen ? styles.check : null]}
               onPress={() => handlePress('overFourteen')}>
-              {checkboxStates.overFourteen && <Text style={styles.checkmark}>✔</Text>}
+                {checkboxStates.overFourteen && <Icon name="check" size={10} color={fcolor.white}/>}
+            
             </TouchableOpacity>
-            <AppText style={{paddingLeft: 20}}>만 14세 이상입니다.</AppText>
+            <Text style={{paddingLeft: 20 }}>만 14세 이상입니다.</Text>
           </View>
           <View style={styles.check_l}>
             <TouchableOpacity
               style={[styles.checkbox, checkboxStates.termsAgree ? styles.check : null]}
               onPress={() => handlePress('termsAgree')}>
-              {checkboxStates.termsAgree && <Text style={styles.checkmark}>✔</Text>}
+              {checkboxStates.termsAgree && <Icon name="check" size={10} color={fcolor.white}/>}
             </TouchableOpacity>
             <AppText style={{paddingLeft: 20}}>서비스 이용약관 동의</AppText>
           </View>
@@ -86,7 +90,7 @@ function Signup() {
             <TouchableOpacity
               style={[styles.checkbox, checkboxStates.privacyPolicy ? styles.check : null]}
               onPress={() => handlePress('privacyPolicy')}>
-              {checkboxStates.privacyPolicy && <Text style={styles.checkmark}>✔</Text>}
+              {checkboxStates.privacyPolicy && <Icon name="check" size={10} color={fcolor.white}/>}
             </TouchableOpacity>
             <AppText style={{paddingLeft: 20}}>개인정보 처리방침 동의</AppText>
           </View>
@@ -94,7 +98,7 @@ function Signup() {
             <TouchableOpacity
               style={[styles.checkbox, checkboxStates.personalInfo ? styles.check : null]}
               onPress={() => handlePress('personalInfo')}>
-              {checkboxStates.personalInfo && <Text style={styles.checkmark}>✔</Text>}
+              {checkboxStates.personalInfo && <Icon name="check" size={10} color={fcolor.white}/>}
             </TouchableOpacity>
             <AppText style={{paddingLeft: 20}}>개인 정보 수집 및 이용 동의</AppText>
           </View>
@@ -102,7 +106,7 @@ function Signup() {
             <TouchableOpacity
               style={[styles.checkbox, checkboxStates.marketing ? styles.check : null]}
               onPress={() => handlePress('marketing')}>
-              {checkboxStates.marketing && <Text style={styles.checkmark}>✔</Text>}
+              {checkboxStates.marketing && <Icon name="check" size={10} color={fcolor.white}/>}
             </TouchableOpacity>
             <AppText style={{paddingLeft: 20}}>마케팅 수신 동의(선택)</AppText>
           </View>
@@ -119,21 +123,20 @@ function Signup() {
   );
 }
 
-const maincol = "#005bea";
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 25,
-    backgroundColor: "#FFFFF",
+    padding: 25,
+    backgroundColor: fcolor.white,
   },
   box: {
     marginTop: 60,
     marginBottom: 60,
-    borderColor: "#C1C1C1",
+    borderColor: fcolor.gray1,
     borderWidth: 1,
     borderRadius: 10,
-    padding: 20
+    padding: 20,
+    backgroundColor:fcolor.gray1
   },
   somting: {
     marginTop: 25,
@@ -146,22 +149,19 @@ const styles = StyleSheet.create({
 
   },
   checkbox: {
-    borderColor: maincol,
+    borderColor: fcolor.gray3,
     borderWidth: 1,
     borderRadius: 50,
-    height: 15,
-    width: 15,
+    height: 19,
+    width: 19,
     alignItems: 'center',
+    justifyContent:'center',
+    backgroundColor:fcolor.white
     
   },
   check: {
-    backgroundColor: maincol
-  },
-  checkmark: {
-    color: 'white',
-    fontSize: 8,
-    justifyContent: 'center',
-    alignItems: 'center'
+    backgroundColor: fcolor.blue,
+    borderColor:fcolor.blue
   },
   checkboxText: {
     paddingLeft: 35,
@@ -170,12 +170,13 @@ const styles = StyleSheet.create({
     fontFamily: "Pretendard-Regular",
   },
   nextbutton: {
-    backgroundColor: maincol,
+    backgroundColor: fcolor.blue,
     height: 61,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: "center",
   }
 })
+
 
 export default Signup;
