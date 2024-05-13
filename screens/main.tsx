@@ -5,8 +5,8 @@ import { GestureHandlerRootView, ScrollView, TouchableOpacity } from 'react-nati
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
-import AppText from '../src/components/common/AppText';
-import BoldText from '../src/components/common/BoldText';
+import AppText from '../src/components/common/RText';
+import BoldText from '../src/components/common/BText';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import fcolor from '../src/assets/colors/fcolors';

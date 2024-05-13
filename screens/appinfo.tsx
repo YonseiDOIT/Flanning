@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import BoldText from "../src/components/common/BoldText";
-import AppText from "../src/components/common/AppText";
+import BoldText from "../src/components/common/BText";
+import AppText from "../src/components/common/RText";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 

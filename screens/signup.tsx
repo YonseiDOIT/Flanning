@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-import AppText from "../src/components/common/AppText";
-import BoldText from "../src/components/common/BoldText";
+import BText from "../src/components/common/BText";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import fcolor from "../src/assets/colors/fcolors";
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import LinearGradient from 'react-native-linear-gradient';
+import NeonGr from "../src/components/neongr";
+import MText from "../src/components/common/MText";
+import RText from "../src/components/common/RText";
+import fcolors from "../src/assets/colors/fcolors";
 
 export type RootStackParam = {
   Home: undefined;
@@ -54,8 +58,8 @@ function Signup() {
         <View style={{backgroundColor: fcolor.blue, width: "25%", height: 4, borderRadius: 40}}/>
       </View>
       <View style={{marginTop: 70}}>
-        <BoldText><BoldText color={fcolor.blue}>약관</BoldText>에 <BoldText color={fcolor.blue}>동의</BoldText>해주세요</BoldText>
-        <Text style={{color:fcolor.gray3,fontFamily:"Pretendard-Medium",fontSize:13}}>플래닝이 여러분의 소중한 개인정보를 지킬게요</Text>
+        <BText><BText color={fcolor.blue}>약관</BText>에 <BText color={fcolor.blue}>동의</BText>해주세요</BText>
+        <MText>플래닝이 여러분의 소중한 개인정보를 지킬게요</MText>
       </View>
       <View style={styles.box}>
         <View style={styles.check_l}>
@@ -64,9 +68,9 @@ function Signup() {
             onPress={() => handlePress('allAgree')}>
             {checkboxStates.allAgree && <Icon name="check" size={10} color={fcolor.white}/>}
           </TouchableOpacity>
-          <AppText style={{paddingLeft: 20,}}>모두 동의</AppText>
+          <NeonGr style={{marginLeft: 20}}><MText fontSize={13}>모두 동의</MText></NeonGr>
         </View>
-        <Text style={styles.checkboxText}>서비스 이용을 위해 약관에 모두 동의합니다.</Text>
+        <RText color={fcolor.gray4} style={{marginLeft:40}}>서비스 이용을 위해 약관에 모두 동의합니다.</RText>
 
         <View style={styles.somting}>
           <View style={styles.check_l}>
@@ -76,7 +80,9 @@ function Signup() {
                 {checkboxStates.overFourteen && <Icon name="check" size={10} color={fcolor.white}/>}
             
             </TouchableOpacity>
-            <Text style={{paddingLeft: 20 }}>만 14세 이상입니다.</Text>
+            <NeonGr style={{marginLeft: 20}}><RText>만 14세 이상</RText></NeonGr>
+            <RText>입니다.</RText>
+
           </View>
           <View style={styles.check_l}>
             <TouchableOpacity
@@ -84,7 +90,8 @@ function Signup() {
               onPress={() => handlePress('termsAgree')}>
               {checkboxStates.termsAgree && <Icon name="check" size={10} color={fcolor.white}/>}
             </TouchableOpacity>
-            <AppText style={{paddingLeft: 20}}>서비스 이용약관 동의</AppText>
+            <NeonGr style={{marginLeft: 20}}><RText>서비스 이용약관</RText></NeonGr>
+            <RText> 동의</RText>
           </View>
           <View style={styles.check_l}>
             <TouchableOpacity
@@ -92,7 +99,8 @@ function Signup() {
               onPress={() => handlePress('privacyPolicy')}>
               {checkboxStates.privacyPolicy && <Icon name="check" size={10} color={fcolor.white}/>}
             </TouchableOpacity>
-            <AppText style={{paddingLeft: 20}}>개인정보 처리방침 동의</AppText>
+            <NeonGr style={{marginLeft: 20}}><RText>개인정보 처리방침</RText></NeonGr>
+            <RText> 동의</RText>
           </View>
           <View style={styles.check_l}>
             <TouchableOpacity
@@ -100,7 +108,8 @@ function Signup() {
               onPress={() => handlePress('personalInfo')}>
               {checkboxStates.personalInfo && <Icon name="check" size={10} color={fcolor.white}/>}
             </TouchableOpacity>
-            <AppText style={{paddingLeft: 20}}>개인 정보 수집 및 이용 동의</AppText>
+            <NeonGr style={{marginLeft: 20}}><RText>개인 정보 수집 및 이용</RText></NeonGr>
+            <RText> 동의</RText>
           </View>
           <View style={styles.check_l}>
             <TouchableOpacity
@@ -108,15 +117,16 @@ function Signup() {
               onPress={() => handlePress('marketing')}>
               {checkboxStates.marketing && <Icon name="check" size={10} color={fcolor.white}/>}
             </TouchableOpacity>
-            <AppText style={{paddingLeft: 20}}>마케팅 수신 동의(선택)</AppText>
+            <NeonGr style={{marginLeft: 20}}><RText>마케팅 수신</RText></NeonGr>
+            <RText> 동의 (선택)</RText>
           </View>
         </View>
       </View>
 
-      <View style={{flex: 1, justifyContent: 'flex-end', marginBottom: 50}}>
+      <View style={{flex: 1, justifyContent: 'flex-end', marginBottom: 70}}>
         <TouchableOpacity style={styles.nextbutton}
           onPress={() => navigation.navigate('idnpass')}>
-          <Text style={{color: 'white', fontFamily: "Pretendard-Regular"}}>다음</Text>
+          <MText color={fcolors.white} fontSize={13}>다음</MText>
         </TouchableOpacity>
       </View>
     </View>
@@ -136,7 +146,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     padding: 20,
-    backgroundColor:fcolor.gray1
+    backgroundColor:fcolor.gray1,
+    justifyContent:'center'
   },
   somting: {
     marginTop: 25,
@@ -146,7 +157,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
-
+    
   },
   checkbox: {
     borderColor: fcolor.gray3,
@@ -154,8 +165,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     height: 19,
     width: 19,
-    alignItems: 'center',
-    justifyContent:'center',
     backgroundColor:fcolor.white
     
   },
@@ -163,18 +172,13 @@ const styles = StyleSheet.create({
     backgroundColor: fcolor.blue,
     borderColor:fcolor.blue
   },
-  checkboxText: {
-    paddingLeft: 35,
-    fontSize: 13,
-    color: '#717171',
-    fontFamily: "Pretendard-Regular",
-  },
   nextbutton: {
     backgroundColor: fcolor.blue,
     height: 61,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: "center",
+    elevation:3
   }
 })
 

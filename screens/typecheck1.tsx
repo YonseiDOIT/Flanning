@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import AppText from "../src/components/common/AppText";
-import BoldText from "../src/components/common/BoldText";
+import RText from "../src/components/common/RText";
+import BText from "../src/components/common/BText";
 import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import database from '@react-native-firebase/database';
+import fcolors from "../src/assets/colors/fcolors";
+import NeonGr from "../src/components/neongr";
+import MText from "../src/components/common/MText";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export type RootStackParam = {
     Home: undefined;
@@ -44,79 +48,98 @@ function Typecheck1() {
     return (
     <GestureHandlerRootView style={{ flex: 1}}>
     <View style={styles.container}>
-        <View style={{height:4,backgroundColor:"#C1C1C1",marginTop:26,borderRadius:40}}>
-            <View style={{backgroundColor:maincol,width:"75%",height:4,borderRadius:40}}/>
+        <View style={{height:4,backgroundColor:fcolors.skyblue,marginTop:26,borderRadius:40}}>
+            <View style={{backgroundColor:fcolors.blue,width:"75%",height:4,borderRadius:40}}/>
         </View>
-        <View style={{paddingTop:70}}>
-            <BoldText>여행 취향을 알려주세요</BoldText>
-            <Text style={{fontSize:14,fontFamily:"Pretendard-Regular"}}>플래닝이 여러분의 여행을 도울게요</Text>
+        <View style={{paddingTop:50}}>
+            <BText><BText color={fcolors.blue}>여행 취향</BText>을 알려주세요</BText>
+            <MText color={fcolors.gray3} fontSize={13} style={{marginTop:10}}>플래닝이 여러분의 여행을 도울게요</MText>
         </View>
         
         <View style={styles.layout}>
-                    <AppText>어떤 여행지를 선호하시나요?</AppText>
-                    <View style={{ flexDirection: "row" }}>
+                    <View style={{flexDirection:'row', marginLeft:15,marginTop:20}}>
+                    <MText>어떤 </MText><NeonGr><MText>여행지</MText></NeonGr><MText>를 선호하시나요?</MText>
+                    </View>
+                    <View style={{ flexDirection: "row" ,justifyContent:'space-between',marginLeft: 5,marginRight:5,
+                        marginTop:10
+                    }}>
                         {['prefer1', 'prefer2', 'prefer3', 'prefer4', 'prefer5'].map(id => (
                             <TouchableOpacity 
                                 key={id}
                                 style={[styles.clickbox, selectedCheckbox === id ? styles.click : null]} 
                                 onPress={() => [handlePress(id),add_db(id)]}
-                            />
+                            ><Icon name="check" size={17} color={fcolors.white}/></TouchableOpacity>
                         ))}
+                    </View>
+                    <View style={{flexDirection:'row', justifyContent:'space-between',marginTop:10}}>
+                        <RText color={fcolors.gray4}>핫플레이스</RText>
+                        <RText color={fcolors.gray4}>로컬장소</RText>
                     </View>
         </View>
 
         {/* 여행태그 */}
         <View style={styles.layout}>
-            <AppText>관심있는 여행 태그를 선택해주세요</AppText>
+            <View style={{flexDirection:'column',marginLeft:15}}>
+                <View style={{flexDirection:'row'}}>
+                    <MText>관심있는 </MText><NeonGr><MText>여행 태그</MText></NeonGr><MText>를 선택해주세요</MText>
+                </View>
+                <RText color={fcolors.gray3} style={{marginTop:4}}>최소 2개 이상 선택해주세요</RText>
+            </View>
+            
             {/* 여행 태그 첫줄 */}
             <View style={{flexDirection:"row"}}>
             <TouchableOpacity style={styles.clickbox1}>
-                <Text style={{fontSize:10}}>관광</Text>
+                <RText fontSize={13} color={fcolors.gray4}>관광</RText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.clickbox1}>
-                <Text style={{fontSize:10}}>추억여행</Text>
+                <RText fontSize={13} color={fcolors.gray4}>추억여행</RText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.clickbox1}>
-                <Text style={{fontSize:10}}>식도락</Text>
+                <RText fontSize={13} color={fcolors.gray4}>사진 업로드</RText>
             </TouchableOpacity>
             </View>
 
             {/* 여행 태그 두번쨰줄 */}
             <View style={{flexDirection:"row"}}>
             <TouchableOpacity style={styles.clickbox1}>
-                <Text style={{fontSize:10}}>사진 업로드</Text>
+                <RText fontSize={13} color={fcolors.gray4}>숨겨진 관광 명소</RText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.clickbox1}>
-                <Text style={{fontSize:10}}>숨겨진 관광 명소</Text>
+                <RText fontSize={13} color={fcolors.gray4}>식도락</RText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.clickbox1}>
-                <Text style={{fontSize:10}}>맛집 기행</Text>
+                <RText fontSize={13} color={fcolors.gray4}>핫플</RText>
             </TouchableOpacity>
             </View>
 
             {/* 여행 태그 세번쨰줄 */}
             <View style={{flexDirection:"row"}}>
             <TouchableOpacity style={styles.clickbox1}>
-                <Text style={{fontSize:10}}>유적지</Text>
+                <RText fontSize={13} color={fcolors.gray4}>유적지</RText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.clickbox1}>
-                <Text style={{fontSize:10}}>전시회 투어</Text>
+                <RText fontSize={13} color={fcolors.gray4}>전시회 투어</RText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.clickbox1}>
-                <Text style={{fontSize:10}}>박물관·미술관 투어</Text>
+                <RText fontSize={13} color={fcolors.gray4}>촬영지</RText>
             </TouchableOpacity>
             </View>
             
+            <View style={{flexDirection:"row"}}>
+            <TouchableOpacity style={styles.clickbox1}>
+                <RText fontSize={13} color={fcolors.gray4}>박물관·미술관 투어</RText>
+            </TouchableOpacity>
+            </View>
         </View>
         {/* 다음 버튼 */}
-        <View style={{flex:1,justifyContent: 'flex-end',marginBottom:20}}>
+        <View style={{flex:1,justifyContent: 'flex-end',marginBottom:12, alignItems:'center'}}>
             <TouchableOpacity style={styles.nextbutton} 
                 onPress={() => navigation.navigate('typecheck2')}>
                     <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>거의 다 왔어요</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={{alignItems:"center",marginTop:10}}
+            <TouchableOpacity style={styles.laterbutton}
             onPress={() => navigation.navigate('appinfo')}>
-            <Text style={{fontFamily:"Pretendard-Regular"}}>다음에 할게요</Text>
+            <MText color={fcolors.gray3} fontSize={14} style={{textDecorationLine:'underline'}}>다음에 할게요</MText>
             </TouchableOpacity>
          </View>
         
@@ -127,13 +150,12 @@ function Typecheck1() {
   );
 }
 
-const maincol="#005bea"
 
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        margin:25,
-        backgroundColor: "#FFFFF",
+        padding:25,
+        backgroundColor: fcolors.white,
     },
     layout:{
         marginTop:30
@@ -141,37 +163,48 @@ const styles = StyleSheet.create({
     clickbox:{
         alignItems:'center',
         justifyContent:'center',
-        width:62,
-        height:32,
+        width:27,
+        height:27,
         borderWidth:1,
-        borderRadius:10,
+        borderRadius:50,
         marginTop:10,
         marginRight:7,
-        borderColor:"#C1C1C1",
+        borderColor: fcolors.gray3,
        
     },
     clickbox1:{
         alignItems:'center',
         justifyContent:'center',
-        height:32,
+        height:34,
         borderWidth:1,
         borderRadius:10,
-        marginTop:10,
-        marginRight:7,
+        marginTop:18,
+        marginRight:20,
         paddingLeft:20,
         paddingRight:20,
-        borderColor:"#C1C1C1",
+        backgroundColor:fcolors.gray1,
+        borderColor:fcolors.gray1
     },
     click:{
-        backgroundColor: maincol
+        backgroundColor: fcolors.blue,
+        borderColor:fcolors.blue
     },
     nextbutton:{
-        
-        backgroundColor:maincol,
+        width:332,
+        backgroundColor:fcolors.blue,
         height:61,
         borderRadius:10,
         justifyContent: 'center',
         alignItems:"center",
+        elevation:3
+    },
+    laterbutton:{
+        alignItems:"center",
+        justifyContent:'center',
+        marginTop:3, 
+        width:144, 
+        height:48,
+        
     }
 })
 

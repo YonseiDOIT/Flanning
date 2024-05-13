@@ -5,8 +5,8 @@ import { GestureHandlerRootView, ScrollView, TouchableOpacity } from 'react-nati
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
-import AppText from '../src/components/common/AppText';
-import BoldText from '../src/components/common/BoldText';
+import AppText from '../src/components/common/RText';
+import BoldText from '../src/components/common/BText';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import fcolor from '../src/assets/colors/fcolors';
@@ -27,7 +27,8 @@ const renderItem = ({ item }) => {
     <View style={{flexDirection:'row',alignItems:'center',paddingBottom:20}}>
       <View style={{flexDirection:'column',alignItems:'center',paddingRight:20,}}>
         <Icons style={{paddingBottom:10}} name={item.bigicontype} size={28} color="#717171"/>
-          <View style={styles.planeline}></View>
+          <View style={styles.planeline}>
+          </View>
       </View>
       {/* 일정 상세 */}
       <View style={{flexDirection:'column',paddingRight:20,}}>
@@ -105,7 +106,9 @@ export function Plan() {
     <GestureHandlerRootView style={{ flex: 1}}>
       <View style={styles.container}>
       <View style={styles.imagebanner}>
-        
+        <TouchableOpacity onPress={() => navigation.navigate('map')}>
+          <Icons name='map-marker' size={20} />
+        </TouchableOpacity>
       </View>
         
       <View style={styles.white}>

@@ -3,7 +3,7 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 import database, { firebase } from '@react-native-firebase/database';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import BoldText from '../src/components/common/BoldText';
+import BoldText from '../src/components/common/BText';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
 

@@ -11,6 +11,7 @@ import Main from './screens/main';
 import FriendList from './screens/frienlist';
 import Main1 from './screens/main1';
 import Plan from './screens/plan';
+import MMap from './screens/Map'
 
 
 const Stack = createNativeStackNavigator();
@@ -31,6 +32,7 @@ function App() {
         <Stack.Screen name="main1" component={Main} /> 
         <Stack.Screen name="friend" component={FriendList} />
         <Stack.Screen name="plan" component={Plan} />
+        <Stack.Screen name="map" component={MMap} />
       </Stack.Navigator>
     </NavigationContainer>
   );
