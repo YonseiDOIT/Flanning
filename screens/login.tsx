@@ -47,7 +47,7 @@ function Login () {
         <View>
           <TouchableOpacity style={styles.kakaobutton}>
             {/* 이미지 버튼으로... */}
-            <Image style={{width:340,height:51}} source={require('../src/assets/kakao_login_medium_wide.png')} />
+            <Image style={{width:"100%",height:50}} source={require('../src/assets/images/kakao_login_medium_wide.png')} />
           </TouchableOpacity>
           
         </View>
@@ -70,6 +70,8 @@ const styles = StyleSheet.create({
   container: {
     flex:1,
     padding:25,
+    paddingLeft:30,
+    paddingRight:30,
     backgroundColor: fcolor.white,
   },
   infoT:{
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
   kakaobutton:{
     marginTop:25,
     // backgroundColor:'#fee500',
-    height:45,
+    height:50,
     // borderRadius:7,
     justifyContent: 'center',
     alignItems:"center",

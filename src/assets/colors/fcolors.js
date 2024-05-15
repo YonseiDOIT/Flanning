@@ -7,6 +7,7 @@ const fcolors = {
     orange: '#FC7819',
     green:'#C2FC19',
     skyblue:'#D4E5FF',
+    lblue:'#F6FAFF',
     blue: "#005BEA",
     white:'#FFFFFF'
 }

@@ -26,16 +26,16 @@ function IdnPass (){
             </View>
             <View style={styles.boxset}>
                 <View style={styles.box}>
-                <MText color={fcolors.gray4} fontSize={13} style={{margin:20}}>아이디</MText>
+                <MText color={fcolors.gray4} fontSize={13} style={{marginTop:20,marginLeft:20,marginRight:40}}>아이디</MText>
                 <TextInput style={styles.boxinput} placeholder={"영문 10자 이내로 설정해주세요"} placeholderTextColor={fcolors.gray3}/>
                 </View>
                 <View style={styles.box}>
-                <MText color={fcolors.gray4} fontSize={13} style={{margin:20}}>비밀번호</MText>
+                <MText color={fcolors.gray4} fontSize={13} style={{marginTop:20,marginLeft:20,marginRight:40}}>비밀번호</MText>
                 <TextInput style={styles.boxinput} placeholder={"8글자 이내로 설정해주세요"} placeholderTextColor={fcolors.gray3}/>
                 </View>
                 <View style={styles.box}>
-                <MText color={fcolors.gray4} fontSize={13} style={{margin:20}}>비밀번호 확인</MText>
-                <TextInput style={styles.boxinput} placeholder={"동일한 비밀번호를 한번 더 입력해주세요"} placeholderTextColor={fcolors.gray3}/>
+                <MText color={fcolors.gray4} fontSize={13} style={{marginTop:20,marginLeft:20,marginRight:10 }}>비밀번호 확인</MText>
+                <TextInput style={styles.boxinput} placeholder={"비밀번호를 한번 더 입력해주세요"} placeholderTextColor={fcolors.gray3}/>
                 </View>
                 {/* <View style={styles.box}>
                 <MText style={{fontSize:13,margin:20}}>닉네임</MText>

@@ -1,15 +1,18 @@
 import React from 'react';
-import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
+import { Button, FlatList, StyleSheet, Text, View, Image } from 'react-native';
 import database from '@react-native-firebase/database';
 import { GestureHandlerRootView, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
-import AppText from '../src/components/common/RText';
-import BoldText from '../src/components/common/BText';
+import RText from '../src/components/common/RText';
+import BText from '../src/components/common/BText';
+import MText from '../src/components/common/MText';
 import fcolor from '../src/assets/colors/fcolors';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+
 
 
 export type RootStackParam = {
@@ -31,31 +34,27 @@ export function Main1() {
     <GestureHandlerRootView style={{ flex: 1}}>
       <View style={styles.container}>
       <View style={styles.imagebanner}>
-        <View style={{flexDirection:'row',justifyContent:'flex-end',paddingBottom:20}}>
-          <TouchableOpacity onPress={() => navigation.navigate('friend')}><Icon style={{marginRight:15}}name='group-add' size={28} color={fcolor.gray4}/></TouchableOpacity>
-          <TouchableOpacity><Icon name='settings' size={28} color={fcolor.gray4}/></TouchableOpacity>
+        <View style={{flexDirection:'row', justifyContent:'space-between',paddingBottom:50}}>
+          <Image source={require('../src/assets/images/logo.png')} style={{width:89,height:34}}/>
+          <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+            <TouchableOpacity onPress={() => navigation.navigate('friend')}><Image style={{width:22,height:16,marginTop:2}}source={require('../src/assets/images/friends.png')}/></TouchableOpacity>
+            <TouchableOpacity><Image style={{width:20,height:20,marginLeft:20}}source={require('../src/assets/images/setting.png')}/></TouchableOpacity>
+          </View>
         </View>
-        <View style={{flexDirection:'row', justifyContent:'center', paddingBottom:10}}>
-          <TouchableOpacity>
-            <Icons name='image-outline' size={28} color={fcolor.gray4}></Icons>
-          </TouchableOpacity>
-        </View>
-        <BoldText color='white'>여행 제목</BoldText>
+        
+        <BText color='white' fontSize={23} style={{marginBottom:5}}>여행 제목</BText>
       </View>
         
       <View style={styles.white}>
           <View style={styles.travelplane}>
             <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-                <Text style={{fontFamily:"Pretendard-SemiBold",fontSize:20,color:"black"}}>여행 일정</Text>
-                  <TouchableOpacity><Text>상세보기{'>'}</Text></TouchableOpacity>
+                <BText fontSize={18}>여행 일정</BText>
                 </View>
                 <View style={styles.planecontent}>
                     <TouchableOpacity onPress={()=> navigation.navigate("main1")}>
-                        <View style={{width:207,height:208,backgroundColor:fcolor.gray1,justifyContent:'center',alignItems:'center', marginBottom:30}}>
-                            <Text style={{color:fcolor.gray4}}>일러스트</Text>
-                        </View>    
+                      <Image source={require('../src/assets/images/pen.png')} style={{width:152,height:152}}/>    
                     </TouchableOpacity>
-                    <Text style={{color:fcolor.gray3}}>아직 일정이 없어요.</Text>
+                    <MText color={fcolor.gray3}>아직 일정이 없어요.</MText>
                     <Text style={{color:fcolor.gray3}}>플래닝과 함께 일정을 세워볼까요?</Text>
 
                 </View>
@@ -67,25 +66,21 @@ export function Main1() {
       
       <View style={styles.bottombar}>
         <TouchableOpacity style={styles.icon}>
-          <Icon name='home' size={30} color={fcolor.black}/>
-          <Text style={[styles.icontext,{color:fcolor.black}]}>홈</Text>  
+          <Icon name='home-filled' size={25} color={fcolor.blue}/>
+          <RText style={{marginTop:5}}color={fcolor.blue} fontSize={10}>홈</RText>
         </TouchableOpacity>
         <TouchableOpacity style={styles.icon}>
-          <Icon name='checklist' size={25} color={fcolor.gray4}/>
-          <Text style={styles.icontext}>여행 목록</Text>  
+          <Icon name='checklist' size={25} color={fcolor.gray3}/>
+          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>여행 목록</RText>  
         </TouchableOpacity>
         <TouchableOpacity style={styles.icon}>
-          <Icon name='edit' size={28} color={fcolor.gray4}/>
-          <Text style={styles.icontext}>리뷰</Text>  
+          <Icon name='edit' size={25} color={fcolor.gray3}/>
+          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>리뷰</RText>
         </TouchableOpacity>
         <TouchableOpacity style={styles.icon}>
-          <Icon name='settings' size={28} color={fcolor.gray4}/>
-          <Text style={styles.icontext}>설정</Text>  
+          <Icon name='settings' size={25} color={fcolor.gray3}/>
+          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>설정</RText> 
         </TouchableOpacity>
-        
-        
-        
-        
       </View>
     
     </GestureHandlerRootView>
@@ -97,7 +92,7 @@ export function Main1() {
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        backgroundColor: fcolor.gray2,
+        backgroundColor: fcolor.blue,
         justifyContent:'flex-end'
     },
     imagebanner:{
@@ -109,8 +104,6 @@ const styles = StyleSheet.create({
       width:'100%',
       height:550,
       backgroundColor:fcolor.white,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
       justifyContent:'center',
       elevation:30,
 
@@ -119,9 +112,7 @@ const styles = StyleSheet.create({
       height: 500,
       padding:20,
       margin:20,
-      borderColor:fcolor.gray3,
-      borderWidth:1,
-      borderRadius:10,
+      
     },
     //일정내용
     planecontent:{
@@ -140,12 +131,13 @@ const styles = StyleSheet.create({
     // 바텀바
     bottombar:{
       width:"100%",
-      height:84,
-      backgroundColor:fcolor.gray2,
+      height:70,
+      backgroundColor:fcolor.gray1,
       flexDirection:"row",
       justifyContent:'space-around',
-      alignItems:'center'
-      
+      alignItems:'center',
+      paddingLeft:10,
+      paddingRight:10
     },
     icon:{
       flexDirection:'column',

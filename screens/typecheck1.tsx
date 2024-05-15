@@ -51,9 +51,9 @@ function Typecheck1() {
         <View style={{height:4,backgroundColor:fcolors.skyblue,marginTop:26,borderRadius:40}}>
             <View style={{backgroundColor:fcolors.blue,width:"75%",height:4,borderRadius:40}}/>
         </View>
-        <View style={{paddingTop:50}}>
+        <View style={{paddingTop:35}}>
             <BText><BText color={fcolors.blue}>여행 취향</BText>을 알려주세요</BText>
-            <MText color={fcolors.gray3} fontSize={13} style={{marginTop:10}}>플래닝이 여러분의 여행을 도울게요</MText>
+            <MText color={fcolors.gray3} fontSize={13} style={{marginTop:7}}>플래닝이 여러분의 여행을 도울게요</MText>
         </View>
         
         <View style={styles.layout}>
@@ -132,7 +132,7 @@ function Typecheck1() {
             </View>
         </View>
         {/* 다음 버튼 */}
-        <View style={{flex:1,justifyContent: 'flex-end',marginBottom:12, alignItems:'center'}}>
+        <View style={{flex:1,justifyContent: 'flex-end',marginBottom:20, alignItems:'center'}}>
             <TouchableOpacity style={styles.nextbutton} 
                 onPress={() => navigation.navigate('typecheck2')}>
                     <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>거의 다 왔어요</Text>

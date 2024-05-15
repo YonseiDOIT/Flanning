@@ -73,53 +73,75 @@ function Signup() {
         <RText color={fcolor.gray4} style={{marginLeft:40}}>서비스 이용을 위해 약관에 모두 동의합니다.</RText>
 
         <View style={styles.somting}>
-          <View style={styles.check_l}>
-            <TouchableOpacity
-              style={[styles.checkbox, checkboxStates.overFourteen ? styles.check : null]}
-              onPress={() => handlePress('overFourteen')}>
-                {checkboxStates.overFourteen && <Icon name="check" size={10} color={fcolor.white}/>}
+          <View style={styles.line}>
+            <View style={styles.check_l}>
+              <TouchableOpacity
+                style={[styles.checkbox, checkboxStates.overFourteen ? styles.check : null]}
+                onPress={() => handlePress('overFourteen')}>
+                  {checkboxStates.overFourteen && <Icon name="check" size={10} color={fcolor.white}/>}
+              
+              </TouchableOpacity>
+              <NeonGr style={{marginLeft: 20}}><RText>만 14세 이상</RText></NeonGr>
+              <RText>입니다.</RText>
+            </View>
             
-            </TouchableOpacity>
-            <NeonGr style={{marginLeft: 20}}><RText>만 14세 이상</RText></NeonGr>
-            <RText>입니다.</RText>
+            <RText color={fcolor.gray4} style={{textDecorationLine:'underline',}}>보기</RText>
+          </View>
+          <View style={styles.line}>
+            <View style={styles.check_l}>
+              <TouchableOpacity
+                style={[styles.checkbox, checkboxStates.termsAgree ? styles.check : null]}
+                onPress={() => handlePress('termsAgree')}>
+                {checkboxStates.termsAgree && <Icon name="check" size={10} color={fcolor.white}/>}
+              </TouchableOpacity>
+              <NeonGr style={{marginLeft: 20}}><RText>서비스 이용약관</RText></NeonGr>
+              <RText> 동의</RText>
+            </View>
+            <RText color={fcolor.gray4} style={{textDecorationLine:'underline',}}>보기</RText>
+          </View>
+          <View style={styles.line}>
+            <View style={styles.check_l}>
+              <TouchableOpacity
+                style={[styles.checkbox, checkboxStates.privacyPolicy ? styles.check : null]}
+                onPress={() => handlePress('privacyPolicy')}>
+                {checkboxStates.privacyPolicy && <Icon name="check" size={10} color={fcolor.white}/>}
+              </TouchableOpacity>
+              <NeonGr style={{marginLeft: 20}}><RText>개인정보 처리방침</RText></NeonGr>
+              <RText> 동의</RText>
+            </View>
+              
+            <RText color={fcolor.gray4} style={{textDecorationLine:'underline',}}>보기</RText>
+          </View>
+          <View style={styles.line}>
+            <View style={styles.check_l}>
+              <TouchableOpacity
+                style={[styles.checkbox, checkboxStates.personalInfo ? styles.check : null]}
+                onPress={() => handlePress('personalInfo')}>
+                {checkboxStates.personalInfo && <Icon name="check" size={10} color={fcolor.white}/>}
+              </TouchableOpacity>
+              <NeonGr style={{marginLeft: 20}}><RText>개인 정보 수집 및 이용</RText></NeonGr>
+              <RText> 동의</RText>
+            </View>
+              
+            <RText color={fcolor.gray4} style={{textDecorationLine:'underline',}}>보기</RText>
+          </View>
 
+          <View style={styles.line}>
+            <View style={styles.check_l}>
+              <TouchableOpacity
+                style={[styles.checkbox, checkboxStates.marketing ? styles.check : null]}
+                onPress={() => handlePress('marketing')}>
+                {checkboxStates.marketing && <Icon name="check" size={10} color={fcolor.white}/>}
+              </TouchableOpacity>
+              <NeonGr style={{marginLeft: 20}}><RText>마케팅 수신</RText></NeonGr>
+              <RText> 동의 (선택)</RText>
+            </View>  
+            <RText color={fcolor.gray4} style={{textDecorationLine:'underline',}}>보기</RText>
           </View>
-          <View style={styles.check_l}>
-            <TouchableOpacity
-              style={[styles.checkbox, checkboxStates.termsAgree ? styles.check : null]}
-              onPress={() => handlePress('termsAgree')}>
-              {checkboxStates.termsAgree && <Icon name="check" size={10} color={fcolor.white}/>}
-            </TouchableOpacity>
-            <NeonGr style={{marginLeft: 20}}><RText>서비스 이용약관</RText></NeonGr>
-            <RText> 동의</RText>
-          </View>
-          <View style={styles.check_l}>
-            <TouchableOpacity
-              style={[styles.checkbox, checkboxStates.privacyPolicy ? styles.check : null]}
-              onPress={() => handlePress('privacyPolicy')}>
-              {checkboxStates.privacyPolicy && <Icon name="check" size={10} color={fcolor.white}/>}
-            </TouchableOpacity>
-            <NeonGr style={{marginLeft: 20}}><RText>개인정보 처리방침</RText></NeonGr>
-            <RText> 동의</RText>
-          </View>
-          <View style={styles.check_l}>
-            <TouchableOpacity
-              style={[styles.checkbox, checkboxStates.personalInfo ? styles.check : null]}
-              onPress={() => handlePress('personalInfo')}>
-              {checkboxStates.personalInfo && <Icon name="check" size={10} color={fcolor.white}/>}
-            </TouchableOpacity>
-            <NeonGr style={{marginLeft: 20}}><RText>개인 정보 수집 및 이용</RText></NeonGr>
-            <RText> 동의</RText>
-          </View>
-          <View style={styles.check_l}>
-            <TouchableOpacity
-              style={[styles.checkbox, checkboxStates.marketing ? styles.check : null]}
-              onPress={() => handlePress('marketing')}>
-              {checkboxStates.marketing && <Icon name="check" size={10} color={fcolor.white}/>}
-            </TouchableOpacity>
-            <NeonGr style={{marginLeft: 20}}><RText>마케팅 수신</RText></NeonGr>
-            <RText> 동의 (선택)</RText>
-          </View>
+          
+          
+          
+          
         </View>
       </View>
 
@@ -138,6 +160,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 25,
     backgroundColor: fcolor.white,
+    
+    
   },
   box: {
     marginTop: 60,
@@ -153,8 +177,13 @@ const styles = StyleSheet.create({
     marginTop: 25,
     marginBottom: 25
   },
+  line:{
+    justifyContent:'space-between',
+    flexDirection:'row',
+    marginTop: 10
+  },
   check_l: {
-    marginTop: 10,
+    
     flexDirection: 'row',
     alignItems: 'center',
     

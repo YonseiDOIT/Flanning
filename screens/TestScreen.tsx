@@ -1,41 +1,72 @@
-import React from 'react';
-import { Button, View } from 'react-native';
-import database from '@react-native-firebase/database';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useRef } from 'react';
+import { Animated, PanResponder, View, StyleSheet, Dimensions, Text } from 'react-native';
 
-export type RootStackParam = {
+const { height: screenHeight } = Dimensions.get('window');  // 디바이스의 화면 높이
+
+export type RootStackParamList = {
   Home: undefined;
   Test: undefined;
 };
 
+const TestScreen = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const heightAnim = useRef(new Animated.Value(100)).current; // 초기 높이 값 설정
 
-
-function TestScreen ()  {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
-  
-  const addFruitToDatabase = () => {
-    // Firebase Realtime Database의 특정 경로에 데이터 쓰기
-    database()
-    .ref('/fruits/apple')
-    .set('사과')
-    .then(() => console.log('Data set.'))
-    .catch(error => console.error('Error writing to Firebase', error));
-
-  };
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (event, gesture) => {
+        if (gesture.dy < 0) {
+          let newHeight = 100 - gesture.dy;
+          if (newHeight > screenHeight) newHeight = screenHeight; // 높이 제한
+          heightAnim.setValue(newHeight);
+        }
+      },
+      onPanResponderRelease: () => {
+        if (heightAnim._value >= screenHeight) {
+          // 높이가 화면 높이 이상일 때 다음 화면으로 넘어가기
+          navigation.navigate('test1'); // 'Test'는 다음 화면의 route name으로 교체 필요
+        } else {
+          // 그렇지 않을 경우 원래 크기로 복귀
+          Animated.spring(heightAnim, {
+            toValue: 100,
+            useNativeDriver: false
+          }).start();
+        }
+      }
+    })
+  ).current;
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Button
-        title="데이터 추가!"
-        onPress={addFruitToDatabase}
-      />
-      <Button
-        title="메인으로"
-        onPress={() => navigation.navigate('main')}
-      />
+    <View style={styles.container}>
+      <Animated.View
+        style={[styles.box, { height: heightAnim }]}
+        {...panResponder.panHandlers}
+      >
+        <Text style={styles.text}>Swipe up to fill the screen</Text>
+      </Animated.View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  box: {
+    width: '100%',
+    backgroundColor: 'blue',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  text: {
+    color: 'white',
+    fontSize: 16
+  }
+});
 
 export default TestScreen;

@@ -8,16 +8,20 @@ import Typecheck2 from './screens/typecheck2';
 import TestScreen from './screens/TestScreen';
 import Appinfo from './screens/appinfo';
 import Main from './screens/main';
-import FriendList from './screens/frienlist';
+import FriendList from './screens/friendlist';
 import Main1 from './screens/main1';
 import Plan from './screens/plan';
 import MMap from './screens/Map'
+import TestScreen2 from './screens/TestScreen2';
+import PlanDetail from './screens/plandetail';
 
+  
 
 const Stack = createNativeStackNavigator();
 
 function App() {
   return (
+    
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="login" component={Login} />
@@ -27,12 +31,14 @@ function App() {
         <Stack.Screen name="typecheck2" component={Typecheck2} />
         <Stack.Screen name="appinfo" component={Appinfo} />
         <Stack.Screen name="test" component={TestScreen} />
+        <Stack.Screen name="test1" component={TestScreen2} />
         {/* 아래는 일정 없는 홈과 일정 있는 홈 잠시 나눔 */}
         <Stack.Screen name="main" component={Main1} /> 
         <Stack.Screen name="main1" component={Main} /> 
         <Stack.Screen name="friend" component={FriendList} />
         <Stack.Screen name="plan" component={Plan} />
         <Stack.Screen name="map" component={MMap} />
+        <Stack.Screen name="plande" component={PlanDetail} />
       </Stack.Navigator>
     </NavigationContainer>
   );

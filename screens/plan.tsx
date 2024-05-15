@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Button, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Button, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import database from '@react-native-firebase/database';
 import { GestureHandlerRootView, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -10,6 +10,9 @@ import BoldText from '../src/components/common/BText';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import fcolor from '../src/assets/colors/fcolors';
+import RText from '../src/components/common/RText';
+import BText from '../src/components/common/BText';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 
 export type RootStackParam = {
   Home: undefined;
@@ -26,19 +29,18 @@ const renderItem = ({ item }) => {
   return (
     <View style={{flexDirection:'row',alignItems:'center',paddingBottom:20}}>
       <View style={{flexDirection:'column',alignItems:'center',paddingRight:20,}}>
-        <Icons style={{paddingBottom:10}} name={item.bigicontype} size={28} color="#717171"/>
-          <View style={styles.planeline}>
-          </View>
+        <Icons style={{paddingBottom:10}} name={item.bigicontype} size={32} color={fcolor.gray4}/>
+          <View style={styles.planeline}></View>
       </View>
       {/* 일정 상세 */}
       <View style={{flexDirection:'column',paddingRight:20,}}>
         <Text style={{fontFamily:"Pretendard-Bold",color:'black',fontSize:16}}>{item.title}</Text>
-          <View style={{flexDirection:'row',alignItems:'center',paddingTop:15,paddingBottom:15}}>
-            <Icons style={{paddingRight:10}} name={item.smicontype} size={18} color="#9E9E9E"/>
-              <Text style={{fontSize:13}}>{item.subtitle}</Text>
+          <View style={{flexDirection:'row',alignItems:'center',paddingTop:15,paddingBottom:15,marginLeft:5}}>
+            <Icons style={{paddingRight:10}} name={item.smicontype} size={24} color={fcolor.gray3}/>
+              <RText color={fcolor.gray4}>{item.subtitle}</RText>
           </View>
-          <View style={{borderColor:'#9E9E9E',width:'auto',height:'auto',padding:20,borderWidth:1,borderRadius:4, alignItems:'center',justifyContent:'center'}}>
-              <Text style={{fontSize:13}}>{item.memo}</Text>
+          <View style={styles.memo}>
+              <RText color={fcolor.gray4}>{item.memo}</RText>
           </View>
       </View>
       
@@ -89,7 +91,8 @@ const LIMIT = 5;
 
 export function Plan() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
-
+  const heightAnim = useRef(new Animated.Value(100)).current; // 초기 높이 값 설정
+  
   const isOpend=useRef(false);
 //   const transYCamera=useShredValue(0);
 
@@ -106,14 +109,25 @@ export function Plan() {
     <GestureHandlerRootView style={{ flex: 1}}>
       <View style={styles.container}>
       <View style={styles.imagebanner}>
-        <TouchableOpacity onPress={() => navigation.navigate('map')}>
-          <Icons name='map-marker' size={20} />
-        </TouchableOpacity>
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          style={StyleSheet.absoluteFill}
+          region={{
+            latitude: 37.279748,
+            longitude: 127.901427,
+            latitudeDelta: 3,
+            longitudeDelta: 3,
+          }}/>
       </View>
         
       <View style={styles.white}>
+            <View style={{flexDirection:'row',justifyContent:'center',marginBottom:20}}>
+              <TouchableOpacity onPress={()=>navigation.navigate('plande')}>
+                <View style={{width:80,height:4,backgroundColor:fcolor.gray2,borderRadius:50}}/>
+              </TouchableOpacity>
+            </View>
             <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-                <Text style={{fontFamily:"Pretendard-SemiBold",fontSize:20,color:"black"}}>여행 일정</Text>
+                <BText fontSize={18}>여행 일정</BText>
             </View>
             <View style={styles.planecontent}>
                 {/* 일정 종류 */}
@@ -123,36 +137,27 @@ export function Plan() {
                     renderItem={renderItem}
                     keyExtractor={(item) => String(item.id)}
                 />
-                <Pressable 
-                    onPress={handlePress}
-                    style={({pressed})=> pressed ? [styles.fab,{transform: [{scale:0.9}]} ] : [styles.fab]}>
-                    <Icon name='edit' size={28} color="#717171"/>
-                </Pressable>
             </View>
         </View>
       </View>
       
       <View style={styles.bottombar}>
         <TouchableOpacity style={styles.icon}>
-          <Icon name='home' size={30} color="#000000"/>
-          <Text style={[styles.icontext,{color:"#000000"}]}>홈</Text>  
+          <Icon name='home-filled' size={25} color={fcolor.blue}/>
+          <RText style={{marginTop:5}}color={fcolor.blue} fontSize={10}>홈</RText>
         </TouchableOpacity>
         <TouchableOpacity style={styles.icon}>
-          <Icon name='checklist' size={25} color="#717171"/>
-          <Text style={styles.icontext}>여행 목록</Text>  
+          <Icon name='checklist' size={25} color={fcolor.gray3}/>
+          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>여행 목록</RText>  
         </TouchableOpacity>
         <TouchableOpacity style={styles.icon}>
-          <Icon name='edit' size={28} color="#717171"/>
-          <Text style={styles.icontext}>리뷰</Text>  
+          <Icon name='edit' size={25} color={fcolor.gray3}/>
+          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>리뷰</RText>
         </TouchableOpacity>
         <TouchableOpacity style={styles.icon}>
-          <Icon name='settings' size={28} color="#717171"/>
-          <Text style={styles.icontext}>설정</Text>  
+          <Icon name='settings' size={25} color={fcolor.gray3}/>
+          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>설정</RText> 
         </TouchableOpacity>
-        
-        
-        
-        
       </View>
     
     </GestureHandlerRootView>
@@ -168,6 +173,7 @@ const styles = StyleSheet.create({
       justifyContent:'flex-end'
   },
   imagebanner:{
+    flex:1,
     paddingLeft: 30,
     paddingRight:30,
     paddingBottom:10
@@ -175,13 +181,10 @@ const styles = StyleSheet.create({
 
   white:{
     width:'100%',
-    height:470,
+    height:550,
     padding:30,
-    paddingTop:50,
+    paddingTop:20,
     backgroundColor:fcolor.white,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    justifyContent:'center',
     elevation:30,
 
   },
@@ -195,13 +198,25 @@ const styles = StyleSheet.create({
   },
   //일정내용
   planecontent:{
-    paddingTop:20,
+    height:'93%',
+    paddingTop:25,
     flexDirection:'column'
   },
   planeline:{
     width:1,
     height:100,
     backgroundColor:fcolor.gray4
+  },
+  memo:{
+    borderColor:fcolor.orange,
+    borderLeftWidth:4,
+    width:'auto',
+    height:'auto',
+    padding:18,
+    marginLeft:5,
+    marginTop:5,
+    alignItems:'center',
+    justifyContent:'center'
   },
 
   //플로팅 버튼
@@ -220,11 +235,13 @@ const styles = StyleSheet.create({
   // 바텀바
   bottombar:{
     width:"100%",
-    height:84,
-    backgroundColor:fcolor.gray2,
+    height:70,
+    backgroundColor:fcolor.gray1,
     flexDirection:"row",
     justifyContent:'space-around',
-    alignItems:'center'
+    alignItems:'center',
+    paddingLeft:10,
+    paddingRight:10
     
   },
   icon:{
