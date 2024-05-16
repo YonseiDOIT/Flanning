@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useRef } from 'react';
 import { Animated, PanResponder, View, StyleSheet, Dimensions, Text } from 'react-native';
+import fcolors from '../src/assets/colors/fcolors';
 
 const { height: screenHeight } = Dimensions.get('window');  // 디바이스의 화면 높이
 
@@ -12,14 +13,14 @@ export type RootStackParamList = {
 
 const TestScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const heightAnim = useRef(new Animated.Value(100)).current; // 초기 높이 값 설정
+  const heightAnim = useRef(new Animated.Value(500)).current; // 초기 높이 값 설정
 
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: (event, gesture) => {
         if (gesture.dy < 0) {
-          let newHeight = 100 - gesture.dy;
+          let newHeight = 500 - gesture.dy;
           if (newHeight > screenHeight) newHeight = screenHeight; // 높이 제한
           heightAnim.setValue(newHeight);
         }
@@ -31,7 +32,7 @@ const TestScreen = () => {
         } else {
           // 그렇지 않을 경우 원래 크기로 복귀
           Animated.spring(heightAnim, {
-            toValue: 100,
+            toValue: 500,
             useNativeDriver: false
           }).start();
         }
@@ -41,6 +42,9 @@ const TestScreen = () => {
 
   return (
     <View style={styles.container}>
+      <View style={{backgroundColor:fcolors.black, height:200,width:'100%'}}>
+        <Text>와와와</Text>
+      </View>
       <Animated.View
         style={[styles.box, { height: heightAnim }]}
         {...panResponder.panHandlers}

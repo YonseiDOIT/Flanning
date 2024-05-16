@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Animated, Button, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Button, Dimensions, FlatList, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import database from '@react-native-firebase/database';
 import { GestureHandlerRootView, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -13,6 +13,8 @@ import fcolor from '../src/assets/colors/fcolors';
 import RText from '../src/components/common/RText';
 import BText from '../src/components/common/BText';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+
+const { height: screenHeight } = Dimensions.get('window');  // 디바이스의 화면 높이
 
 export type RootStackParam = {
   Home: undefined;
@@ -91,40 +93,53 @@ const LIMIT = 5;
 
 export function Plan() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
-  const heightAnim = useRef(new Animated.Value(100)).current; // 초기 높이 값 설정
+  const heightAnim = useRef(new Animated.Value(550)).current; // 초기 높이 값 설정
   
-  const isOpend=useRef(false);
-//   const transYCamera=useShredValue(0);
 
-  function handlePress(){
-    if(isOpend.current){
-
-    }else{
-
-    }
-    
-  }
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (event, gesture) => {
+        if (gesture.dy < 0) {
+          let newHeight = 550 - gesture.dy;
+          if (newHeight > screenHeight) newHeight = screenHeight; // 높이 제한
+          heightAnim.setValue(newHeight);
+        }
+      },
+      onPanResponderRelease: () => {
+        if (heightAnim._value >= screenHeight-70) {
+          // 높이가 화면 높이 이상일 때 다음 화면으로 넘어가기
+          navigation.navigate('plande'); // 'Test'는 다음 화면의 route name으로 교체 필요
+        } else {
+          // 그렇지 않을 경우 원래 크기로 복귀
+          Animated.spring(heightAnim, {
+            toValue: 550,
+            useNativeDriver: false
+          }).start();
+        }
+      }
+    })
+  ).current;
   
   return (
     <GestureHandlerRootView style={{ flex: 1}}>
       <View style={styles.container}>
-      <View style={styles.imagebanner}>
-        <MapView
-          provider={PROVIDER_GOOGLE}
-          style={StyleSheet.absoluteFill}
-          region={{
-            latitude: 37.279748,
-            longitude: 127.901427,
-            latitudeDelta: 3,
-            longitudeDelta: 3,
-          }}/>
-      </View>
-        
-      <View style={styles.white}>
+        <View style={styles.imagebanner}>
+          <MapView
+            provider={PROVIDER_GOOGLE}
+            style={StyleSheet.absoluteFill}
+            region={{
+              latitude: 37.279748,
+              longitude: 127.901427,
+              latitudeDelta: 3,
+              longitudeDelta: 3,
+            }}/>
+        </View>
+   
+        <Animated.View style={[styles.white,{ height: heightAnim }]}
+          {...panResponder.panHandlers}>
             <View style={{flexDirection:'row',justifyContent:'center',marginBottom:20}}>
-              <TouchableOpacity onPress={()=>navigation.navigate('plande')}>
-                <View style={{width:80,height:4,backgroundColor:fcolor.gray2,borderRadius:50}}/>
-              </TouchableOpacity>
+              <View style={{width:80,height:4,backgroundColor:fcolor.gray2,borderRadius:50}}/>
             </View>
             <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                 <BText fontSize={18}>여행 일정</BText>
@@ -138,7 +153,7 @@ export function Plan() {
                     keyExtractor={(item) => String(item.id)}
                 />
             </View>
-        </View>
+        </Animated.View>
       </View>
       
       <View style={styles.bottombar}>
@@ -181,7 +196,6 @@ const styles = StyleSheet.create({
 
   white:{
     width:'100%',
-    height:550,
     padding:30,
     paddingTop:20,
     backgroundColor:fcolor.white,

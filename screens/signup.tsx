@@ -194,7 +194,9 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     height: 19,
     width: 19,
-    backgroundColor:fcolor.white
+    backgroundColor:fcolor.white,
+    alignItems:'center',
+    justifyContent:'center'
     
   },
   check: {

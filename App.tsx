@@ -14,12 +14,16 @@ import Plan from './screens/plan';
 import MMap from './screens/Map'
 import TestScreen2 from './screens/TestScreen2';
 import PlanDetail from './screens/plandetail';
+// import SplashScreen from 'react-native-splash-screen';
+import { useEffect } from 'react';
 
   
 
+
 const Stack = createNativeStackNavigator();
 
-function App() {
+const App=()=> {
+  
   return (
     
     <NavigationContainer>
