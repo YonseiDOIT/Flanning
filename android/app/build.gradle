@@ -120,6 +120,9 @@ dependencies {
     implementation("com.facebook.react:flipper-integration")
     implementation platform('com.google.firebase:firebase-bom:32.2.2')
     implementation project(':react-native-linear-gradient')
+
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
     
 
     if (hermesEnabled.toBoolean()) {

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">flanningapp</string>
+    <string name="kakao_app_key">ce5c12af4b32907aecd25674f8c7abd2</string>
 </resources>

@@ -11,32 +11,72 @@ import RText from '../src/components/common/RText';
 import NeonGr from '../src/components/neongr';
 import LinearGradient from 'react-native-linear-gradient';
 
-export type RootStackParam = {
-  Home: undefined;
-  Test: undefined;
-};
+import firestore from "@react-native-firebase/firestore";
+import Nickname from './nickname';
+import DialogInput from 'react-native-dialog-input';
 
 
+const mycode='iE5G8'
+const fr_code='zORE2'
 
-function FriendList ()  {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
+function FriendList ({navigation:{navigate}})  {
   
   const [isMore,setMore]= useState(false)
-
+  const [isDialogVisible, setDialogVisible] = useState(false);
+  
   const changeView = () => {
       setMore({})
     };
+
+  //데이터 가져오기
+  const [users, setUsers] = useState({
+    nickname: '',
+    intro:'',
+    trvtg:[]
+  });
+  const usersCollection = firestore().collection('users').doc(fr_code).get();
+
+  const frd_info = async () => {
+    try {
+      console.log('돌아감');
+      const db = (await usersCollection).data();
+      setUsers(prevState => ({nickname: db.nickname, intro:db.intro, trvtg: db.trvtg}));
+      
+      console.log(db);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };  
+
+  const toggleDialog = (isVisible) => {
+    setDialogVisible(isVisible);
+  };
+
+  const handleDialogSubmit = (inputText) => {
+    console.log(inputText); // Implement your logic to handle the input text
+    toggleDialog(false);
+  };
   
 
   return (
     <GestureHandlerRootView style={{ flex: 1}}>
+      
         <View style={styles.container}>
             <View style={{flexDirection:'row', justifyContent:'space-between',marginBottom:30,marginTop:10,alignItems:'center'}}>
-                <TouchableOpacity onPress={() => navigation.navigate('main')}><Icon name='arrow-back-ios' size={24} color="#717171"/></TouchableOpacity>
+                <TouchableOpacity onPress={() => navigate('main')}><Icon name='arrow-back-ios' size={24} color="#717171"/></TouchableOpacity>
                 <BText fontSize={18}>친구 목록</BText>
-                <Icon name= 'person-add-alt' size={24} color="#717171"/>
+                <TouchableOpacity>
+                  <Icon name= 'person-add-alt' size={24} color="#717171"/>
+                </TouchableOpacity>
+                <DialogInput isDialogVisible={isDialogVisible}
+                         title={"Add a Friend"}
+                         message={"Enter your friend's code:"}
+                         hintInput ={"Friend Code"}
+                         submitInput={handleDialogSubmit}
+                         closeDialog={() => toggleDialog(false)}>
+            </DialogInput>
             </View>
-
+           
             <View style={styles.friendbox}>
                 {/* 친구 프사 */}
                 <LinearGradient style={{width:47,height:47,borderRadius:10,marginRight:20,alignItems:'center',justifyContent:'center'}}
@@ -47,8 +87,8 @@ function FriendList ()  {
 
                 <View style={{flexDirection:'row'}}>
                     <View style={{flexDirection:'column'}}>
-                        <BText fontSize={16} style={{marginBottom:4}}>김연세</BText>
-                        <NeonGr><RText color={fcolors.gray4}>혼저옵서예</RText></NeonGr>
+                        <BText fontSize={16} style={{marginBottom:4}}>{users.nickname}</BText>
+                        <NeonGr><RText color={fcolors.gray4}>{users.intro}</RText></NeonGr>
                     </View>
                     <View style={{position:'absolute',right:-185,bottom:20}}>
                       <TouchableOpacity
@@ -61,7 +101,11 @@ function FriendList ()  {
                 </View>
                 
             </View>
-        
+            <TouchableOpacity style={styles.smallbox}
+            onPress={() => frd_info()}>
+                    <View><Text style={{color:fcolors.white}}>친구 초대하기</Text></View>
+                    
+            </TouchableOpacity>
         </View>
         <View style={styles.bottombar}>
         <TouchableOpacity style={styles.icon}>
@@ -69,7 +113,7 @@ function FriendList ()  {
           <RText style={{marginTop:5}}color={fcolors.blue} fontSize={10}>홈</RText>
         </TouchableOpacity>
         <TouchableOpacity style={styles.icon}
-          onPress={()=>navigation.navigate('test')}>
+          onPress={()=>navigate('test')}>
           <Icon name='checklist' size={25} color={fcolors.gray3}/>
           <RText style={{marginTop:5}}color={fcolors.gray3} fontSize={10}>여행 목록</RText>  
         </TouchableOpacity>
@@ -127,6 +171,15 @@ const styles = StyleSheet.create({
     padding:5,
     color:fcolors.gray4
   },
+  smallbox:{
+    position:'absolute',
+    top:-88,
+    right:-10,
+    backgroundColor:fcolors.blue,
+    padding:10,
+    borderRadius:10
+
+  }
 })
 
 export default FriendList;

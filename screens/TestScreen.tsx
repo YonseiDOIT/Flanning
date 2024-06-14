@@ -1,76 +1,72 @@
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useRef } from 'react';
-import { Animated, PanResponder, View, StyleSheet, Dimensions, Text } from 'react-native';
-import fcolors from '../src/assets/colors/fcolors';
+import * as React from 'react';
+import { View, TextInput, Text, Button } from 'react-native';
+import * as KakaoLogin from '@react-native-seoul/kakao-login';
+import auth, { FirebaseAuthTypes, firebase } from '@react-native-firebase/auth';
+import { useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { createUser } from '../src/lib/users';
 
-const { height: screenHeight } = Dimensions.get('window');  // 디바이스의 화면 높이
 
-export type RootStackParamList = {
-  Home: undefined;
-  Test: undefined;
-};
 
-const TestScreen = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const heightAnim = useRef(new Animated.Value(500)).current; // 초기 높이 값 설정
+const firebaseAuth = auth();
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderMove: (event, gesture) => {
-        if (gesture.dy < 0) {
-          let newHeight = 500 - gesture.dy;
-          if (newHeight > screenHeight) newHeight = screenHeight; // 높이 제한
-          heightAnim.setValue(newHeight);
-        }
-      },
-      onPanResponderRelease: () => {
-        if (heightAnim._value >= screenHeight) {
-          // 높이가 화면 높이 이상일 때 다음 화면으로 넘어가기
-          navigation.navigate('test1'); // 'Test'는 다음 화면의 route name으로 교체 필요
-        } else {
-          // 그렇지 않을 경우 원래 크기로 복귀
-          Animated.spring(heightAnim, {
-            toValue: 500,
-            useNativeDriver: false
-          }).start();
-        }
+function LoginScreen(){
+
+  const onSubmit = () => {
+    createUser({ // 회원 프로필 생성
+      email:'와 입력된다.'
+    }).catch((error) => {
+      console.log('파이어베이스: ',error);
+    });
+
+    console.log('파이어베이스 데이터 입력 성공!');
+    
+  };
+
+  const login = () => {
+    KakaoLogin.login().then((result) => {
+      console.log("로그인 성공", JSON.stringify(result));
+      getProfile()
+      
+    }).catch((error) => {
+      if (error.code === 'E_CANCELLED_OPERATION') {
+        console.log("로그인 취소", error.message);
+      } else {
+        console.log(`로그인 실패(code:${error.code})`, error.message);
       }
-    })
-  ).current;
+    });
+  };
+  
+  const getProfile = () => {
+    KakaoLogin.getProfile().then((result) => {
+      console.log("GetProfile Success", JSON.stringify(result));
+      const email = result.email;
+      const password = "A!@" + result.id;
+      onSubmit()
+      firebaseAuth.createUserWithEmailAndPassword(email, password).then((success) => {
+        console.log(success);
 
-  return (
-    <View style={styles.container}>
-      <View style={{backgroundColor:fcolors.black, height:200,width:'100%'}}>
-        <Text>와와와</Text>
-      </View>
-      <Animated.View
-        style={[styles.box, { height: heightAnim }]}
-        {...panResponder.panHandlers}
-      >
-        <Text style={styles.text}>Swipe up to fill the screen</Text>
-      </Animated.View>
+      }, (fail) => {
+        console.log(fail);
+      });
+    }).catch((error) => {
+      console.log(`GetProfile Fail(code:${error.code})`, error.message);
+    });
+  };
+  
+  return(
+    <View>
+      <Button
+        title="카카오로그인"
+        onPress={()=>login()}
+      />
     </View>
   );
-};
+}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  box: {
-    width: '100%',
-    backgroundColor: 'blue',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  text: {
-    color: 'white',
-    fontSize: 16
-  }
-});
 
-export default TestScreen;
+export default LoginScreen
+
+function onAuthStateChanged(firebaseAuth: FirebaseAuthTypes.Module, arg1: (user: any) => void) {
+  throw new Error('Function not implemented.');
+}

@@ -11,14 +11,9 @@ import NeonGr from "../src/components/neongr";
 import database from '@react-native-firebase/database';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-export type RootStackParam = {
-    Home: undefined;
-    Test: undefined;
-  };
 
-function Typecheck2() {
-    const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
-
+function Typecheck2({navigation: {navigate},route}) {
+    
     const [selectedCheckbox, setSelectedCheckbox] = useState<string | null>(null);
     
     // 클릭 이벤트
@@ -126,11 +121,11 @@ function Typecheck2() {
             {/* 다음 버튼 */}
             <View style={{flex:1,justifyContent: 'flex-end',marginBottom:20, alignItems:'center'}}>
                 <TouchableOpacity style={styles.nextbutton}
-                onPress={()=>{navigation.navigate('appinfo')}}>
+                onPress={()=>{navigate('nickname',{usercode:route.params.usercode})}}>
                         <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>마지막이에요</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.laterbutton}
-                onPress={() => navigation.navigate('appinfo')}>
+                onPress={() => navigate('appinfo')}>
                 <MText color={fcolors.gray3} fontSize={14} style={{textDecorationLine:'underline'}}>다음에 할게요</MText>
                 </TouchableOpacity>
             </View>
@@ -196,7 +191,7 @@ const styles = StyleSheet.create({
     nextbutton:{
         width:332,
         backgroundColor:maincol,
-        height:61,
+        height:45,
         borderRadius:10,
         justifyContent: 'center',
         alignItems:"center",

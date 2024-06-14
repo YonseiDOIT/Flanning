@@ -8,41 +8,24 @@ import BText from "../src/components/common/BText";
 import fcolors from "../src/assets/colors/fcolors";
 import { signUp } from "../src/lib/auth";
 import { createUser } from "../src/lib/users";
+import firestore from "@react-native-firebase/firestore";
 
 
-
-function IdnPass ({navigation:{navigate}}){
-    // const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
+function Nickname ({navigation:{navigate},route}){
 
     const [form, setForm] = useState({
-        email: "",
-        password: "",
-        confirmPassword: "",
+        nickname: "",
+        intro: "",
       });
     
-    const signUpSubmit = async () => { // 회원가입 함수
-        const {email, password} = form;
-        const info = {email, password};
-        try {
-          const {user} = await signUp(info);
-          
-          console.log(user);
-          onSubmit(email)
-        } catch (e) {
-          //Alert.alert("회원가입에 실패하였습니다.");
-        }
-    }
     
-    const onSubmit = (email: string) => {
-        console.log('파이어베이스 데이터 입력 성공!');
-        const usercode= createUser({ // 회원 프로필 생성
-          email:email
-        })
-        console.log('파이어베이스: ',usercode);
-        navigate('typecheck1',{usercode:usercode})
-        .catch(() => {
-          console.log('파이어베이스 에러');
-        });
+    
+    const onSubmit = (nickname,intro) => {
+        const userCollection = firestore().collection("users").doc(route.params.usercode);
+        userCollection.update({
+            nickname : nickname,
+            intro:intro
+          })
     }
 
     return(
@@ -51,28 +34,25 @@ function IdnPass ({navigation:{navigate}}){
             <View style={{backgroundColor:maincol,width:"50%",height:4,borderRadius:40}}/>
             </View>
             <View style={{paddingTop:70}}>
-            <BText>{"아이디와 비밀번호를\n"}<BText color={fcolors.blue}>설정</BText>해주세요</BText>
+            <BText><BText color={fcolors.blue}>닉네임</BText>과 <BText color={fcolors.blue}>사진</BText>을 설정해주세요</BText>
             </View>
             <View style={styles.boxset}>
                 <View style={styles.box}>
-                <MText color={fcolors.gray4} fontSize={13} style={{marginTop:20,marginLeft:20,marginRight:40}}>아이디</MText>
+                <MText color={fcolors.gray4} fontSize={13} style={{marginTop:20,marginLeft:20,marginRight:40}}>닉네임</MText>
                     <TextInput style={styles.boxinput} 
-                    onChangeText={(text)=>setForm({...form,email:text})}
-                    placeholder={"영문 10자 이내로 설정해주세요"}
+                    onChangeText={(text)=>setForm({...form,nickname:text})}
+                    placeholder={"닉네임을 입력해주세요"}
                      placeholderTextColor={fcolors.gray3}/>
                 </View>
                 <View style={styles.box}>
-                <MText color={fcolors.gray4} fontSize={13} style={{marginTop:20,marginLeft:20,marginRight:40}}>비밀번호</MText>
+                <MText color={fcolors.gray4} fontSize={13} style={{marginTop:20,marginLeft:20,marginRight:40}}>자기 소개</MText>
                     <TextInput style={styles.boxinput} 
-                    onChangeText={(text)=>setForm({...form,password:text})}
-                    placeholder={"8글자 이내로 설정해주세요"} 
+                    onChangeText={(text)=>setForm({...form,intro:text})}
+                    placeholder={"한 줄 자기소개를 입력해주세요"} 
                     placeholderTextColor={fcolors.gray3} 
-                    secureTextEntry={true}/>
+                    />
                 </View>
-                <View style={styles.box}>
-                <MText color={fcolors.gray4} fontSize={13} style={{marginTop:20,marginLeft:20,marginRight:10 }}>비밀번호 확인</MText>
-                    <TextInput style={styles.boxinput} placeholder={"비밀번호를 한번 더 입력해주세요"} placeholderTextColor={fcolors.gray3}/>
-                </View>
+               
                 {/* <View style={styles.box}>
                 <MText style={{fontSize:13,margin:20}}>닉네임</MText>
                 <TextInput style={styles.boxinput} placeholder={"어떻게 불러드리면 될까요?\n5글자 이내로 설정해주세요"}/>
@@ -80,12 +60,18 @@ function IdnPass ({navigation:{navigate}}){
 
                 
             </View>
-            <View style={{flex:1,marginTop:60}}>
-                <TouchableOpacity style={[styles.nextbutton, form.email && form.password ? {backgroundColor:fcolors.blue} : null]}
-                    onPress={form.email && form.password ? () => signUpSubmit() : null}>
-                        <MText color={fcolors.white} fontSize={13}>다음</MText>
-                    </TouchableOpacity>
+
+            <View style={{flex:1,marginTop:150, alignItems:'center'}}>
+                <TouchableOpacity style={[styles.nextbutton, form.nickname && form.intro ? {backgroundColor:fcolors.blue} : null]}
+                    onPress={form.nickname && form.intro ? () =>[onSubmit(form.nickname,form.intro),navigate('appinfo')] : null}>
+                        <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>마지막이에요</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.laterbutton}
+                onPress={() => navigate('appinfo')}>
+                <MText color={fcolors.gray3} fontSize={14} style={{textDecorationLine:'underline'}}>다음에 할게요</MText>
+                </TouchableOpacity>
             </View>
+
             
         </View>
         
@@ -124,12 +110,21 @@ const styles = StyleSheet.create({
     },
     
     nextbutton:{
+        width:332,
         backgroundColor:fcolors.gray4,
         height:45,
         borderRadius:10,
         justifyContent: 'center',
         alignItems:"center",
+    },
+    laterbutton:{
+        alignItems:"center",
+        justifyContent:'center',
+        marginTop:3, 
+        width:144, 
+        height:48,
+        
     }
 })
 
-export default IdnPass;
+export default Nickname;

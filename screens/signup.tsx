@@ -13,8 +13,7 @@ import RText from "../src/components/common/RText";
 import fcolors from "../src/assets/colors/fcolors";
 
 export type RootStackParam = {
-  Home: undefined;
-  Test: undefined;
+  
 };
 
 function Signup() {
@@ -28,7 +27,6 @@ function Signup() {
     personalInfo: false,
     marketing: false,
   });
-
 
   const handlePress = (checkbox) => {
     if (checkbox === 'allAgree') {
@@ -51,6 +49,7 @@ function Signup() {
       }));
     }
   };
+
 
   return (
     <View style={styles.container}>
@@ -145,9 +144,11 @@ function Signup() {
         </View>
       </View>
 
-      <View style={{flex: 1, justifyContent: 'flex-end', marginBottom: 70}}>
-        <TouchableOpacity style={styles.nextbutton}
-          onPress={() => navigation.navigate('idnpass')}>
+      <View style={{flex: 1, marginBottom: 70}}>
+        <TouchableOpacity style={[styles.nextbutton,checkboxStates.termsAgree && checkboxStates.overFourteen && 
+          checkboxStates.personalInfo && checkboxStates.privacyPolicy ? {backgroundColor:fcolor.blue} : null]}
+          onPress={checkboxStates.termsAgree && checkboxStates.overFourteen && 
+          checkboxStates.personalInfo && checkboxStates.privacyPolicy ? () => navigation.navigate('idnpass') : null}>
           <MText color={fcolors.white} fontSize={13}>다음</MText>
         </TouchableOpacity>
       </View>
@@ -204,12 +205,11 @@ const styles = StyleSheet.create({
     borderColor:fcolor.blue
   },
   nextbutton: {
-    backgroundColor: fcolor.blue,
-    height: 61,
-    borderRadius: 10,
+    backgroundColor: fcolor.gray4,
+    height:45,
+    borderRadius:10,
     justifyContent: 'center',
-    alignItems: "center",
-    elevation:3
+    alignItems:"center",
   }
 })
 

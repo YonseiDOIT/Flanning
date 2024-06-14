@@ -16,6 +16,7 @@ import TestScreen2 from './screens/TestScreen2';
 import PlanDetail from './screens/plandetail';
 // import SplashScreen from 'react-native-splash-screen';
 import { useEffect } from 'react';
+import Nickname from './screens/nickname';
 
   
 
@@ -33,6 +34,7 @@ const App=()=> {
         <Stack.Screen name="idnpass" component={IdnPass} />
         <Stack.Screen name="typecheck1" component={Typecheck1} />
         <Stack.Screen name="typecheck2" component={Typecheck2} />
+        <Stack.Screen name="nickname" component={Nickname} />
         <Stack.Screen name="appinfo" component={Appinfo} />
         <Stack.Screen name="test" component={TestScreen} />
         <Stack.Screen name="test1" component={TestScreen2} />
