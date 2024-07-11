@@ -56,7 +56,7 @@ function Signup() {
       <View style={{height: 4, backgroundColor: fcolor.skyblue, marginTop: 26, borderRadius: 40}}>
         <View style={{backgroundColor: fcolor.blue, width: "25%", height: 4, borderRadius: 40}}/>
       </View>
-      <View style={{marginTop: 70}}>
+      <View style={{marginTop: 40}}>
         <BText><BText color={fcolor.blue}>약관</BText>에 <BText color={fcolor.blue}>동의</BText>해주세요</BText>
         <MText>플래닝이 여러분의 소중한 개인정보를 지킬게요</MText>
       </View>
@@ -144,7 +144,7 @@ function Signup() {
         </View>
       </View>
 
-      <View style={{flex: 1, marginBottom: 70}}>
+      <View style={{flex: 1,justifyContent:'flex-end',marginBottom:100}}>
         <TouchableOpacity style={[styles.nextbutton,checkboxStates.termsAgree && checkboxStates.overFourteen && 
           checkboxStates.personalInfo && checkboxStates.privacyPolicy ? {backgroundColor:fcolor.blue} : null]}
           onPress={checkboxStates.termsAgree && checkboxStates.overFourteen && 
@@ -165,8 +165,8 @@ const styles = StyleSheet.create({
     
   },
   box: {
-    marginTop: 60,
-    marginBottom: 60,
+    marginTop: 80,
+    marginBottom: 40,
     borderColor: fcolor.gray1,
     borderWidth: 1,
     borderRadius: 10,
@@ -181,10 +181,11 @@ const styles = StyleSheet.create({
   line:{
     justifyContent:'space-between',
     flexDirection:'row',
+    alignItems:'center',
     marginTop: 10
   },
   check_l: {
-    
+    marginTop:10,
     flexDirection: 'row',
     alignItems: 'center',
     

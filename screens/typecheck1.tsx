@@ -47,16 +47,6 @@ function Typecheck1({navigation: {navigate},route}) {
         setsave(prevState => ({...prevState, trvtg: isclick.includes(clickbox) ? prevState.trvtg.filter((element) => element !== clickbox) : [...prevState.trvtg, clickbox]}))
     };
 
-    // Firebase Realtime Database에 데이터 쓰기
-    // const add_db = (db) => {
-    //     // 선택된 버튼 이름을 경로에 설정하여 데이터베이스에 저장
-    //     database()
-    //     .ref(`/회원/ㅇㅇㅇ/선호여행지/${db ? db : 'none'}`)
-    //     .set(db ? true : false)
-    //     .then(() => console.log(`Data set for ${db}.`))
-    //     .catch(error => console.error('Error writing to Firebase', error));
-    // };
-
     const createtype = (db1,db2) =>{
         const userCollection = firestore().collection("users").doc(route.params.usercode);
         userCollection.update({

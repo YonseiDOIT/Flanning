@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BText from "../src/components/common/BText";
@@ -10,32 +10,43 @@ import MText from "../src/components/common/MText";
 import NeonGr from "../src/components/neongr";
 import database from '@react-native-firebase/database';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import firestore from "@react-native-firebase/firestore";
 
 
 function Typecheck2({navigation: {navigate},route}) {
     
-    const [selectedCheckbox, setSelectedCheckbox] = useState<string | null>(null);
-    
-    // 클릭 이벤트
-    const handlePress = (clickbox) => {
-        setSelectedCheckbox(prevState => prevState === clickbox ? null : clickbox);
-    };
 
-    // Firebase Realtime Database에 데이터 쓰기
-    const add_db = (db) => {
-        // 선택된 버튼 이름을 경로에 설정하여 데이터베이스에 저장
-        database()
-        .ref(`/회원/ㅇㅇㅇ/선호여행지/${db ? db : 'none'}`)
-        .set(db ? true : false)
-        .then(() => console.log(`Data set for ${db}.`))
-        .catch(error => console.error('Error writing to Firebase', error));
+    //선호 여행지
+    const [selectedCheckbox, setSelectedCheckbox] = useState({
+        prefertravel:null,
+        travelpurpose: null,
+        howtrvplan:null,
+        howtodayplan:null
+    });
+
+
+    // 선호 클릭
+    const handlePress = (keyname,clickbox) => {
+        setSelectedCheckbox((prevState) => ({...prevState, [keyname] : prevState[keyname] === clickbox ? null : clickbox}));
+        console.log(selectedCheckbox)
+    };
+    
+    const createtype = (db1,db2,db3,db4) =>{
+        const userCollection = firestore().collection("users").doc(route.params.usercode);
+        userCollection.update({
+            prefertravel : db1,
+            travelpurpose: db2,
+            howtrvplan:db3,
+            howtodayplan:db4
+          })
+        
     };
 
     return (
         <GestureHandlerRootView style={{ flex: 1}}>
         <View style={styles.container}>
             <View style={{height:4,backgroundColor:"#C1C1C1",marginTop:26,borderRadius:40}}>
-                <View style={{backgroundColor:maincol,width:"100%",height:4,borderRadius:40}}/>
+                <View style={{backgroundColor:maincol,width:"75%",height:4,borderRadius:40}}/>
             </View>
             <View style={{paddingTop:30}}>
                 <BText><BText color={fcolors.blue}>여행 성향</BText>을 알려주세요</BText>
@@ -50,8 +61,8 @@ function Typecheck2({navigation: {navigate},route}) {
                         {['prefer1', 'prefer2', 'prefer3', 'prefer4', 'prefer5'].map(id => (
                             <TouchableOpacity 
                                 key={id}
-                                style={[styles.clickbox, selectedCheckbox === id ? styles.click : null]} 
-                                onPress={() => [handlePress(id)]}
+                                style={[styles.clickbox, selectedCheckbox.prefertravel==id ? styles.click : null]} 
+                                onPress={() => [handlePress('prefertravel',id)]}
                             ><Icon name="check" size={17} color={fcolors.white}/></TouchableOpacity>
                         ))}
                 </View>
@@ -68,8 +79,8 @@ function Typecheck2({navigation: {navigate},route}) {
                         {['prefer1', 'prefer2', 'prefer3', 'prefer4', 'prefer5'].map(id => (
                             <TouchableOpacity 
                                 key={id}
-                                style={[styles.clickbox, selectedCheckbox === id ? styles.click : null]} 
-                                onPress={() => [handlePress(id)]}
+                                style={[styles.clickbox, selectedCheckbox.travelpurpose === id ? styles.click : null]} 
+                                onPress={() => [handlePress('travelpurpose',id)]}
                             ><Icon name="check" size={17} color={fcolors.white}/></TouchableOpacity>
                         ))}
                 </View>
@@ -87,8 +98,8 @@ function Typecheck2({navigation: {navigate},route}) {
                         {['prefer1', 'prefer2', 'prefer3', 'prefer4', 'prefer5'].map(id => (
                             <TouchableOpacity 
                                 key={id}
-                                style={[styles.clickbox, selectedCheckbox === id ? styles.click : null]} 
-                                onPress={() => [handlePress(id)]}
+                                style={[styles.clickbox, selectedCheckbox.howtrvplan === id ? styles.click : null]} 
+                                onPress={() => [handlePress('howtrvplan',id)]}
                             ><Icon name="check" size={17} color={fcolors.white}/></TouchableOpacity>
                         ))}
                 </View>
@@ -106,8 +117,8 @@ function Typecheck2({navigation: {navigate},route}) {
                         {['prefer1', 'prefer2', 'prefer3', 'prefer4', 'prefer5'].map(id => (
                             <TouchableOpacity 
                                 key={id}
-                                style={[styles.clickbox, selectedCheckbox === id ? styles.click : null]} 
-                                onPress={() => [handlePress(id)]}
+                                style={[styles.clickbox, selectedCheckbox.howtodayplan === id ? styles.click : null]} 
+                                onPress={() => [handlePress('howtodayplan',id)]}
                             ><Icon name="check" size={17} color={fcolors.white}/></TouchableOpacity>
                         ))}
                 </View>
@@ -120,8 +131,8 @@ function Typecheck2({navigation: {navigate},route}) {
 
             {/* 다음 버튼 */}
             <View style={{flex:1,justifyContent: 'flex-end',marginBottom:20, alignItems:'center'}}>
-                <TouchableOpacity style={styles.nextbutton}
-                onPress={()=>{navigate('nickname',{usercode:route.params.usercode})}}>
+                <TouchableOpacity style={[styles.nextbutton,selectedCheckbox ? {backgroundColor:fcolors.blue}:null]}
+                onPress={selectedCheckbox ? ()=>[navigate('nickname',{usercode:route.params.usercode}),createtype(selectedCheckbox.prefertravel,selectedCheckbox.travelpurpose,selectedCheckbox.howtrvplan,selectedCheckbox.howtodayplan)]: null}>
                         <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>마지막이에요</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.laterbutton}
@@ -179,7 +190,11 @@ const styles = StyleSheet.create({
         paddingLeft:20,
         paddingRight:20,
         borderColor:"#C1C1C1",
-    },click:{
+    },click1:{
+        backgroundColor: fcolors.green,
+        borderColor:fcolors.blue
+    },
+    click:{
         backgroundColor: fcolors.blue,
         borderColor:fcolors.blue
     },

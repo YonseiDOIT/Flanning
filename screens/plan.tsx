@@ -13,6 +13,10 @@ import fcolor from '../src/assets/colors/fcolors';
 import RText from '../src/components/common/RText';
 import BText from '../src/components/common/BText';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import NeonGr from '../src/components/neongr';
+import MText from '../src/components/common/MText';
+import BottomBar from '../src/components/common/BottomBar';
+import BoxGr from '../src/components/common/BoxGr';
 
 const { height: screenHeight } = Dimensions.get('window');  // 디바이스의 화면 높이
 
@@ -136,44 +140,82 @@ export function Plan() {
             }}/>
         </View>
    
-        <Animated.View style={[styles.white,{ height: heightAnim }]}
-          {...panResponder.panHandlers}>
-            <View style={{flexDirection:'row',justifyContent:'center',marginBottom:20}}>
-              <View style={{width:80,height:4,backgroundColor:fcolor.gray2,borderRadius:50}}/>
+        <Animated.View style={[styles.white,{ height: heightAnim }]}{...panResponder.panHandlers}>
+            <View style={{alignItems:'center',marginBottom:20}}>
+              <TouchableOpacity onPress={()=>(panResponder)}>
+                <View style={{width:80,height:4,backgroundColor:fcolor.gray2,borderRadius:50}}/>
+              </TouchableOpacity>
+              <BText fontSize={18} style={{marginTop:20}}>여행 일정</BText>
             </View>
-            <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-                <BText fontSize={18}>여행 일정</BText>
-            </View>
-            <View style={styles.planecontent}>
-                {/* 일정 종류 */}
+            
 
-                <FlatList
-                    data={data}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => String(item.id)}
-                />
-            </View>
+            <View>
+                {/* 여행 중요 메모 */}
+                <View style={styles.trvmemo}>
+                  <BText fontSize={14} color={fcolor.blue} style={{marginBottom:5}}>여행 중요 메모</BText>
+                  <RText>{"어쩌구저쩌구"}</RText>
+                </View>
+              </View>
+
+              <View style={{marginTop:15}}>
+                {/* 여행 일정 */}
+                
+                <View style={styles.travelplane}>
+                    <View style={styles.trv_calendar}>
+                      <View style={{width:'30%',alignItems:'center',justifyContent:'center'}}>
+                        <RText fontSize={10} color={fcolor.gray4}>JUNE</RText>
+                        <BText fontSize={16} color={fcolor.gray4}>6</BText>
+                      </View>
+                      <View style={{alignItems:'center',justifyContent:'center'}}>
+                        <NeonGr><MText color={fcolor.gray4}>여행 소제목</MText></NeonGr>
+                      </View>
+                    </View>
+                    <View style={styles.planecontent}>
+                      <View style={styles.planebox}>
+                        <View style={{width:'30%',flexDirection:'row'}}>
+                          <BoxGr></BoxGr>
+                        </View>
+                        <View>
+                          <BText fontSize={13}>곽지해수욕장 석양 구경</BText>
+                        </View>
+                      </View>
+                      <View style={styles.planebox}>
+                        <View style={{width:'42%'}}>
+                          <View style={styles.statebox_b}>
+                              <RText fontSize={10} color={fcolor.blue}>진행예정</RText>
+                          </View>
+                          <View style={styles.statebox_o}>
+                              <RText fontSize={10} color={fcolor.orange}>예약전</RText>
+                          </View>
+                        </View>
+                        <View>
+                          <BText fontSize={13}>제주 흑돼지 거리</BText>
+                          <RText fontSize={10} color={fcolor.gray4}>가서 직접 예약하기</RText>
+                        </View>
+                      </View>
+                      <View style={styles.planebox}>
+                        <View style={{width:'42%'}}>
+                          <View style={styles.statebox_b}>
+                              <RText fontSize={10} color={fcolor.blue}>진행예정</RText>
+                          </View>
+                          <View style={styles.statebox_p}>
+                              <RText fontSize={10} color='#6F19FC'>예약확정</RText>
+                          </View>
+                        </View>
+                        <View>
+                          <BText fontSize={13}>숙소 가기</BText>
+                        </View>
+                      </View>
+                    </View>
+        
+                </View>
+              </View>
+
+
         </Animated.View>
       </View>
       
-      <View style={styles.bottombar}>
-        <TouchableOpacity style={styles.icon}>
-          <Icon name='home-filled' size={25} color={fcolor.blue}/>
-          <RText style={{marginTop:5}}color={fcolor.blue} fontSize={10}>홈</RText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.icon}>
-          <Icon name='checklist' size={25} color={fcolor.gray3}/>
-          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>여행 목록</RText>  
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.icon}>
-          <Icon name='edit' size={25} color={fcolor.gray3}/>
-          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>리뷰</RText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.icon}>
-          <Icon name='settings' size={25} color={fcolor.gray3}/>
-          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>설정</RText> 
-        </TouchableOpacity>
-      </View>
+      <BottomBar></BottomBar>
     
     </GestureHandlerRootView>
     
@@ -196,54 +238,96 @@ const styles = StyleSheet.create({
 
   white:{
     width:'100%',
-    padding:30,
-    paddingTop:20,
+    height:544,
+    padding:15,
+    paddingHorizontal:28,
     backgroundColor:fcolor.white,
     elevation:30,
 
   },
-  travelplane:{
-    height: 500,
-    padding:20,
-    margin:20,
-    borderColor:fcolor.gray3,
-    borderWidth:1,
-    borderRadius:10,
+  //여행 중요 메모
+  trvmemo:{
+    height:90,
+    flexDirection:'column',
+    backgroundColor:'#EEF6FF',
+    padding:24,
+    borderRadius:10
   },
   //일정내용
+  travelplane:{
+    height:314,
+    backgroundColor:fcolor.white,
+    borderColor:fcolor.skyblue,
+    borderWidth:2,
+    borderRadius:10,
+    padding:14
+  },
+  trv_calendar:{
+    height:50,
+    borderRadius:5,
+    backgroundColor:fcolor.lblue,
+    flexDirection:'row',
+    marginBottom:5
+  },
   planecontent:{
-    height:'93%',
-    paddingTop:25,
-    flexDirection:'column'
+    alignItems:'center',
+    justifyContent:'center',
+    paddingHorizontal:10,
+    
   },
-  planeline:{
-    width:1,
-    height:100,
-    backgroundColor:fcolor.gray4
-  },
-  memo:{
-    borderColor:fcolor.orange,
-    borderLeftWidth:4,
-    width:'auto',
-    height:'auto',
-    padding:18,
-    marginLeft:5,
+  statebox_g:{
     marginTop:5,
+    width:50,
+    height:20,
+    marginRight:5,
+    backgroundColor:fcolor.gray1,
+    borderWidth:1,
+    borderColor:fcolor.gray4,
+    borderRadius:4,
     alignItems:'center',
     justifyContent:'center'
   },
-
-  //플로팅 버튼
-  fab:{
-    width: 56,
-    height:56,
-    backgroundColor:fcolor.gray2,
-    borderRadius:30,
+  statebox_b:{
+    marginTop:5,
+    width:50,
+    height:20,
+    marginRight:5,
+    backgroundColor:'#F3F7FF',
+    borderWidth:1,
+    borderColor:fcolor.blue,
+    borderRadius:4,
     alignItems:'center',
-    justifyContent:'center',
-    position:'absolute',
-    right:0,
-    bottom:0
+    justifyContent:'center'
+  },
+  statebox_p:{
+    marginTop:5,
+    width:50,
+    height:20,
+    marginRight:5,
+    backgroundColor:'#F3ECFF',
+    borderWidth:1,
+    borderColor:'#6F19FC',
+    borderRadius:4,
+    alignItems:'center',
+    justifyContent:'center'
+  },
+  statebox_o:{
+    marginTop:5,
+    width:50,
+    height:20,
+    marginRight:5,
+    backgroundColor:'#FEF3EA',
+    borderWidth:1,
+    borderColor:fcolor.orange,
+    borderRadius:4,
+    alignItems:'center',
+    justifyContent:'center'
+  },
+  planebox:{
+    margin:10,
+    flexDirection:'row',
+    height:60,
+    width:'100%', 
   },
 
   // 바텀바

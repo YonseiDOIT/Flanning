@@ -12,6 +12,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import fcolor from '../src/assets/colors/fcolors';
 import BText from '../src/components/common/BText';
 import RText from '../src/components/common/RText';
+import LinearGradient from 'react-native-linear-gradient';
+import MText from '../src/components/common/MText';
+import NeonGr from '../src/components/neongr';
+import BottomBar from '../src/components/common/BottomBar';
 
 export type RootStackParam = {
   Home: undefined;
@@ -94,56 +98,66 @@ export function Main() {
   return (
     <GestureHandlerRootView style={{ flex: 1}}>
       <View style={styles.container}>
-      <View style={styles.imagebanner}>
-        <View style={{flexDirection:'row',justifyContent:'flex-end',paddingBottom:50}}>
-          <TouchableOpacity onPress={() => navigation.navigate('friend')}><Image style={{width:22,height:16,marginTop:2}}source={require('../src/assets/images/friends.png')}/></TouchableOpacity>
-          <TouchableOpacity><Image style={{width:20,height:20,marginLeft:20}}source={require('../src/assets/images/setting.png')}/></TouchableOpacity>
+        <View style={styles.imagebanner}>
+       
+          <View style={{flexDirection:'row', justifyContent:'space-between',paddingBottom:50}}>
+            <Image source={require('../src/assets/images/logo.png')} style={{width:89,height:34}}/>
+            <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+              <Icons name='bell' size={22} color={fcolor.white}></Icons>
+              <TouchableOpacity onPress={() => navigation.navigate('friend')}><Icon name='group' size={25} color={fcolor.white} style={{marginHorizontal:16}}/></TouchableOpacity>
+              <TouchableOpacity><Icon name='settings' size={25} color={fcolor.white}/></TouchableOpacity>
+            </View>
+          </View>
+          
+          <BText color='white' fontSize={23} style={{marginBottom:5}}>여행 제목</BText>
         </View>
-        
-        <BText color='white' fontSize={23} style={{marginBottom:5}}>여행 제목</BText>
-      </View>
+      
         
       <View style={styles.white}>
-          <View style={styles.travelplane}>
-            <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-                <BText fontSize={18}>여행 일정</BText>
-                  <TouchableOpacity onPress={()=>navigation.navigate('plan')}><RText color={fcolor.gray4}>상세보기{'>'}</RText></TouchableOpacity>
-                </View>
-                <View style={styles.planecontent}>
-                  {/* 일정 종류 */}
-
-                  <FlatList
-                    data={data}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => String(item.id)}
-                  />
-
-                </View>
+          <View>
+            {/* 여행 중요 메모 */}
+            <View style={styles.trvmemo}>
+              <BText fontSize={14} color={fcolor.blue} style={{marginBottom:5}}>여행 중요 메모</BText>
+              <RText>중요 메모를 잊지 않도록 기록해요</RText>
                   
-                
             </View>
-          </View> 
+          </View>
+
+          <View style={{marginTop:15}}>
+            {/* 여행 일정 */}
+            <View style={{flexDirection:'row',justifyContent:'space-between',paddingHorizontal:20, alignItems:'center'}}>
+              <BText fontSize={15} color={fcolor.gray4}>여행 일정</BText>
+              <TouchableOpacity onPress={()=>navigation.navigate('main1')}><RText color={fcolor.gray4}>상세보기{'>'}</RText></TouchableOpacity>
+            </View>
+            <View style={styles.travelplane}>
+                  <TouchableOpacity onPress={()=> navigation.navigate("addplan")}>
+                    <Image source={require('../src/assets/images/pen.png')} style={{width:102,height:102,margin:5}}/>    
+                  </TouchableOpacity>
+                  <MText fontSize={13} color={fcolor.gray4}>아직 일정이 없어요.</MText>
+                  <MText fontSize={13} color={fcolor.gray4}>플래닝과 함께 일정을 세워볼까요?</MText>
+    
+            </View>
+          </View>
+
+          <View style={{marginTop:15}}>
+            {/* 여행 예산 */}
+            <View style={{flexDirection:'row',justifyContent:'space-between',paddingHorizontal:20, alignItems:'center'}}>
+              <BText fontSize={15} color={fcolor.gray4}>여행 예산</BText>
+              
+            </View>
+            <View style={styles.trvmoney}>
+              <View style={styles.moneybar}></View>            
+              <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:7}}>
+                <RText fontSize={10} color={fcolor.gray4}>예산 - 원</RText>
+                <MText fontSize={10} color={fcolor.gray4}>남은 예산 - 원</MText>
+              </View>
+            </View>
+          </View>
+               
       </View>
-      
-      <View style={styles.bottombar}>
-        <TouchableOpacity style={styles.icon}>
-          <Icon name='home-filled' size={25} color={fcolor.blue}/>
-          <RText style={{marginTop:5}}color={fcolor.blue} fontSize={10}>홈</RText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.icon}
-          onPress={()=>navigation.navigate('test')}>
-          <Icon name='checklist' size={25} color={fcolor.gray3}/>
-          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>여행 목록</RText>  
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.icon}>
-          <Icon name='edit' size={25} color={fcolor.gray3}/>
-          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>리뷰</RText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.icon}>
-          <Icon name='settings' size={25} color={fcolor.gray3}/>
-          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>설정</RText> 
-        </TouchableOpacity>
       </View>
+
+      <BottomBar></BottomBar>
     
     </GestureHandlerRootView>
     
@@ -158,71 +172,66 @@ const styles = StyleSheet.create({
       justifyContent:'flex-end'
   },
   imagebanner:{
+    flex:1,
+    paddingTop:30,
     paddingLeft: 30,
     paddingRight:30,
-    paddingBottom:10
+    paddingBottom:10,
+    backgroundColor:fcolor.blue
   },
   white:{
     width:'100%',
-    height:550,
+    height:544,
+    padding:25,
+    paddingHorizontal:28,
     backgroundColor:fcolor.white,
-    justifyContent:'center',
     elevation:30,
 
   },
-  travelplane:{
-    height: 500,
-    paddingTop:10,
-    padding:20,
-    paddingBottom:0,
-    marginLeft:20,
-    marginRight:20
+  //여행 중요 메모
+  trvmemo:{
+    height:88,
+    flexDirection:'column',
+    backgroundColor:'#EEF6FF',
+    padding:24,
+    borderRadius:10,
   },
   //일정내용
-  planecontent:{
-    height:'98%',
-    paddingTop:25,
-    flexDirection:'column'
-  },
-  planeline:{
-    width:1,
-    height:100,
-    backgroundColor:fcolor.gray4
-  },
-  memo:{
-    borderColor:fcolor.orange,
-    borderLeftWidth:4,
-    width:'auto',
-    height:'auto',
-    padding:18,
-    marginLeft:5,
-    marginTop:5,
+  travelplane:{
+    height:235,
+    marginTop:10,
+    backgroundColor:fcolor.skyblue,
+    borderRadius:10,
+    padding:14,
     alignItems:'center',
     justifyContent:'center'
   },
-
-  // 바텀바
-  bottombar:{
-    width:"100%",
-    height:70,
-    backgroundColor:fcolor.gray1,
-    flexDirection:"row",
-    justifyContent:'space-around',
+  trv_calendar:{
+    height:50,
+    borderRadius:5,
+    backgroundColor:fcolor.lblue,
+    flexDirection:'row'
+  },
+  planecontent:{
     alignItems:'center',
-    paddingLeft:10,
-    paddingRight:10
+    justifyContent:'center'
     
   },
-  icon:{
-    flexDirection:'column',
-    alignItems:'center',
-    justifyContent:'center',
+
+  //여행 예산
+  trvmoney:{
+    height:75,
+    marginTop:10,
+    backgroundColor:'#FAFAFA',
+    borderRadius:10,
+    paddingVertical:16,
+    paddingHorizontal:24
   },
-  icontext:{
-    fontSize:10,
-    fontFamily:"Pretendard-Regular",
-    padding:5,
-    color:fcolor.gray4
+  moneybar:{
+    height:20,
+    borderRadius:5,
+    backgroundColor:'#EDEDED',
+
   },
 
 })

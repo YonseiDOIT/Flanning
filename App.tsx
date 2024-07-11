@@ -17,6 +17,10 @@ import PlanDetail from './screens/plandetail';
 // import SplashScreen from 'react-native-splash-screen';
 import { useEffect } from 'react';
 import Nickname from './screens/nickname';
+import Trvplanelist, { Trvplanlist } from './screens/trvplanlist';
+import PlanDetail1 from './screens/plandetail1';
+import AddPlan from './screens/addplan';
+import AddPlan1 from './screens/addplan1';
 
   
 
@@ -39,12 +43,20 @@ const App=()=> {
         <Stack.Screen name="test" component={TestScreen} />
         <Stack.Screen name="test1" component={TestScreen2} />
         {/* 아래는 일정 없는 홈과 일정 있는 홈 잠시 나눔 */}
-        <Stack.Screen name="main" component={Main1} /> 
-        <Stack.Screen name="main1" component={Main} /> 
+        <Stack.Screen name="main" component={Main} /> 
+        <Stack.Screen name="main1" component={Main1} /> 
         <Stack.Screen name="friend" component={FriendList} />
         <Stack.Screen name="plan" component={Plan} />
         <Stack.Screen name="map" component={MMap} />
         <Stack.Screen name="plande" component={PlanDetail} />
+        <Stack.Screen name="plande1" component={PlanDetail1} />
+        {/* 여행 추가 */}
+        <Stack.Screen name="addplan" component={AddPlan} />
+        <Stack.Screen name="addplan1" component={AddPlan1} />
+        
+        {/* 여행목록리스트 */}
+        <Stack.Screen name='planlist' component={Trvplanlist}/>
+
       </Stack.Navigator>
     </NavigationContainer>
   );

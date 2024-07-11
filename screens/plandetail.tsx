@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Button, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import database from '@react-native-firebase/database';
 import { GestureHandlerRootView, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
@@ -14,6 +14,12 @@ import RText from '../src/components/common/RText';
 import BText from '../src/components/common/BText';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import NeonGr from '../src/components/neongr';
+import MText from '../src/components/common/MText';
+import Collapsible from 'react-native-collapsible';
+import Accordion from '../src/components/common/Accordion'
+import BottomBar from '../src/components/common/BottomBar';
+import BoxGr from '../src/components/common/BoxGr';
+import firestore, { FieldValue } from "@react-native-firebase/firestore";
 
 export type RootStackParam = {
   Home: undefined;
@@ -26,238 +32,307 @@ export type RootStackParam = {
 // Item.title(큰내용)
 // Item.memo(메모)
 
-const renderItem = ({ item }) => {
-  return (
-    <View style={{flexDirection:'row',alignItems:'center',paddingBottom:20}}>
-      <View style={{flexDirection:'column',alignItems:'center',paddingRight:20,}}>
-        <Icons style={{paddingBottom:10}} name={item.bigicontype} size={32} color={fcolor.gray4}/>
-          <View style={styles.planeline}></View>
-      </View>
-      {/* 일정 상세 */}
-      <View style={{flexDirection:'column',paddingRight:20,}}>
-        <Text style={{fontFamily:"Pretendard-Bold",color:'black',fontSize:16}}>{item.title}</Text>
-          <View style={{flexDirection:'row',alignItems:'center',paddingTop:15,paddingBottom:15,marginLeft:5}}>
-            <Icons style={{paddingRight:10}} name={item.smicontype} size={24} color={fcolor.gray3}/>
-              <RText color={fcolor.gray4}>{item.subtitle}</RText>
-          </View>
-          <View style={styles.memo}>
-              <RText color={fcolor.gray4}>{item.memo}</RText>
-          </View>
-      </View>
-      
-    </View>
-  );
+const plan_id = 'L8WdV6LrBUuCS1qeXKlW'
+let plan_title = ''
+
+// 친구id 가져오기
+const get_plan = async () => {
+  const usersCollection = firestore().collection('plan').doc(plan_id).get();
+  const db = (await usersCollection).data();
+  console.log(db);
+  return db.title;
 };
 
 
+
+
 // 백엔드 할 때는 데이터를 파이어베이스에서 가져오도록
-const data=[
-  {
-    id:'1',
-    bigicontype:'airplane',
-    smicontype:'airplane-takeoff',
-    title:'출발지',
-    subtitle: "출발지 > 도착지",
-    memo:'여행이나 일정에 대한 메모 '
-  },
-  {
-    id:'2',
-    bigicontype:'map-marker-outline',
-    smicontype:'bus',
-    title:'여행코스1',
-    subtitle: "이동시간 (~분 소요)",
-    memo:'여행이나 일정에 대한 메모 '
-  },
-  {
-    id:'3',
-    bigicontype:'map-marker-outline',
-    smicontype:'bus',
-    title:'여행코스2',
-    subtitle: "이동시간 (~분 소요)",
-    memo:'여행이나 일정에 대한 메모 '
-  },
-  {
-    id:'4',
-    bigicontype:'airplane',
-    smicontype:'airplane-landing',
-    title:'출발지',
-    subtitle: "출발지 > 도착지",
-    memo:'여행이나 일정에 대한 메모 '
-  },
 
-
-]
-
-const LIMIT = 5;
 
 export function PlanDetail() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
 
-  const isOpend=useRef(false);
-//   const transYCamera=useShredValue(0);
+  const renderItem = ({ item }) => {
+    console.log(plan)
+    return (
+      <View style={styles.travelplane}>
+        <View style={styles.trv_calendar}>
 
-  function handlePress(){
-    if(isOpend.current){
+          <View style={{ width: '30%', alignItems: 'center', justifyContent: 'center' }}>
+            <RText fontSize={10} color={fcolor.gray4}>JUNE</RText>
+            <TouchableOpacity onPress={() => { navigation.navigate('plande1') }}>
+              <BText fontSize={16} color={fcolor.gray4}>6</BText>
+            </TouchableOpacity>
 
-    }else{
+          </View>
+          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <NeonGr><MText color={fcolor.gray4}>{item.weather}</MText></NeonGr>
+          </View>
+        </View>
+        <View style={styles.planecontent}>
+          <FlatList
+            data={planlist}
+            renderItem={renderItem1}
+            keyExtractor={(item) => String(item.id)}
+          />
 
-    }
-    
-  }
-  
-  return (
-    <GestureHandlerRootView style={{ flex: 1}}>
-      <View style={styles.container}>
-        <View style={{flexDirection:'row', justifyContent:'space-between',marginBottom:30,marginTop:10,alignItems:'center'}}>
-                <TouchableOpacity onPress={() => navigation.navigate('main')}><Icon name='arrow-back-ios' size={24} color="#717171"/></TouchableOpacity>
-                <BText fontSize={18}>여행 제목</BText>
-                <Icon name= 'person-add-alt' size={24} color="#717171"/>
         </View>
 
-        <View style={styles.statebox}>
-            <View style={{flexWrap:'wrap'}}>
-                <NeonGr><BText fontSize={13} color={fcolor.gray4}>여행 정보 상세보기</BText></NeonGr>
-            </View>
-            
-        </View>
-        
-        
-            
-                <View style={styles.planecontent}>
-                    {/* 일정 종류 */}
-
-                    <FlatList
-                        data={data}
-                        renderItem={renderItem}
-                        keyExtractor={(item) => String(item.id)}
-                    />
-                    <Pressable 
-                        onPress={handlePress}
-                        style={({pressed})=> pressed ? [styles.fab,{transform: [{scale:0.9}]} ] : [styles.fab]}>
-                        <Icon name='edit' size={24} color={fcolor.white}/>
-                    </Pressable>
-                </View>
-            </View>
-      
-      <View style={styles.bottombar}>
-        <TouchableOpacity style={styles.icon}>
-          <Icon name='home-filled' size={25} color={fcolor.blue}/>
-          <RText style={{marginTop:5}}color={fcolor.blue} fontSize={10}>홈</RText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.icon}>
-          <Icon name='checklist' size={25} color={fcolor.gray3}/>
-          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>여행 목록</RText>  
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.icon}>
-          <Icon name='edit' size={25} color={fcolor.gray3}/>
-          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>리뷰</RText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.icon}>
-          <Icon name='settings' size={25} color={fcolor.gray3}/>
-          <RText style={{marginTop:5}}color={fcolor.gray3} fontSize={10}>설정</RText> 
-        </TouchableOpacity>
       </View>
-    
+    );
+  };
+
+  const renderItem1 = ({ item }) => {
+    // console.log(item)
+    return (
+      <View style={styles.planebox}>
+        <View style={{ width: '30%' }}>
+          {item.state.map((ele,index) => (
+            <BoxGr key={`${item.id}-${index}`} name={ele} />
+          ))}
+        </View>
+        <View>
+          <BText fontSize={13}>{item.title}</BText>
+            <View style={{flexDirection:'row',marginTop:10}}>
+              <Icons name={item.content[0]} size={18} color="#717171"/>
+              <RText fontSize={10} color={fcolor.gray4}>{item.content[1]}</RText>
+            </View>
+        </View>
+      </View>
+    );
+  };
+
+  const [isOpend, setOpend] = useState(false);
+
+  //   const transYCamera=useShredValue(0);
+
+  const handlePress = () => {
+    setOpend(!isOpend);
+  }
+  //여기 아래부터는 다 데이터 가져오기
+  const [planTitle, setPlanTitle] = useState(null);
+  const [plan, setplan] = useState([]);//큰 계획
+  const [planlist, setplanlist] = useState([]);//작은 계획
+
+
+  // // 친구 목록 불러오기
+  useEffect(() => {
+    const plan_info = async () => {
+      try {
+        console.log('돌아감');
+        let plan = await get_plan();
+        console.log(plan)
+        //여행 제목
+        setPlanTitle(plan)
+        let usersCollection = firestore().collection('plan').doc(plan_id).collection('planlist').doc('06.06').get();
+        let db = (await usersCollection).data();
+
+        let usersCollection1 = firestore().collection('plan').doc(plan_id).collection('planlist').doc('06.07').get();
+        let db1 = (await usersCollection1).data();
+        console.log(db.weather)
+        setplan(prevState => [
+          ...prevState, 
+          { weather: db.weather, id: 1 },
+          { weather: db1.weather, id: 2 }
+        ]);
+
+        const list = db1.plantext
+        for (let id = 0; id < list.length; id++) {
+          console.log(list[id].state)
+          setplanlist(prevState => [...prevState, { ...list[id], id: id + 1 }]);
+        }
+
+        // setplanlist(db)
+
+      } catch (error) {
+        console.log('안돌아감');
+      }
+    };
+    plan_info();
+  }, []);
+
+
+
+
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, marginTop: 10, alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => navigation.navigate('plan')}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
+          <BText fontSize={18}>{planTitle}</BText>
+          <TouchableOpacity onPress={get_plan}>
+            <Icon name='more-vert' size={24} color="#717171" />
+          </TouchableOpacity>
+
+        </View>
+        <View>
+          {/* 여행 중요 메모 */}
+          <View style={[styles.trvmemo, isOpend ? { height: 80 } : null]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <BText fontSize={14} color={fcolor.blue}>여행 중요 메모</BText>
+              <TouchableOpacity onPress={handlePress}>
+                <Icon name='expand-more' size={30} color={fcolor.gray2} />
+              </TouchableOpacity>
+            </View>
+            {isOpend &&
+              <View style={{ marginHorizontal: 8 }}>
+                <RText fontSize={13} color={fcolor.gray4}>와!</RText>
+              </View>
+            }
+
+
+          </View>
+        </View>
+
+        <View style={[{ paddingVertical: 10 }, isOpend ? { height: 530 } : { height: 565 }]}>
+          {/* 여행 일정 */}
+          <FlatList
+            data={plan}
+            renderItem={renderItem}
+            keyExtractor={(item) => String(item.id)}
+          />
+
+
+        </View>
+        <Pressable
+          style={({ pressed }) => pressed ? [styles.fab, { transform: [{ scale: 0.9 }] }] : [styles.fab]}>
+          <Icon name='edit' size={24} color={fcolor.white} />
+        </Pressable>
+
+      </View>
+
+      <BottomBar></BottomBar>
+
+
+
     </GestureHandlerRootView>
-    
+
   );
 };
 
 
 const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    height:550,
-    padding:30,
-    paddingTop:20,
-    backgroundColor:fcolor.white,
+  container: {
+    flex: 1,
+    padding: 30,
+    paddingTop: 20,
+    backgroundColor: fcolor.white,
   },
-  statebox:{
-    backgroundColor:fcolor.lblue,
-    height:50,
-    borderRadius:10,
-    padding:17,
-    paddingLeft:22
+  statebox: {
+    backgroundColor: fcolor.lblue,
+    height: 50,
+    borderRadius: 10,
+    padding: 17,
+    paddingLeft: 22
   },
 
-  white:{
-    width:'100%',
-    height:550,
-    padding:30,
-    paddingTop:20,
-    backgroundColor:fcolor.white,
-    elevation:30,
-
+  white: {
+    width: '100%',
+    padding: 30,
+    paddingTop: 20,
+    backgroundColor: fcolor.white,
+    elevation: 30,
   },
-  travelplane:{
-    height: 500,
-    padding:20,
-    margin:20,
-    borderColor:fcolor.gray3,
-    borderWidth:1,
-    borderRadius:10,
+
+  //여행 중요 메모
+  trvmemo: {
+    height: 50,
+    flexDirection: 'column',
+    backgroundColor: '#EEF6FF',
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 10
   },
   //일정내용
-  planecontent:{
-    height:'85%',
-    paddingTop:25,
-    padding:17,
-    flexDirection:'column'
+  travelplane: {
+    height: 314,
+    marginVertical: 10,
+    backgroundColor: fcolor.white,
+    borderColor: fcolor.skyblue,
+    borderWidth: 2,
+    borderRadius: 10,
+    padding: 14
   },
-  planeline:{
-    width:1,
-    height:100,
-    backgroundColor:fcolor.gray4
+  trv_calendar: {
+    height: 50,
+    borderRadius: 5,
+    backgroundColor: fcolor.lblue,
+    flexDirection: 'row',
+    marginBottom: 5
   },
-  memo:{
-    borderColor:fcolor.orange,
-    borderLeftWidth:4,
-    width:'auto',
-    height:'auto',
-    padding:18,
-    marginLeft:5,
-    marginTop:5,
-    alignItems:'center',
-    justifyContent:'center'
+  planecontent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+
   },
+  statebox_g: {
+    width: 50,
+    height: 20,
+    marginRight: 5,
+    backgroundColor: fcolor.gray1,
+    borderWidth: 1,
+    borderColor: fcolor.gray4,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  statebox_b: {
+    width: 50,
+    height: 20,
+    marginRight: 5,
+    backgroundColor: '#F3F7FF',
+    borderWidth: 1,
+    borderColor: fcolor.blue,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  statebox_p: {
+    width: 50,
+    height: 20,
+    marginRight: 5,
+    backgroundColor: '#F3ECFF',
+    borderWidth: 1,
+    borderColor: '#6F19FC',
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  statebox_o: {
+    width: 50,
+    height: 20,
+    marginRight: 5,
+    backgroundColor: '#FEF3EA',
+    borderWidth: 1,
+    borderColor: fcolor.orange,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  planebox: {
+    margin: 10,
+    flexDirection: 'row',
+    height: 60,
+    width: '100%',
+  },
+
 
   //플로팅 버튼
-  fab:{
+  fab: {
     width: 40,
-    height:40,
-    backgroundColor:fcolor.blue ,
-    borderRadius:30,
-    alignItems:'center',
-    justifyContent:'center',
-    position:'absolute',
-    right:0,
-    bottom:0,
-    elevation:2
-  },
+    height: 40,
+    backgroundColor: fcolor.blue,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    elevation: 2
+  }
 
-  // 바텀바
-  bottombar:{
-    width:"100%",
-    height:70,
-    backgroundColor:fcolor.gray1,
-    flexDirection:"row",
-    justifyContent:'space-around',
-    alignItems:'center',
-    paddingLeft:10,
-    paddingRight:10
-    
-  },
-  icon:{
-    flexDirection:'column',
-    alignItems:'center',
-    justifyContent:'center',
-  },
-  icontext:{
-    fontSize:10,
-    fontFamily:"Pretendard-Regular",
-    padding:5,
-    color:fcolor.gray4
-  },
 
 })
 
