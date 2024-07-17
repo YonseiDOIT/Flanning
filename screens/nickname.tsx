@@ -12,9 +12,10 @@ import firestore from "@react-native-firebase/firestore";
 import RText from "../src/components/common/RText";
 
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useUser } from "../src/components/common/UserContext";
 
 
-function Nickname({ navigation: { navigate }, route }) {
+function Nickname({ navigation: { navigate } }) {
 
     const [form, setForm] = useState({
         nickname: "",
@@ -22,9 +23,11 @@ function Nickname({ navigation: { navigate }, route }) {
     });
 
 
+    //유저코드 가져오기
+    const { usercode } = useUser();
 
     const onSubmit = (nickname, intro) => {
-        const userCollection = firestore().collection("users").doc(route.params.usercode);
+        const userCollection = firestore().collection("users").doc(usercode);
         userCollection.update({
             nickname: nickname,
             intro: intro
@@ -40,9 +43,9 @@ function Nickname({ navigation: { navigate }, route }) {
                 <BText><BText color={fcolors.blue}>닉네임</BText>과 <BText color={fcolors.blue}>사진</BText>을 설정해주세요</BText>
                 <RText fontSize={13} color={fcolors.gray3} style={{ marginTop: 10 }}>동행인이 여러분을 알아볼 수 있도록 해주세요</RText>
             </View>
-            <View style={{marginVertical:30,alignItems:'center'}}>
-                <View style={{ backgroundColor: '#F1F1F1', height: 80, width: 80, borderRadius: 50, alignItems:'center',justifyContent:'center'}}>
-                    <Icon name='person-sharp' size={45} color='#D9D9D9'/>
+            <View style={{ marginVertical: 30, alignItems: 'center' }}>
+                <View style={{ backgroundColor: '#F1F1F1', height: 80, width: 80, borderRadius: 50, alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon name='person-sharp' size={45} color='#D9D9D9' />
                 </View>
 
             </View>

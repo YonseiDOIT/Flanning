@@ -13,10 +13,11 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import database from '@react-native-firebase/database';
 import firestore from "@react-native-firebase/firestore";
+import { useUser } from "../src/components/common/UserContext";
 
 
 
-function Typecheck1({navigation: {navigate},route}) {
+function Typecheck1({navigation: {navigate}}) {
     const [issave,setsave]= useState({
         preferlocation:'',
         trvtg: []
@@ -47,8 +48,11 @@ function Typecheck1({navigation: {navigate},route}) {
         setsave(prevState => ({...prevState, trvtg: isclick.includes(clickbox) ? prevState.trvtg.filter((element) => element !== clickbox) : [...prevState.trvtg, clickbox]}))
     };
 
+    //유저코드 가져오기
+  const { usercode } = useUser();
+
     const createtype = (db1,db2) =>{
-        const userCollection = firestore().collection("users").doc(route.params.usercode);
+        const userCollection = firestore().collection("users").doc(usercode);
         userCollection.update({
             preferlocation : db1,
             trvtg:db2
@@ -161,7 +165,7 @@ function Typecheck1({navigation: {navigate},route}) {
         {/* 다음 버튼 */}
         <View style={{flex:1,justifyContent: 'flex-end',marginBottom:20, alignItems:'center'}}>
             <TouchableOpacity style={[styles.nextbutton,selectedCheckbox ? {backgroundColor:fcolors.blue}:null]} 
-                onPress={selectedCheckbox ? () => [navigate('typecheck2',{usercode:route.params.usercode}),createtype(issave.preferlocation,issave.trvtg)]:null}>
+                onPress={selectedCheckbox ? () => [navigate('typecheck2'),createtype(issave.preferlocation,issave.trvtg)]:null}>
                     <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>거의 다 왔어요</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.laterbutton}

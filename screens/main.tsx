@@ -17,11 +17,6 @@ import MText from '../src/components/common/MText';
 import NeonGr from '../src/components/neongr';
 import BottomBar from '../src/components/common/BottomBar';
 
-export type RootStackParam = {
-  Home: undefined;
-  Test: undefined;
-};
-
 
 // Item.bigicontyp(큰 아이콘)
 // Item.smicontyp(작은 아이콘)
@@ -92,8 +87,8 @@ const data=[
 
 const LIMIT = 5;
 
-export function Main() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
+export function Main({ navigation: { navigate }}) {
+
   
   return (
     <GestureHandlerRootView style={{ flex: 1}}>
@@ -104,7 +99,7 @@ export function Main() {
             <Image source={require('../src/assets/images/logo.png')} style={{width:89,height:34}}/>
             <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
               <Icons name='bell' size={22} color={fcolor.white}></Icons>
-              <TouchableOpacity onPress={() => navigation.navigate('friend')}><Icon name='group' size={25} color={fcolor.white} style={{marginHorizontal:16}}/></TouchableOpacity>
+              <TouchableOpacity onPress={() => navigate('friend')}><Icon name='group' size={25} color={fcolor.white} style={{marginHorizontal:16}}/></TouchableOpacity>
               <TouchableOpacity><Icon name='settings' size={25} color={fcolor.white}/></TouchableOpacity>
             </View>
           </View>
@@ -127,10 +122,10 @@ export function Main() {
             {/* 여행 일정 */}
             <View style={{flexDirection:'row',justifyContent:'space-between',paddingHorizontal:20, alignItems:'center'}}>
               <BText fontSize={15} color={fcolor.gray4}>여행 일정</BText>
-              <TouchableOpacity onPress={()=>navigation.navigate('main1')}><RText color={fcolor.gray4}>상세보기{'>'}</RText></TouchableOpacity>
+              <TouchableOpacity onPress={()=>navigate('main1')}><RText color={fcolor.gray4}>상세보기{'>'}</RText></TouchableOpacity>
             </View>
             <View style={styles.travelplane}>
-                  <TouchableOpacity onPress={()=> navigation.navigate("addplan")}>
+                  <TouchableOpacity onPress={()=> navigate("addplan")}>
                     <Image source={require('../src/assets/images/pen.png')} style={{width:102,height:102,margin:5}}/>    
                   </TouchableOpacity>
                   <MText fontSize={13} color={fcolor.gray4}>아직 일정이 없어요.</MText>

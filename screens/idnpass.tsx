@@ -8,6 +8,7 @@ import BText from "../src/components/common/BText";
 import fcolors from "../src/assets/colors/fcolors";
 import { signUp } from "../src/lib/auth";
 import { createUser } from "../src/lib/users";
+import { useUser } from "../src/components/common/UserContext";
 
 
 
@@ -32,14 +33,19 @@ function IdnPass ({navigation:{navigate}}){
           //Alert.alert("회원가입에 실패하였습니다.");
         }
     }
+
+    //유저 코드
+    const { usercode, setUsercode } = useUser();
     
     const onSubmit = (email: string) => {
         console.log('파이어베이스 데이터 입력 성공!');
-        const usercode= createUser({ // 회원 프로필 생성
+        const usercode1= createUser({ // 회원 프로필 생성
           email:email
         })
-        console.log('파이어베이스: ',usercode);
-        navigate('typecheck1',{usercode:usercode})
+        
+        console.log('파이어베이스: ',usercode1);
+        setUsercode(usercode1);
+        navigate('typecheck1')
         .catch(() => {
           console.log('파이어베이스 에러');
         });

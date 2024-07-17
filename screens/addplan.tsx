@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Button, FlatList, StyleSheet, Text, View, Image, TextInput } from 'react-native';
 import database from '@react-native-firebase/database';
 import { GestureHandlerRootView, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
@@ -19,25 +19,13 @@ import firestore, { FieldValue } from "@react-native-firebase/firestore";
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { createplan } from '../src/lib/plans';
-
-export type RootStackParam = {
-  Home: undefined;
-  Test: undefined;
-};
+import { useUser } from '../src/components/common/UserContext';
 
 
 
-
-// Item.bigicontyp(큰 아이콘)
-// Item.smicontyp(작은 아이콘)
-// Item.title(큰내용)
-// Item.memo(메모)
-
-const mycode = 'GPlyn';
-
-
-export function AddPlan() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
+export function AddPlan({ navigation: { navigate }}) {
+  //유저코드 가져오기
+  const { usercode } = useUser();
 
   //여행태그
   const [isclick, setclick] = useState();
@@ -156,14 +144,19 @@ export function AddPlan() {
   //페이지
   const [form, setForm] = useState({
     title: "",
+    memo:''
   });
 
-  const onSubmit = (title: string) => {
+  const onSubmit = (title: string, date1: string,date2: string,memo: string,userid: undefined) => {
     console.log('파이어베이스 데이터 입력 성공!');
-    const usercode= createplan({ // 회원 프로필 생성
-      title:title
+    const plancode= createplan({ // 회원 프로필 생성
+      title:title,
+      date1:date1,
+      date2:date2,
+      memo:memo,
+      userid:userid
     })
-    
+    return plancode
 }
 
 
@@ -172,9 +165,9 @@ export function AddPlan() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, marginTop: 10, alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => navigation.navigate('main')}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
-          <BText fontSize={18}>여행 추가하기</BText>
-          <TouchableOpacity onPress={() => [navigation.navigate('addplan1'),onSubmit(form.title)]}>
+          <TouchableOpacity onPress={() => navigate('main')}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
+          <BText fontSize={18}>여행 떠나기</BText>
+          <TouchableOpacity onPress={() => [navigate('addplan1'),onSubmit(form.title,selected.start,selected.end,form.memo,usercode)]}>
             <Icon name='arrow-forward' size={24} color={fcolor.blue} />
           </TouchableOpacity>
         </View>
@@ -229,6 +222,7 @@ export function AddPlan() {
                 <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 10 }}>선택</RText>
               </View>
               <TextInput style={styles.box}
+                onChangeText={(text)=>setForm({...form,memo:text})}
                 placeholder={"여행 메모를 추가해주세요 (선택)"}
                 placeholderTextColor={fcolor.gray3}
               />

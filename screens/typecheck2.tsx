@@ -11,9 +11,10 @@ import NeonGr from "../src/components/neongr";
 import database from '@react-native-firebase/database';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import firestore from "@react-native-firebase/firestore";
+import { useUser } from "../src/components/common/UserContext";
 
 
-function Typecheck2({navigation: {navigate},route}) {
+function Typecheck2({navigation: {navigate}}) {
     
 
     //선호 여행지
@@ -30,9 +31,12 @@ function Typecheck2({navigation: {navigate},route}) {
         setSelectedCheckbox((prevState) => ({...prevState, [keyname] : prevState[keyname] === clickbox ? null : clickbox}));
         console.log(selectedCheckbox)
     };
+
+    //유저코드 가져오기
+  const { usercode } = useUser();
     
     const createtype = (db1,db2,db3,db4) =>{
-        const userCollection = firestore().collection("users").doc(route.params.usercode);
+        const userCollection = firestore().collection("users").doc(usercode);
         userCollection.update({
             prefertravel : db1,
             travelpurpose: db2,
@@ -132,7 +136,7 @@ function Typecheck2({navigation: {navigate},route}) {
             {/* 다음 버튼 */}
             <View style={{flex:1,justifyContent: 'flex-end',marginBottom:20, alignItems:'center'}}>
                 <TouchableOpacity style={[styles.nextbutton,selectedCheckbox ? {backgroundColor:fcolors.blue}:null]}
-                onPress={selectedCheckbox ? ()=>[navigate('nickname',{usercode:route.params.usercode}),createtype(selectedCheckbox.prefertravel,selectedCheckbox.travelpurpose,selectedCheckbox.howtrvplan,selectedCheckbox.howtodayplan)]: null}>
+                onPress={selectedCheckbox ? ()=>[navigate('nickname'),createtype(selectedCheckbox.prefertravel,selectedCheckbox.travelpurpose,selectedCheckbox.howtrvplan,selectedCheckbox.howtodayplan)]: null}>
                         <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>마지막이에요</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.laterbutton}

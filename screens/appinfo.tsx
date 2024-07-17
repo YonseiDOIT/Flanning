@@ -11,13 +11,6 @@ import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
 import MText from "../src/components/common/MText";
 
 
-
-export type RootStackParam = {
-    Home: undefined;
-    Test: undefined;
-  };
-
-
 const SlideItem = ({ item }) => {
     return (
         <View style={item.style}>
@@ -62,7 +55,7 @@ const slides=[
 
 
 
-function Appinfo() {
+function Appinfo({navigation:{navigate}}) {
 
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
     
@@ -82,7 +75,6 @@ function Appinfo() {
                     <View style={{flexWrap:'wrap'}}>
                         <NeonGr><BText>여행을 떠나볼까요?</BText></NeonGr>
                     </View>
-                    
                 </View>
                 
                 <View style={{alignItems:'center'}}>
@@ -111,7 +103,7 @@ function Appinfo() {
                     {/* 다음 버튼 */}
                     <View style={{flex:1,justifyContent: 'flex-end',marginBottom:65}}>
                         <TouchableOpacity style={styles.nextbutton}
-                        onPress={() => navigation.navigate('main')}>
+                        onPress={() => navigate('main')}>
                                 <MText fontSize={14} color={fcolors.white}>시작하기</MText>
                         </TouchableOpacity>
 

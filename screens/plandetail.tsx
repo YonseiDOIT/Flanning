@@ -1,25 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Animated, Button, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import database from '@react-native-firebase/database';
-import { GestureHandlerRootView, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import firestore from '@react-native-firebase/firestore';
+import { GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
-import AppText from '../src/components/common/RText';
-import BoldText from '../src/components/common/BText';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import fcolor from '../src/assets/colors/fcolors';
 import RText from '../src/components/common/RText';
 import BText from '../src/components/common/BText';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import NeonGr from '../src/components/neongr';
-import MText from '../src/components/common/MText';
-import Collapsible from 'react-native-collapsible';
-import Accordion from '../src/components/common/Accordion'
-import BottomBar from '../src/components/common/BottomBar';
 import BoxGr from '../src/components/common/BoxGr';
-import firestore, { FieldValue } from "@react-native-firebase/firestore";
+import BottomBar from '../src/components/common/BottomBar';
+import MText from '../src/components/common/MText';
+import { usePlan } from '../src/components/common/PlanContext';
 
 export type RootStackParam = {
   Home: undefined;
@@ -27,147 +22,123 @@ export type RootStackParam = {
 };
 
 
-// Item.bigicontyp(큰 아이콘)
-// Item.smicontyp(작은 아이콘)
-// Item.title(큰내용)
-// Item.memo(메모)
-
-const plan_id = 'L8WdV6LrBUuCS1qeXKlW'
-let plan_title = ''
-
-// 친구id 가져오기
-const get_plan = async () => {
-  const usersCollection = firestore().collection('plan').doc(plan_id).get();
-  const db = (await usersCollection).data();
-  console.log(db);
-  return db.title;
-};
 
 
+const PlanDetail = () => {
+  //메인 계획 코드 가져오기
+  const { plancode } = usePlan();
 
+  //여행 제목
+  const get_plan = async () => {
+    const planDoc = await firestore().collection('plan').doc(plancode).get();
+    const planData = planDoc.data();
+    return { title: planData?.title, memo: planData?.memo };
+  };
 
-// 백엔드 할 때는 데이터를 파이어베이스에서 가져오도록
+  //여행 계획
+  const get_plan_list = async () => {
+    const planListCollection = await firestore().collection('plan').doc(plancode).collection('planlist').get();
+    let planList = [];
+    planListCollection.forEach(doc => {
+      planList.push({ id: doc.id, ...doc.data() });
+    });
+    return planList;
+  };
 
-
-export function PlanDetail() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
 
-  const renderItem = ({ item }) => {
-    console.log(plan)
-    return (
-      <View style={styles.travelplane}>
-        <View style={styles.trv_calendar}>
-
-          <View style={{ width: '30%', alignItems: 'center', justifyContent: 'center' }}>
-            <RText fontSize={10} color={fcolor.gray4}>JUNE</RText>
-            <TouchableOpacity onPress={() => { navigation.navigate('plande1') }}>
-              <BText fontSize={16} color={fcolor.gray4}>6</BText>
-            </TouchableOpacity>
-
-          </View>
-          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <NeonGr><MText color={fcolor.gray4}>{item.weather}</MText></NeonGr>
-          </View>
-        </View>
-        <View style={styles.planecontent}>
-          <FlatList
-            data={planlist}
-            renderItem={renderItem1}
-            keyExtractor={(item) => String(item.id)}
-          />
-
-        </View>
-
-      </View>
-    );
-  };
-
-  const renderItem1 = ({ item }) => {
-    // console.log(item)
-    return (
-      <View style={styles.planebox}>
-        <View style={{ width: '30%' }}>
-          {item.state.map((ele,index) => (
-            <BoxGr key={`${item.id}-${index}`} name={ele} />
-          ))}
-        </View>
-        <View>
-          <BText fontSize={13}>{item.title}</BText>
-            <View style={{flexDirection:'row',marginTop:10}}>
-              <Icons name={item.content[0]} size={18} color="#717171"/>
-              <RText fontSize={10} color={fcolor.gray4}>{item.content[1]}</RText>
-            </View>
-        </View>
-      </View>
-    );
-  };
-
+  const [planTitle, setPlanTitle] = useState({ title: '', memo: '' });
+  const [plan, setPlan] = useState([]); // 큰 계획
+  const [planList, setPlanList] = useState([]); // 작은 계획
   const [isOpend, setOpend] = useState(false);
 
-  //   const transYCamera=useShredValue(0);
-
-  const handlePress = () => {
-    setOpend(!isOpend);
-  }
-  //여기 아래부터는 다 데이터 가져오기
-  const [planTitle, setPlanTitle] = useState(null);
-  const [plan, setplan] = useState([]);//큰 계획
-  const [planlist, setplanlist] = useState([]);//작은 계획
-
-
-  // // 친구 목록 불러오기
   useEffect(() => {
     const plan_info = async () => {
       try {
-        console.log('돌아감');
-        let plan = await get_plan();
-        console.log(plan)
-        //여행 제목
-        setPlanTitle(plan)
-        let usersCollection = firestore().collection('plan').doc(plan_id).collection('planlist').doc('06.06').get();
-        let db = (await usersCollection).data();
+        const plan = await get_plan();
+        setPlanTitle(plan);
 
-        let usersCollection1 = firestore().collection('plan').doc(plan_id).collection('planlist').doc('06.07').get();
-        let db1 = (await usersCollection1).data();
-        console.log(db.weather)
-        setplan(prevState => [
-          ...prevState, 
-          { weather: db.weather, id: 1 },
-          { weather: db1.weather, id: 2 }
-        ]);
+        const planList = await get_plan_list();
+        setPlan(planList.map(item => ({ title: item.title, id: item.id })));
 
-        const list = db1.plantext
-        for (let id = 0; id < list.length; id++) {
-          console.log(list[id].state)
-          setplanlist(prevState => [...prevState, { ...list[id], id: id + 1 }]);
-        }
-
-        // setplanlist(db)
-
+        let id1 = 0;
+        let fullPlanList = [];
+        planList.forEach(item => {
+          item.plantext.forEach(planItem => {
+            fullPlanList.push({ ...planItem, id: id1 += 1, date: item.id });
+          });
+        });
+        setPlanList(fullPlanList);
       } catch (error) {
-        console.log('안돌아감');
+        console.error(error);
       }
     };
     plan_info();
   }, []);
 
+  const renderItem = ({ item }) => (
+    <View style={styles.travelplane}>
+      <View style={styles.trv_calendar}>
+        <View style={{ width: '30%', alignItems: 'center', justifyContent: 'center' }}>
+          <RText fontSize={10} color={fcolor.gray4}>JUNE</RText>
+          <BText fontSize={16} color={fcolor.gray4}>6</BText>
+        </View>
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginRight: 10 }}>
+          <View>
+            <NeonGr><MText color={fcolor.gray4}>{item.title}</MText></NeonGr>
+          </View>
+          <TouchableOpacity onPress={() => navigation.navigate('plande1')}>
+            <Icon name='arrow-forward' size={24} color={fcolor.blue} />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.planecontent}>
+        <FlatList
+          data={planList.filter(plan => plan.date === item.id)}
+          renderItem={renderItem1}
+          keyExtractor={(item) => String(item.id)}
+        />
+      </View>
+    </View>
+  );
 
+  const renderItem1 = ({ item }) => (
+    <View style={styles.planebox}>
+      <View style={{ width: '30%', marginRight: 10 }}>
+        {item.state.map((ele, index) => (
+          <BoxGr key={index} name={ele} />
+        ))}
+      </View>
+      <View>
+        <View style={{ flexDirection: 'row' }}>
+          <BText fontSize={13}>{item.location}</BText>
+          <RText fontSize={10} color={fcolor.gray4} style={{ marginTop: 3, marginLeft: 5 }}>{item.locationtyp}</RText>
+        </View>
+        <View style={{ flexDirection: 'row'}}>
+          <Icons name={item.content[0]} size={18} color="#717171" />
+          <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
+        </View>
+      </View>
+    </View>
+  );
 
-
+  const handlePress = () => {
+    setOpend(!isOpend);
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, marginTop: 10, alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => navigation.navigate('plan')}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
-          <BText fontSize={18}>{planTitle}</BText>
+          <TouchableOpacity onPress={() => navigation.navigate('plan')}>
+            <Icon name='arrow-back-ios' size={24} color="#717171" />
+          </TouchableOpacity>
+          <BText fontSize={18}>{planTitle.title}</BText>
           <TouchableOpacity onPress={get_plan}>
             <Icon name='more-vert' size={24} color="#717171" />
           </TouchableOpacity>
-
         </View>
         <View>
-          {/* 여행 중요 메모 */}
           <View style={[styles.trvmemo, isOpend ? { height: 80 } : null]}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <BText fontSize={14} color={fcolor.blue}>여행 중요 메모</BText>
@@ -177,40 +148,29 @@ export function PlanDetail() {
             </View>
             {isOpend &&
               <View style={{ marginHorizontal: 8 }}>
-                <RText fontSize={13} color={fcolor.gray4}>와!</RText>
+                <RText fontSize={13} color={fcolor.gray4}>{planTitle.memo}</RText>
               </View>
             }
-
-
           </View>
         </View>
-
         <View style={[{ paddingVertical: 10 }, isOpend ? { height: 530 } : { height: 565 }]}>
-          {/* 여행 일정 */}
           <FlatList
             data={plan}
             renderItem={renderItem}
             keyExtractor={(item) => String(item.id)}
+            initialNumToRender={10}
+            windowSize={21}
           />
-
-
         </View>
         <Pressable
           style={({ pressed }) => pressed ? [styles.fab, { transform: [{ scale: 0.9 }] }] : [styles.fab]}>
           <Icon name='edit' size={24} color={fcolor.white} />
         </Pressable>
-
       </View>
-
-      <BottomBar></BottomBar>
-
-
-
+      <BottomBar />
     </GestureHandlerRootView>
-
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -246,6 +206,7 @@ const styles = StyleSheet.create({
   },
   //일정내용
   travelplane: {
+    width: '100%',
     height: 314,
     marginVertical: 10,
     backgroundColor: fcolor.white,
@@ -259,12 +220,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: fcolor.lblue,
     flexDirection: 'row',
-    marginBottom: 5
+    marginBottom: 5,
+    alignItems: 'center',
   },
   planecontent: {
-    alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: 10
 
   },
   statebox_g: {

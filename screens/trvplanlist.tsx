@@ -17,6 +17,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import firestore, { FieldValue } from "@react-native-firebase/firestore";
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import { useUser } from '../src/components/common/UserContext';
 
 
 export type RootStackParam = {
@@ -32,11 +33,12 @@ export type RootStackParam = {
 // Item.title(큰내용)
 // Item.memo(메모)
 
-const mycode = 'GPlyn';
-
 
 export function Trvplanlist() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
+  
+  //유저코드 가져오기
+  const { usercode } = useUser();
 
   //여행태그
   const [isclick,setclick]=useState();
@@ -61,21 +63,26 @@ export function Trvplanlist() {
   useEffect(() => {
     const plan_info = async () => {
       try {
-        const usersCollection = firestore().collection('users').doc(mycode).get();
+        const usersCollection = firestore().collection('users').doc(usercode).get();
         let db = (await usersCollection).data();
        
         const list = db.plan
-
+        console.log('뭐임')
+        console.log(list)
+        
+        let updateplan = [];
         for (let id = 0; id < list.length; id++) {
           console.log(list[id])
           const usersCollection1 = firestore().collection('plan').doc(list[id]).get();
           const db1 = (await usersCollection1).data();
           console.log('돌아감1')
-          console.log(db1.title)
-          setPlanTitle(prevState => [...prevState, { title: db1.title, id: id + 1 }]);
-          console.log('돌아감2')
+          console.log(db1)
+          let title= db1.title
+          updateplan.push({...db1, title: title, id: id + 1 })
+           console.log('돌아감2')
           console.log(db1.title)
         }
+        setPlanTitle(updateplan)
         
 
         // setplanlist(db)

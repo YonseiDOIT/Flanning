@@ -13,10 +13,7 @@ import RText from './RText';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-export type RootStackParam = {
-    Home: undefined;
-    Test: undefined;
-  };
+
 
 const BottomBar = ({ homecolor=fcolors.blue,checkcolor=fcolors.gray3,reviewcolor=fcolors.gray3,settingcolor=fcolors.gray3 }) => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();

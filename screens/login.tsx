@@ -11,17 +11,15 @@ import MText from "../src/components/common/MText";
 import { signIn, signUp } from "../src/lib/auth";
 import * as KakaoLogin from '@react-native-seoul/kakao-login';
 import auth from '@react-native-firebase/auth';
-import { createUser } from "../src/lib/users";
+import { createUser, getUserid } from "../src/lib/users";
+import { useUser } from "../src/components/common/UserContext";
+import { usePlan } from "../src/components/common/PlanContext";
 
 const firebaseAuth = auth();
 
-export type RootStackParam = {
-  Home: undefined;
-  Test: undefined;
-};
 
-function Login () {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
+
+function Login ({navigation:{navigate}}) {
 
   const [form, setForm] = useState({
     email: "",
@@ -29,13 +27,23 @@ function Login () {
     confirmPassword: "",
   });
 
+  //유저 코드
+  const { usercode, setUsercode } = useUser();
+
+  //메인계획 코드
+  const { plancode, setPlancode } = usePlan();
+
   const signInSubmit = async () => { // 로그인 함수
     const {email, password} = form;
     const info = {email, password};
     try {
       const {user} = await signIn(info);
-      //console.log(user);
-      navigation.navigate('main')
+      const {usercode,main}= await getUserid(email)
+      setUsercode(usercode);
+      setPlancode(main)
+      console.log('main')
+
+      navigate('main')
     } catch (e) {
       Alert.alert("로그인에 실패하였습니다.");
     }
@@ -46,7 +54,7 @@ const login = () => {
   KakaoLogin.login().then((result) => {
     console.log("로그인 성공", JSON.stringify(result));
     getProfile()
-    navigation.navigate('main')
+    navigate('main')
   }).catch((error) => {
     if (error.code === 'E_CANCELLED_OPERATION') {
       console.log("로그인 취소", error.message);
@@ -106,12 +114,12 @@ const getProfile = () => {
         />
         <View style={styles.rowbutton}>
           <TouchableOpacity style={styles.smallbutton}
-          onPress={()=>navigation.navigate('test')}>
+          onPress={()=>navigate('test')}>
             <MText fontSize={13} color={fcolor.gray4}>비밀번호 찾기</MText>
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.smallbutton} 
-            onPress={() => navigation.navigate('signup')}>
+            onPress={() => navigate('signup')}>
             <MText fontSize={13} color={fcolor.gray4}>회원가입</MText>
           </TouchableOpacity>
         </View>
