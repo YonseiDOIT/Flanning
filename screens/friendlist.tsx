@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, FlatList, StyleSheet, Text, View, Alert, Animated } from 'react-native';
+import { Button, FlatList, StyleSheet, Text, View, Alert, Animated, Image } from 'react-native';
 import database, { firebase } from '@react-native-firebase/database';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -17,7 +17,7 @@ import { useUser } from '../src/components/common/UserContext';
 
 const mycode = 'GPlyn';
 
-function FriendList({ navigation: { navigate }}) {
+function FriendList({ navigation: { navigate } }) {
   const [isMore, setMore] = useState(false);
   const [users, setUsers] = useState([]);
   const [showaddf, setshowaddf] = useState(false);
@@ -110,10 +110,13 @@ function FriendList({ navigation: { navigate }}) {
       <View style={[styles.friendbox, isExpanded ? { height: 196 } : null]}>
         {/* 친구 프사 */}
         <View style={{ flexDirection: 'row' }}>
-          <LinearGradient style={{ width: 47, height: 47, borderRadius: 10, marginRight: 20, alignItems: 'center', justifyContent: 'center' }}
-            start={{ x: 0, y: 1 }} end={{ x: 0, y: 0 }} locations={[0.8, 0.9, 1]} colors={[fcolors.white, fcolors.gray1, '#EDEDED']} >
-            <Icon name='person' size={28} color='#858588'></Icon>
-          </LinearGradient>
+          <Image source={require('../src/assets/images/userframe.png')}
+            style={{
+              width: 47,
+              height: 47,
+              marginRight: 20
+            }}
+          />
 
           <View style={{ flexDirection: 'row' }}>
             <View style={{ flexDirection: 'column' }}>

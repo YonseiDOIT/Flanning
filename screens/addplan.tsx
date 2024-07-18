@@ -161,15 +161,78 @@ export function AddPlan({ navigation: { navigate } }) {
       userid: userid
     })
 
+
     setPlancode(plancode)
+    users.forEach((item) => {
+      const usersCollection1 = firestore().collection("users").doc(item.code);
+      usersCollection1.update("plan", FieldValue.arrayUnion(plancode));
+    }
+    )
+
 
     return plancode
   }
 
+  //여행 친구
+  const [users, setUsers] = useState([]);
+  const [useradd, setUseradd] = useState('');
+
+  // 친구 ID 가져오기
+  const get_frdid = async () => {
+    const usersCollection = await firestore().collection('users').doc(usercode).get();
+    const db = usersCollection.data();
+    console.log(db.friend);
+    return db.friend;
+  };
+
+  // 친구 목록 불러와서 해당 친구 이름이 같으면 여행 친구로 추가
+  const frd_info = async (name) => {
+    try {
+      console.log('돌아감');
+      let frdid = await get_frdid();
+      console.log('친구 :', frdid);
+      for (let id = 0; id < frdid.length; id++) {
+        const usersCollection = await firestore().collection('users').doc(frdid[id]).get();
+        const db = usersCollection.data();
+        console.log('친구 정보 :', db);
+        if (db.nickname == name)
+          setUsers(prevState => [...prevState, { nickname: db.nickname, id: prevState.length + 1, code: frdid[id] }]); ``
+
+
+        console.log('있음');
+        console.log(users);
+
+      }
+
+
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const renderItem = ({ item }) => {
+    console.log(users)
+    return (
+      <View style={styles.friendbox}>
+        {/* 친구 프사 */}
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image source={require('../src/assets/images/userframe.png')}
+            style={{
+              width: 47,
+              height: 47,
+              marginRight: 20
+            }}
+          />
+          <BText fontSize={12}>{item.nickname}</BText>
+        </View>
+      </View>
+    );
+
+  }
 
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: fcolor.white }}>
       <View style={styles.container}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, marginTop: 10, alignItems: 'center' }}>
           <TouchableOpacity onPress={() => navigate('main')}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
@@ -179,102 +242,116 @@ export function AddPlan({ navigation: { navigate } }) {
           </TouchableOpacity>
         </View>
         <View>
-          <ScrollView>
-            <View style={styles.boxset}>
-              <BText fontSize={15} color={fcolor.gray4}>여행 제목</BText>
-              <TextInput style={styles.box}
-                onChangeText={(text) => setForm({ ...form, title: text })}
-                placeholder={"띄어쓰기 포함 12글자 이내로 작성해주세요"}
-                placeholderTextColor={fcolor.gray3}
-              />
-            </View>
-            <View style={styles.boxset}>
-              <BText fontSize={15} color={fcolor.gray4}>여행 기간</BText>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={[styles.box, { width: 123 }]}>
-                  <RText fontSize={11} color={fcolor.gray4} style={{ marginRight: 10 }}>{selected.start}</RText>
-                  <Icon name='calendar-today' size={22} color={fcolor.blue} />
+          <FlatList
+            data={[]}
+            renderItem={null}
+            ListEmptyComponent={
+              <View>
+                <View style={styles.boxset}>
+                  <BText fontSize={15} color={fcolor.gray4}>여행 제목</BText>
+                  <TextInput style={styles.box}
+                    onChangeText={(text) => setForm({ ...form, title: text })}
+                    placeholder={"띄어쓰기 포함 12글자 이내로 작성해주세요"}
+                    placeholderTextColor={fcolor.gray3}
+                  />
                 </View>
-                <MText fontSize={16} color={fcolor.blue} style={{ marginHorizontal: 10 }}>~</MText>
-                <View style={[styles.box, { width: 123 }]}>
-                  <RText fontSize={11} color={fcolor.gray4} style={{ marginRight: 10 }}>{selected.end}</RText>
-                  <Icon name='calendar-today' size={22} color={fcolor.blue} />
+                <View style={styles.boxset}>
+                  <BText fontSize={15} color={fcolor.gray4}>여행 기간</BText>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={[styles.box, { width: 123 }]}>
+                      <RText fontSize={11} color={fcolor.gray4} style={{ marginRight: 10 }}>{selected.start}</RText>
+                      <Icon name='calendar-today' size={22} color={fcolor.blue} />
+                    </View>
+                    <MText fontSize={16} color={fcolor.blue} style={{ marginHorizontal: 10 }}>~</MText>
+                    <View style={[styles.box, { width: 123 }]}>
+                      <RText fontSize={11} color={fcolor.gray4} style={{ marginRight: 10 }}>{selected.end}</RText>
+                      <Icon name='calendar-today' size={22} color={fcolor.blue} />
+                    </View>
+                  </View>
+                  <Calendar style={{ marginVertical: 20 }}
+                    theme={{
+                      backgroundColor: '#ffffff',
+                      calendarBackground: '#ffffff',
+                      textSectionTitleColor: '#b6c1cd',
+                      selectedDayBackgroundColor: fcolor.blue,
+                      selectedDayTextColor: '#ffffff',
+                      todayTextColor: fcolor.blue,
+                      dayTextColor: '#2d4150',
+                      arrowColor: fcolor.skyblue
+                    }}
+                    markingType={'period'}
+
+                    markedDates={markedDates}
+                    onDayPress={day => {
+                      daysclick(day.dateString)
+                    }}
+
+                  />
+
+                </View>
+
+                <View style={styles.boxset}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <BText fontSize={15} color={fcolor.gray4}>여행 메모</BText>
+                    <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 10 }}>선택</RText>
+                  </View>
+                  <TextInput style={styles.box}
+                    onChangeText={(text) => setForm({ ...form, memo: text })}
+                    placeholder={"여행 메모를 추가해주세요 (선택)"}
+                    placeholderTextColor={fcolor.gray3}
+                  />
+                </View>
+
+                <View style={styles.boxset}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <BText fontSize={15} color={fcolor.gray4}>여행 친구</BText>
+                    <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 10 }}>선택</RText>
+                  </View>
+                  <View style={styles.box}>
+                    <TextInput placeholder={"함께 여행을 떠날 친구를 추가해주세요 (선택)"}
+                      onChangeText={(text) => (setUseradd(text))}
+                      placeholderTextColor={fcolor.gray3}
+                      style={{ fontSize: 11 }}
+                    />
+                    <TouchableOpacity
+                      onPress={() => frd_info(useradd)}>
+                      <Icon name='search' size={24} color={fcolor.blue} />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{ marginVertical: 10 }}>
+                    <FlatList
+                      style={styles.frdbox}
+                      data={users}
+                      renderItem={renderItem} // 인덱스를 함께 전달
+                      keyExtractor={(item) => item.id.toString()}
+                    />
+                  </View>
+
+                  <View style={[styles.boxset, { marginBottom: 80 }]}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <BText fontSize={15} color={fcolor.gray4}>여행 예산</BText>
+                      <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 10 }}>선택</RText>
+                    </View>
+                    <View style={styles.box}>
+                      <TextInput placeholder={"여행의 예산을 작성해주세요"}
+                        placeholderTextColor={fcolor.gray3}
+                        style={{ fontSize: 11 }}
+                      />
+                      <Icon name='check' size={24} color={fcolor.blue} />
+                    </View>
+                  </View>
                 </View>
               </View>
-              <Calendar style={{ marginVertical: 20 }}
-                theme={{
-                  backgroundColor: '#ffffff',
-                  calendarBackground: '#ffffff',
-                  textSectionTitleColor: '#b6c1cd',
-                  selectedDayBackgroundColor: fcolor.blue,
-                  selectedDayTextColor: '#ffffff',
-                  todayTextColor: fcolor.blue,
-                  dayTextColor: '#2d4150',
-                  arrowColor: fcolor.skyblue
-                }}
-                markingType={'period'}
 
-                markedDates={markedDates}
-                onDayPress={day => {
-                  daysclick(day.dateString)
-                }}
-
-              />
-
-            </View>
-
-            <View style={styles.boxset}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <BText fontSize={15} color={fcolor.gray4}>여행 메모</BText>
-                <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 10 }}>선택</RText>
-              </View>
-              <TextInput style={styles.box}
-                onChangeText={(text) => setForm({ ...form, memo: text })}
-                placeholder={"여행 메모를 추가해주세요 (선택)"}
-                placeholderTextColor={fcolor.gray3}
-              />
-            </View>
-
-            <View style={styles.boxset}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <BText fontSize={15} color={fcolor.gray4}>여행 친구</BText>
-                <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 10 }}>선택</RText>
-              </View>
-              <View style={styles.box}>
-                <TextInput placeholder={"함께 여행을 떠날 친구를 추가해주세요 (선택)"}
-                  onChangeText={}
-                  placeholderTextColor={fcolor.gray3}
-                  style={{ fontSize: 11 }}
-                />
-                <Icon name='search' size={24} color={fcolor.blue} />
-              </View>
-            </View>
-            <View style={[styles.boxset, { marginBottom: 80 }]}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <BText fontSize={15} color={fcolor.gray4}>여행 예산</BText>
-                <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 10 }}>선택</RText>
-              </View>
-              <View style={styles.box}>
-                <TextInput placeholder={"여행의 예산을 작성해주세요"}
-                  placeholderTextColor={fcolor.gray3}
-                  style={{ fontSize: 11 }}
-                />
-                <Icon name='check' size={24} color={fcolor.blue} />
-              </View>
-            </View>
-
-          </ScrollView>
+            }
+          />
 
 
 
         </View>
 
-
-
-
       </View>
       <BottomBar></BottomBar>
-
 
     </GestureHandlerRootView>
 
@@ -287,7 +364,22 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 25,
     backgroundColor: fcolor.white,
-    flexDirection: 'column'
+    flexDirection: 'column',
+    marginBottom: 50
+  },
+  friendbox: {
+    width: '100%',
+    height: 65,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  frdbox:{
+    width: '100%',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: fcolor.skyblue,
+    justifyContent:'center'
+    
   },
   boxset: {
     marginVertical: 15,
