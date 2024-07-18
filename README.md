@@ -1,5 +1,8 @@
 # Flanning ✈️
-<img src="https://i.imgur.com/9zkv8nA.png" width="800">
+<p align="center">
+  <img src="https://i.imgur.com/9zkv8nA.png" width="800">
+</p>
+
 
 * 다양한 국내여행자들에게 효율적이며 편리한 공동 여행 플래닝 경험을 제공
   
@@ -15,12 +18,14 @@
 * → **여행의 목적, 계획 스타일이 다른 국내여행자들이 개인에게 적합하게 이용할 수 있는 국내여행 공동 플래닝 서비스**
 
 ## 📋 기획
-<img src="https://i.imgur.com/uH0Y36M.png" width="800">
-<img src="https://i.imgur.com/Ku8oG7q.png" width="800">
-<img src="https://i.imgur.com/175MpS4.png" width="800">
-<img src="https://i.imgur.com/9rDGkXi.png" width="800">
-<img src="https://i.imgur.com/Mr0nZCP.png" width="800">
-<img src="https://i.imgur.com/mu0UUaF.png" width="800">
+<p align="center">
+  <img src="https://i.imgur.com/uH0Y36M.png" width="800">
+  <img src="https://i.imgur.com/Ku8oG7q.png" width="800">
+  <img src="https://i.imgur.com/175MpS4.png" width="800">
+  <img src="https://i.imgur.com/9rDGkXi.png" width="800">
+  <img src="https://i.imgur.com/Mr0nZCP.png" width="800">
+  <img src="https://i.imgur.com/mu0UUaF.png" width="800">
+</p>
 
 ## 🛠️ 기능
 * ▶️개발 진행된 파트
