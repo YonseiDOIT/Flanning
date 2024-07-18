@@ -78,7 +78,10 @@ function IdnPass ({navigation:{navigate}}){
                     </View>
                     <View style={styles.box}>
                     <MText color={fcolors.gray4} fontSize={13} style={{marginTop:20,marginLeft:20,marginRight:10 }}>비밀번호 확인</MText>
-                        <TextInput style={styles.boxinput} placeholder={"비밀번호를 한번 더 입력해주세요"} placeholderTextColor={fcolors.gray3}/>
+                        <TextInput style={styles.boxinput} 
+                        placeholder={"비밀번호를 한번 더 입력해주세요"} 
+                        placeholderTextColor={fcolors.gray3}
+                        secureTextEntry={true}/>
                     </View>
                     {/* <View style={styles.box}>
                     <MText style={{fontSize:13,margin:20}}>닉네임</MText>

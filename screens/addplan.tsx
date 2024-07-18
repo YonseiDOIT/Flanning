@@ -211,7 +211,6 @@ export function AddPlan({ navigation: { navigate } }) {
   };
 
   const renderItem = ({ item }) => {
-    console.log(users)
     return (
       <View style={styles.friendbox}>
         {/* 친구 프사 */}

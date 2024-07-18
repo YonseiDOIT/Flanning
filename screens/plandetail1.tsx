@@ -89,7 +89,7 @@ export function PlanDetail1({navigation:{navigate}}) {
 
   const renderItem = ({ item }) => (
     <View style={styles.planebox}>
-      <View style={{ width: '30%' }}>
+      <View style={{ width: '23%',marginLeft:40 }}>
         {item.state.map((ele, index) => (
           <BoxGr key={index} name={ele} />
         ))}
@@ -100,7 +100,7 @@ export function PlanDetail1({navigation:{navigate}}) {
           <RText fontSize={10} color={fcolor.gray4} style={{marginTop:3,marginLeft:5}}>{item.locationtyp}</RText>
         </View>
         <View style={{ flexDirection: 'row'}}>
-        {item.content[0] && <Icons name={item.content[0]} size={18} color="#717171" />}
+        {item.content[0] && <Icon name={item.content[0]} size={18} color="#717171" />}
           <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
         </View>
       </View>
@@ -134,8 +134,8 @@ export function PlanDetail1({navigation:{navigate}}) {
         {
           latitude: latitude,
           longitude: longitude,
-          latitudeDelta: 0.0722,
-          longitudeDelta: 0.0221
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0321
         },
         0.1,
       );

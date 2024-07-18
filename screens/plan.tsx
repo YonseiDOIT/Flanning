@@ -155,7 +155,7 @@ export function Plan() {
           <RText fontSize={10} color={fcolor.gray4} style={{ marginTop: 3, marginLeft: 5 }}>{item.locationtyp}</RText>
         </View>
         <View style={{ flexDirection: 'row' }}>
-          {item.content[0] && <Icons name={item.content[0]} size={18} color="#717171" />}
+          {item.content[0] !== '' && <Icons name={item.content[0]} size={16} color="#717171" />}
           <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
         </View>
       </View>
@@ -174,8 +174,8 @@ export function Plan() {
         {
           latitude: latitude,
           longitude: longitude,
-          latitudeDelta: 0.0722,
-          longitudeDelta: 0.0221
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0321
         },
         0.1,
       );
@@ -233,11 +233,11 @@ export function Plan() {
             <View style={styles.travelplane}>
               <View style={styles.trv_calendar}>
                 <View style={{ width: '30%', alignItems: 'center', justifyContent: 'center' }}>
-                  <RText fontSize={10} color={fcolor.gray4}>JUNE</RText>
-                  <BText fontSize={16} color={fcolor.gray4}>6</BText>
+                  <RText fontSize={10} color={fcolor.gray4}>JULY</RText>
+                  <BText fontSize={16} color={fcolor.gray4}>25</BText>
                 </View>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                  <NeonGr><MText color={fcolor.gray4}>{plan.title}</MText></NeonGr>
+                  <MText color={fcolor.gray4}>{plan.title}</MText>
                 </View>
               </View>
               <View style={styles.planecontent}>
@@ -283,6 +283,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
     backgroundColor: fcolor.white,
     elevation: 30,
+    marginBottom:40
 
   },
   //여행 중요 메모

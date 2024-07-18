@@ -37,7 +37,7 @@ const BottomBar = ({ homecolor = fcolors.blue, checkcolor = fcolors.gray3, revie
 
   return (
     <View style={styles.bottombar}>
-      <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('main')}>
+      <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('main1')}>
         <Icon name='home-filled' size={25} color={homecolor} />
         <RText style={{ marginTop: 5 }} color={homecolor} fontSize={10}>홈</RText>
       </TouchableOpacity>

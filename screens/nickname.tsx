@@ -37,7 +37,7 @@ function Nickname({ navigation: { navigate } }) {
     return (
         <View style={styles.container}>
             <View style={{ height: 4, backgroundColor: fcolors.skyblue, marginTop: 26, borderRadius: 40 }}>
-                <View style={{ backgroundColor: maincol, width: "100%", height: 4, borderRadius: 40 }} />
+                <View style={{ backgroundColor: maincol, width: "75%", height: 4, borderRadius: 40 }} />
             </View>
             <View style={{ paddingTop: 40 }}>
                 <BText><BText color={fcolors.blue}>닉네임</BText>과 <BText color={fcolors.blue}>사진</BText>을 설정해주세요</BText>
@@ -78,7 +78,7 @@ function Nickname({ navigation: { navigate } }) {
             <View style={{ flex: 1, marginTop: 150, alignItems: 'center' }}>
                 <TouchableOpacity style={[styles.nextbutton, form.nickname && form.intro ? { backgroundColor: fcolors.blue } : null]}
                     onPress={form.nickname && form.intro ? () => [onSubmit(form.nickname, form.intro), navigate('typecheck1')] : null}>
-                    <Text style={{ color: 'white', fontFamily: "Pretendard-Regular" }}>마지막이에요</Text>
+                    <Text style={{ color: 'white', fontFamily: "Pretendard-Regular" }}>다음</Text>
                 </TouchableOpacity>
             </View>
 

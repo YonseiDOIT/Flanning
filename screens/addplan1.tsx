@@ -45,7 +45,7 @@ export function AddPlan1({ navigation: { navigate } }) {
           latitudeDelta: 0.0022,
           longitudeDelta: 0.0011
         },
-        2000,
+        1000,
       );
     }
   }
@@ -58,7 +58,7 @@ export function AddPlan1({ navigation: { navigate } }) {
   const renderItem = (location, index) => {
 
     return (
-      <View style={{ backgroundColor: fcolor.lblue, marginVertical: 10 }}>
+      <View style={{ backgroundColor: fcolor.lblue, marginVertical: 20}}>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
             <RText fontSize={11} color={fcolor.gray3} style={{ textDecorationLine: 'underline' }}>시간 입력</RText>
@@ -245,7 +245,7 @@ export function AddPlan1({ navigation: { navigate } }) {
           <TouchableOpacity onPress={() => navigate('addplan')}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
           <BText fontSize={18}>여행 떠나기</BText>
           <TouchableOpacity
-            onPress={() => [onSubmit()]}>
+            onPress={() => [navigate('main1'),onSubmit()]}>
             <Icon name='check' size={24} color={fcolor.blue} />
           </TouchableOpacity>
         </View>
@@ -265,7 +265,6 @@ export function AddPlan1({ navigation: { navigate } }) {
                 </View>
                 <View style={styles.boxset}>
                   <BText fontSize={15} color={fcolor.gray4}>여행 일자</BText>
-                  <RText>{plancode}</RText>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <View style={[styles.box, { width: 123 }]}>
                       <RText fontSize={11} color={fcolor.gray4} style={{ marginRight: 10 }}>{form.date}</RText>
@@ -300,6 +299,7 @@ export function AddPlan1({ navigation: { navigate } }) {
                 <GooglePlacesAutocomplete
                   disableScroll={true}
                   minLength={2}
+                  debounce={300}
                   placeholder="여행 장소를 추가해주세요"
                   query={{
                     key: 'AIzaSyASPm2BftJ_bVyceC7Yu20nuEQP7wIn2ho',

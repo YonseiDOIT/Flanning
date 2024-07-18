@@ -10,7 +10,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import fcolor from '../src/assets/colors/fcolors';
 import RText from '../src/components/common/RText';
 import BText from '../src/components/common/BText';
-import NeonGr from '../src/components/neongr';
 import BoxGr from '../src/components/common/BoxGr';
 import BottomBar from '../src/components/common/BottomBar';
 import MText from '../src/components/common/MText';
@@ -80,12 +79,12 @@ const PlanDetail = () => {
     <View style={styles.travelplane}>
       <View style={styles.trv_calendar}>
         <View style={{ width: '30%', alignItems: 'center', justifyContent: 'center' }}>
-          <RText fontSize={10} color={fcolor.gray4}>JUNE</RText>
-          <BText fontSize={16} color={fcolor.gray4}>6</BText>
+          <RText fontSize={10} color={fcolor.gray4}>JULY</RText>
+          <BText fontSize={16} color={fcolor.gray4}>25</BText>
         </View>
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginRight: 10 }}>
           <View>
-            <NeonGr><MText color={fcolor.gray4}>{item.title}</MText></NeonGr>
+            <MText color={fcolor.gray4}>{item.title}</MText>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate('plande1')}>
             <Icon name='arrow-forward' size={24} color={fcolor.blue} />

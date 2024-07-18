@@ -36,8 +36,14 @@ function FriendList({ navigation: { navigate } }) {
       const userCollection = firestore().collection("users").doc(usercode);
       userCollection.update("friend", FieldValue.arrayUnion(frdcode));
 
+      //상대 쪽에도 추가
+      const userCollection1 = firestore().collection("users").doc(frdcode);
+      userCollection1.update("friend", FieldValue.arrayUnion(usercode));
+
       // 새 친구를 추가하고 상태를 업데이트
       setUsers(prevState => [...prevState, { ...db, id: prevState.length + 1, code: frdcode }]);
+
+
     } else {
       console.log("없음");
       Alert.alert('', '해당 친구코드는 없는 코드입니다.');
@@ -285,7 +291,7 @@ const styles = StyleSheet.create({
   smallbox: {
     position: 'absolute',
     right: -10,
-    top: -620,
+    top: -630,
     backgroundColor: fcolors.skyblue,
     padding: 8,
     borderRadius: 10,
@@ -295,7 +301,7 @@ const styles = StyleSheet.create({
   smallbox1: {
     position: 'absolute',
     right: -10,
-    top: -575,
+    top: -680,
     backgroundColor: fcolors.skyblue,
     padding: 8,
     borderRadius: 10,

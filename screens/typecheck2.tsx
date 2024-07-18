@@ -50,7 +50,7 @@ function Typecheck2({navigation: {navigate}}) {
         <GestureHandlerRootView style={{ flex: 1}}>
         <View style={styles.container}>
             <View style={{height:4,backgroundColor:"#C1C1C1",marginTop:26,borderRadius:40}}>
-                <View style={{backgroundColor:maincol,width:"75%",height:4,borderRadius:40}}/>
+                <View style={{backgroundColor:maincol,width:"100%",height:4,borderRadius:40}}/>
             </View>
             <View style={{paddingTop:30}}>
                 <BText><BText color={fcolors.blue}>여행 성향</BText>을 알려주세요</BText>

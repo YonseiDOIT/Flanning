@@ -90,8 +90,8 @@ export function Main1({ navigation: { navigate } }) {
           <BText fontSize={13}>{item.location}</BText>
           <RText fontSize={10} color={fcolor.gray4} style={{marginTop:3,marginLeft:5}}>{item.locationtyp}</RText>
         </View>
-        <View style={{ flexDirection: 'row'}}>
-        {item.content[0] && <Icons name={item.content[0]} size={18} color="#717171" />}
+        <View style={{ flexDirection: 'row',marginTop:3}}>
+        {item.content[0] !== '' && <Icons name={item.content[0]} size={16} color="#717171" />}
           <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
         </View>
       </View>
@@ -140,8 +140,8 @@ export function Main1({ navigation: { navigate } }) {
             <View style={styles.travelplane}>
               <View style={styles.trv_calendar}>
                 <View style={{ width: '30%', alignItems: 'center', justifyContent: 'center' }}>
-                  <RText fontSize={10} color={fcolor.gray4}>JUNE</RText>
-                  <BText fontSize={16} color={fcolor.gray4}>6</BText>
+                  <RText fontSize={10} color={fcolor.gray4}>JULY</RText>
+                  <BText fontSize={16} color={fcolor.gray4}>25</BText>
                 </View>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                   <MText color={fcolor.gray4}>{plan.title}</MText>
@@ -205,6 +205,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
     backgroundColor: fcolor.white,
     elevation: 30,
+    marginBottom:60
 
   },
   //여행 중요 메모
@@ -236,52 +237,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10
 
   },
-  statebox_g: {
-    width: 50,
-    height: 20,
-    marginRight: 5,
-    backgroundColor: fcolor.gray1,
-    borderWidth: 1,
-    borderColor: fcolor.gray4,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  statebox_b: {
-    width: 50,
-    height: 20,
-    marginRight: 5,
-    backgroundColor: '#F3F7FF',
-    borderWidth: 1,
-    borderColor: fcolor.blue,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  statebox_p: {
-    width: 50,
-    height: 20,
-    marginRight: 5,
-    backgroundColor: '#F3ECFF',
-    borderWidth: 1,
-    borderColor: '#6F19FC',
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  statebox_o: {
-    width: 50,
-    height: 20,
-    marginRight: 5,
-    backgroundColor: '#FEF3EA',
-    borderWidth: 1,
-    borderColor: fcolor.orange,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
+
   planebox: {
-    margin: 3,
+    marginTop: 5,
     flexDirection: 'row',
     height: 50,
     width: '100%',

@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
     paddingHorizontal:28,
     backgroundColor:fcolor.white,
     elevation:30,
+    marginBottom:60
 
   },
   //여행 중요 메모
