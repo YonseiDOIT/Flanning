@@ -1,5 +1,5 @@
 # Flanning ✈️
-![flanning_logo] (./android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png)
+![flanning_logo] (../android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png)
 * 다양한 국내여행자들에게 효율적이며 편리한 공동 여행 플래닝 경험을 제공
   
 ## 구성원
