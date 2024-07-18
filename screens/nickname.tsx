@@ -77,12 +77,8 @@ function Nickname({ navigation: { navigate } }) {
 
             <View style={{ flex: 1, marginTop: 150, alignItems: 'center' }}>
                 <TouchableOpacity style={[styles.nextbutton, form.nickname && form.intro ? { backgroundColor: fcolors.blue } : null]}
-                    onPress={form.nickname && form.intro ? () => [onSubmit(form.nickname, form.intro), navigate('appinfo')] : null}>
+                    onPress={form.nickname && form.intro ? () => [onSubmit(form.nickname, form.intro), navigate('typecheck1')] : null}>
                     <Text style={{ color: 'white', fontFamily: "Pretendard-Regular" }}>마지막이에요</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.laterbutton}
-                    onPress={() => navigate('appinfo')}>
-                    <MText color={fcolors.gray3} fontSize={14} style={{ textDecorationLine: 'underline' }}>다음에 할게요</MText>
                 </TouchableOpacity>
             </View>
 

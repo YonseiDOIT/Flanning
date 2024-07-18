@@ -45,7 +45,7 @@ function IdnPass ({navigation:{navigate}}){
         
         console.log('파이어베이스: ',usercode1);
         setUsercode(usercode1);
-        navigate('typecheck1')
+        navigate('nickname')
         .catch(() => {
           console.log('파이어베이스 에러');
         });

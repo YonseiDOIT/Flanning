@@ -114,8 +114,8 @@ const PlanDetail = () => {
           <BText fontSize={13}>{item.location}</BText>
           <RText fontSize={10} color={fcolor.gray4} style={{ marginTop: 3, marginLeft: 5 }}>{item.locationtyp}</RText>
         </View>
-        <View style={{ flexDirection: 'row'}}>
-          <Icons name={item.content[0]} size={18} color="#717171" />
+        <View style={{ flexDirection: 'row' }}>
+          {item.content[0] && <Icons name={item.content[0]} size={18} color="#717171" />}
           <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
         </View>
       </View>

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Button, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import database from '@react-native-firebase/database';
 import { GestureHandlerRootView, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
@@ -12,154 +12,183 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import fcolor from '../src/assets/colors/fcolors';
 import RText from '../src/components/common/RText';
 import BText from '../src/components/common/BText';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import NeonGr from '../src/components/neongr';
 import MText from '../src/components/common/MText';
 import BottomBar from '../src/components/common/BottomBar';
 import BoxGr from '../src/components/common/BoxGr';
+import { usePlan } from '../src/components/common/PlanContext';
+
+import firestore from '@react-native-firebase/firestore';
 export type RootStackParam = {
   Home: undefined;
   Test: undefined;
 };
 
 
-// Item.bigicontyp(큰 아이콘)
-// Item.smicontyp(작은 아이콘)
-// Item.title(큰내용)
-// Item.memo(메모)
+export function PlanDetail1({navigation:{navigate}}) {
+  //메인 계획 코드 가져오기
+  const { plancode } = usePlan();
 
-const renderItem = ({ item }) => {
-  return (
-    <View style={styles.planecontent}>
-        <View style={styles.planebox}>
-          <View style={{ width: '30%'}}>
-          {item.state.map((ele,index) => (
-            <BoxGr key={`${item.id}-${index}`} name={ele} />
-          ))}
-            
-          </View>
-          <View>
-            <BText fontSize={13}>{item.title}</BText>
-            <View style={{flexDirection:'row',marginTop:10}}>
-              <Icon name={item.icon} size={18} color="#717171"/>
-              <RText>{item.subtitle}</RText>
+  //여행 제목
+  const get_plan = async () => {
+    const planDoc = await firestore().collection('plan').doc(plancode).get();
+    const planData = planDoc.data();
+    return { title: planData?.title, memo: planData?.memo };
+  };
 
-            </View>
+  //여행 계획
+  const get_plan_list = async () => {
+    const planListCollection = await firestore().collection('plan').doc(plancode).collection('planlist').get();
+    let planList = [];
+    planListCollection.forEach(doc => {
+      planList.push({ id: doc.id, ...doc.data() });
+    });
+    return planList;
+  };
 
-          </View>
-        </View>
-      
-      </View>
-  );
-};
-
-
-// 백엔드 할 때는 데이터를 파이어베이스에서 가져오도록
-const data = [
-  {
-    id: '1',
-    state:['진행 완료','예약 확정'],
-    title: '곽지해수욕장 석양 구경',
-    icon: 'bus',
-    subtitle:'버스 타고 이동'
-
-  },
-  {
-    id: '2',
-    state:['진행 중','예약 확정'],
-    title: '제주 흑돼지 거리',
-    icon: 'calendar-start',
-    subtitle:'테이블링으로 가서 직접 예약'
-  },
-  {
-    id: '3',
-    state:['진행 중','예약 확정'],
-    title: '숙소 가기',
-    icon: 'calendar-start',
-    subtitle:'고등어회 포장 예약 픽업'
-  },
-  {
-    id: '4',
-    state:['진행 중','예약 확정'],
-    title: '곽지해수욕장 석양 구경',
-    icon: 'bus',
-    subtitle:'버스 타고 이동'
-
-  },
-  {
-    id: '5',
-    state:['진행 중','예약 확정'],
-    title: '제주 흑돼지 거리',
-    icon: 'calendar-start',
-    subtitle:'테이블링으로 가서 직접 예약'
-  },
-  {
-    id: '6',
-    state:['진행 중','예약 전'],
-    title: '숙소 가기',
-    icon: 'calendar-start',
-    subtitle:'고등어회 포장 예약 픽업'
-  }
-
-
-]
-
-const LIMIT = 5;
-
-export function PlanDetail1() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
-
+  const [planTitle, setPlanTitle] = useState({ title: '', memo: '' });
+  const [plan, setPlan] = useState({ title: '', id: '' }); // 큰 계획
+  const [planList, setPlanList] = useState([]); // 작은 계획
   const [isOpend, setOpend] = useState(false);
-  
-  //   const transYCamera=useShredValue(0);
+
+  useEffect(() => {
+    const plan_info = async () => {
+      try {
+        const plan = await get_plan();
+        console.log(plan)
+        setPlanTitle(plan);
+
+
+        const planList = await get_plan_list();
+        console.log(planList[0].title)
+        // setPlan을 호출할 때 planList[0]의 각 item을 변환하여 설정
+        setPlan({ title: planList[0].title, id: planList[0].id });
+
+
+        // planList[0]만을 사용하여 fullPlanList를 구성
+        let id1 = 0;
+        let fullPlanList = [];
+        planList[0].plantext.forEach(planItem => {
+          fullPlanList.push({ ...planItem, id: id1 += 1, date: planList[0].id });
+        });
+
+        setPlanList(fullPlanList);
+        fullPlanList.map((num) => {
+          setmark((prev) => ({ lat: [...prev.lat, num.latlng[0]], lng: [...prev.lng, num.latlng[1]] }))
+        })
+
+        movelocation(fullPlanList[0].latlng[0], fullPlanList[0].latlng[1])
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    plan_info();
+  }, []);
+
+  const renderItem = ({ item }) => (
+    <View style={styles.planebox}>
+      <View style={{ width: '30%' }}>
+        {item.state.map((ele, index) => (
+          <BoxGr key={index} name={ele} />
+        ))}
+      </View>
+      <View style={{ width: '60%' }}>
+        <View style={{ flexDirection: 'row'}}>
+          <BText fontSize={13}>{item.location}</BText>
+          <RText fontSize={10} color={fcolor.gray4} style={{marginTop:3,marginLeft:5}}>{item.locationtyp}</RText>
+        </View>
+        <View style={{ flexDirection: 'row'}}>
+        {item.content[0] && <Icons name={item.content[0]} size={18} color="#717171" />}
+          <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
+        </View>
+      </View>
+    </View>
+
+  );
 
   const handlePress = () => {
     setOpend(!isOpend);
-  }
+  };
 
-  function handlePress1() {
-    if (isOpend) {
+  //지도
+  const mapRef = useRef(null);
+  //지도
+  const [islocation, setlocation] = useState({
+    lat: 0,
+    lng: 0
+  })
 
-    } else {
+  const [ismark, setmark] = useState({
+    lat: [],
+    lng: []
+  })
 
+
+  //지도
+  async function movelocation(latitude, longitude) {
+    setlocation({ lat: latitude, lng: longitude }); // 위치 상태 업데이트
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: 0.0722,
+          longitudeDelta: 0.0221
+        },
+        0.1,
+      );
     }
-
   }
+
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <View style={{ paddingHorizontal: 30,flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, marginTop: 10, alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => navigation.navigate('plande')}><Icons name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
+        <View style={{ paddingHorizontal: 30, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, marginTop: 10, alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => navigate('plande')}><Icons name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
           <BText fontSize={18}>여행 제목</BText>
           <Icons name='more-vert' size={24} color="#717171" />
         </View>
-        <View style={{flexDirection:'row',paddingHorizontal: 30,marginBottom:20}}>
+        <View style={{ flexDirection: 'row', paddingHorizontal: 30, marginBottom: 20 }}>
           <NeonGr><BText fontSize={18} color={fcolor.gray4}>DAY1</BText></NeonGr>
         </View>
 
         <View style={styles.imagebanner}>
-          <MapView
+        <MapView
+            ref={mapRef}
             provider={PROVIDER_GOOGLE}
             style={StyleSheet.absoluteFill}
-            region={{
-              latitude: 37.279748,
-              longitude: 127.901427,
-              latitudeDelta: 3,
-              longitudeDelta: 3,
-            }}/>
+            initialRegion={{
+              latitude: 37.541,
+              longitude: 126.986,
+              latitudeDelta: 0.0722,
+              longitudeDelta: 0.0221
+            }}>
+
+            {ismark.lat.map((coord, index) => (
+              <Marker
+                key={index}
+                coordinate={{
+                  latitude: coord,
+                  longitude: ismark.lng[index],
+                }}
+                pinColor={fcolor.blue}
+              />
+            ))}
+          </MapView>
         </View>
 
-        
 
-        <View style={{ marginVertical: 15, paddingHorizontal: 30, height:330}}>
+
+        <View style={{ marginVertical: 15, paddingHorizontal: 30, height: 330 }}>
           {/* 여행 일정 */}
           <FlatList
-            data={data}
+            data={planList.filter(dplan => dplan.date === plan.id)}
             renderItem={renderItem}
             keyExtractor={(item) => String(item.id)}
           />
-
 
         </View>
         <Pressable
@@ -201,9 +230,9 @@ const styles = StyleSheet.create({
     backgroundColor: fcolor.white,
     elevation: 30,
   },
-  imagebanner:{
-    height:220,
-    width:'100%'
+  imagebanner: {
+    height: 220,
+    width: '100%'
   },
 
 
@@ -218,7 +247,7 @@ const styles = StyleSheet.create({
   //일정내용
   travelplane: {
     height: 314,
-    marginVertical:10,
+    marginVertical: 10,
     backgroundColor: fcolor.white,
     borderColor: fcolor.skyblue,
     borderWidth: 1,
@@ -240,7 +269,7 @@ const styles = StyleSheet.create({
 
   },
   planebox: {
-    marginTop:10,
+    marginTop: 10,
     marginBottom: 30,
     flexDirection: 'row',
     width: '100%'

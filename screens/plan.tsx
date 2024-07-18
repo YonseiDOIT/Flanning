@@ -11,7 +11,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import fcolor from '../src/assets/colors/fcolors';
 import RText from '../src/components/common/RText';
 import BText from '../src/components/common/BText';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import NeonGr from '../src/components/neongr';
 import MText from '../src/components/common/MText';
 import BottomBar from '../src/components/common/BottomBar';
@@ -34,10 +34,14 @@ export function Plan() {
 
   //지도
   const [islocation, setlocation] = useState({
-    lat: 37.541,
-    lng: 126.986
+    lat: 0,
+    lng: 0
   })
 
+  const [ismark, setmark] = useState({
+    lat: [],
+    lng: []
+  })
 
   //아래 내용 끌어오기
   const panResponder = useRef(
@@ -98,6 +102,9 @@ export function Plan() {
   const [plan, setPlan] = useState({ title: '', id: '' }); // 큰 계획
   const [planList, setPlanList] = useState([]); // 작은 계획
   const [isOpend, setOpend] = useState(false);
+  const setlat = useRef(0);
+  const setlng = useRef(0);
+
 
   useEffect(() => {
     const plan_info = async () => {
@@ -121,6 +128,12 @@ export function Plan() {
         });
 
         setPlanList(fullPlanList);
+        fullPlanList.map((num) => {
+          setmark((prev) => ({ lat: [...prev.lat, num.latlng[0]], lng: [...prev.lng, num.latlng[1]] }))
+        })
+
+        movelocation(fullPlanList[0].latlng[0], fullPlanList[0].latlng[1])
+
       } catch (error) {
         console.error(error);
       }
@@ -141,8 +154,8 @@ export function Plan() {
           <BText fontSize={13}>{item.location}</BText>
           <RText fontSize={10} color={fcolor.gray4} style={{ marginTop: 3, marginLeft: 5 }}>{item.locationtyp}</RText>
         </View>
-        <View style={{ flexDirection: 'row'}}>
-          <Icons name={item.content[0]} size={18} color="#717171" />
+        <View style={{ flexDirection: 'row' }}>
+          {item.content[0] && <Icons name={item.content[0]} size={18} color="#717171" />}
           <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
         </View>
       </View>
@@ -150,19 +163,51 @@ export function Plan() {
 
   );
 
+  //지도
+  const mapRef = useRef(null);
+
+  //지도
+  async function movelocation(latitude, longitude) {
+    setlocation({ lat: latitude, lng: longitude }); // 위치 상태 업데이트
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: 0.0722,
+          longitudeDelta: 0.0221
+        },
+        0.1,
+      );
+    }
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
         <View style={styles.imagebanner}>
           <MapView
+            ref={mapRef}
             provider={PROVIDER_GOOGLE}
             style={StyleSheet.absoluteFill}
             initialRegion={{
-              latitude: islocation.lat,
-              longitude: islocation.lng,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421
-            }} />
+              latitude: 37.541,
+              longitude: 126.986,
+              latitudeDelta: 0.0722,
+              longitudeDelta: 0.0221
+            }}>
+
+            {ismark.lat.map((coord, index) => (
+              <Marker
+                key={index}
+                coordinate={{
+                  latitude: coord,
+                  longitude: ismark.lng[index],
+                }}
+                pinColor={fcolor.blue}
+              />
+            ))}
+          </MapView>
         </View>
 
         <Animated.View style={[styles.white, { height: heightAnim }]}{...panResponder.panHandlers}>

@@ -20,10 +20,11 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { createplan } from '../src/lib/plans';
 import { useUser } from '../src/components/common/UserContext';
+import { usePlan } from '../src/components/common/PlanContext';
 
 
 
-export function AddPlan({ navigation: { navigate }}) {
+export function AddPlan({ navigation: { navigate } }) {
   //유저코드 가져오기
   const { usercode } = useUser();
 
@@ -144,30 +145,36 @@ export function AddPlan({ navigation: { navigate }}) {
   //페이지
   const [form, setForm] = useState({
     title: "",
-    memo:''
+    memo: ''
   });
 
-  const onSubmit = (title: string, date1: string,date2: string,memo: string,userid: undefined) => {
+  //메인계획 코드
+  const { plancode, setPlancode } = usePlan();
+
+  const onSubmit = (title: string, date1: string, date2: string, memo: string, userid: undefined) => {
     console.log('파이어베이스 데이터 입력 성공!');
-    const plancode= createplan({ // 회원 프로필 생성
-      title:title,
-      date1:date1,
-      date2:date2,
-      memo:memo,
-      userid:userid
+    const plancode = createplan({ // 회원 프로필 생성
+      title: title,
+      date1: date1,
+      date2: date2,
+      memo: memo,
+      userid: userid
     })
+
+    setPlancode(plancode)
+
     return plancode
-}
+  }
 
 
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, marginTop: 10, alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, marginTop: 10, alignItems: 'center' }}>
           <TouchableOpacity onPress={() => navigate('main')}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
           <BText fontSize={18}>여행 떠나기</BText>
-          <TouchableOpacity onPress={() => [navigate('addplan1'),onSubmit(form.title,selected.start,selected.end,form.memo,usercode)]}>
+          <TouchableOpacity onPress={() => [navigate('addplan1'), onSubmit(form.title, selected.start, selected.end, form.memo, usercode)]}>
             <Icon name='arrow-forward' size={24} color={fcolor.blue} />
           </TouchableOpacity>
         </View>
@@ -176,7 +183,7 @@ export function AddPlan({ navigation: { navigate }}) {
             <View style={styles.boxset}>
               <BText fontSize={15} color={fcolor.gray4}>여행 제목</BText>
               <TextInput style={styles.box}
-                onChangeText={(text)=>setForm({...form,title:text})}
+                onChangeText={(text) => setForm({ ...form, title: text })}
                 placeholder={"띄어쓰기 포함 12글자 이내로 작성해주세요"}
                 placeholderTextColor={fcolor.gray3}
               />
@@ -215,14 +222,14 @@ export function AddPlan({ navigation: { navigate }}) {
               />
 
             </View>
-            
+
             <View style={styles.boxset}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <BText fontSize={15} color={fcolor.gray4}>여행 메모</BText>
                 <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 10 }}>선택</RText>
               </View>
               <TextInput style={styles.box}
-                onChangeText={(text)=>setForm({...form,memo:text})}
+                onChangeText={(text) => setForm({ ...form, memo: text })}
                 placeholder={"여행 메모를 추가해주세요 (선택)"}
                 placeholderTextColor={fcolor.gray3}
               />
@@ -235,6 +242,7 @@ export function AddPlan({ navigation: { navigate }}) {
               </View>
               <View style={styles.box}>
                 <TextInput placeholder={"함께 여행을 떠날 친구를 추가해주세요 (선택)"}
+                  onChangeText={}
                   placeholderTextColor={fcolor.gray3}
                   style={{ fontSize: 11 }}
                 />
