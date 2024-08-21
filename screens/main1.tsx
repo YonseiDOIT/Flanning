@@ -18,6 +18,7 @@ import { usePlan } from '../src/components/common/PlanContext';
 
 import firestore from '@react-native-firebase/firestore';
 import BoxGr from '../src/components/common/BoxGr';
+import { date } from '../src/lib/date';
 
 
 
@@ -44,7 +45,7 @@ export function Main1({ navigation: { navigate } }) {
   };
 
   const [planTitle, setPlanTitle] = useState({ title: '', memo: '' });
-  const [plan, setPlan] = useState({ title: '', id: '' }); // 큰 계획
+  const [plan, setPlan] = useState({ title: '', id: '' ,mon:'',day:''}); // 큰 계획
   const [planList, setPlanList] = useState([]); // 작은 계획
   const [isOpend, setOpend] = useState(false);
 
@@ -58,8 +59,6 @@ export function Main1({ navigation: { navigate } }) {
 
         const planList = await get_plan_list();
         console.log(planList[0].title)
-        // setPlan을 호출할 때 planList[0]의 각 item을 변환하여 설정
-        setPlan({ title: planList[0].title, id: planList[0].id });
 
 
         // planList[0]만을 사용하여 fullPlanList를 구성
@@ -69,6 +68,9 @@ export function Main1({ navigation: { navigate } }) {
           fullPlanList.push({ ...planItem, id: id1 += 1, date: planList[0].id });
         });
 
+        let date_word= date(planList[0].id)
+        // setPlan을 호출할 때 planList[0]의 각 item을 변환하여 설정
+        setPlan({ title: planList[0].title, id: planList[0].id ,mon:date_word[0],day:date_word[1]});
         setPlanList(fullPlanList);
       } catch (error) {
         console.error(error);
@@ -81,16 +83,17 @@ export function Main1({ navigation: { navigate } }) {
   const renderItem = ({ item }) => (
     <View style={styles.planebox}>
       <View style={{ width: '30%' }}>
-        {item.state.map((ele, index) => (
+        <BoxGr name={item.state[0]} />
+        {/* {item.state.map((ele, index) => (
           <BoxGr key={index} name={ele} />
-        ))}
+        ))} */}
       </View>
       <View style={{ width: '60%' }}>
         <View style={{ flexDirection: 'row'}}>
           <BText fontSize={13}>{item.location}</BText>
           <RText fontSize={10} color={fcolor.gray4} style={{marginTop:3,marginLeft:5}}>{item.locationtyp}</RText>
         </View>
-        <View style={{ flexDirection: 'row',marginTop:3}}>
+        <View style={{ flexDirection: 'row',marginTop:4}}>
         {item.content[0] !== '' && <Icons name={item.content[0]} size={16} color="#717171" />}
           <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
         </View>
@@ -126,7 +129,7 @@ export function Main1({ navigation: { navigate } }) {
             {/* 여행 중요 메모 */}
             <View style={styles.trvmemo}>
               <BText fontSize={14} color={fcolor.blue} style={{ marginBottom: 5 }}>여행 중요 메모</BText>
-              <RText>{planTitle.memo}</RText>
+              <RText fontSize={13} color={fcolor.gray4}>{planTitle.memo}</RText>
 
             </View>
           </View>
@@ -140,8 +143,8 @@ export function Main1({ navigation: { navigate } }) {
             <View style={styles.travelplane}>
               <View style={styles.trv_calendar}>
                 <View style={{ width: '30%', alignItems: 'center', justifyContent: 'center' }}>
-                  <RText fontSize={10} color={fcolor.gray4}>JULY</RText>
-                  <BText fontSize={16} color={fcolor.gray4}>25</BText>
+                  <RText fontSize={10} color={fcolor.gray4}>{plan.mon}</RText>
+                  <BText fontSize={16} color={fcolor.gray4}>{plan.day}</BText>
                 </View>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                   <MText color={fcolor.gray4}>{plan.title}</MText>
@@ -202,7 +205,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 544,
     padding: 25,
-    paddingHorizontal: 28,
+    paddingHorizontal: 16,
     backgroundColor: fcolor.white,
     elevation: 30,
     marginBottom:60

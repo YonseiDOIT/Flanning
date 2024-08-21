@@ -34,7 +34,7 @@ export type RootStackParam = {
 // Item.memo(메모)
 
 
-export function Trvplanlist({ navigation: { navigate } }) {
+export function Reviewlist({ navigation: { navigate } }) {
 
   //유저코드 가져오기
   const { usercode } = useUser();
@@ -58,72 +58,36 @@ export function Trvplanlist({ navigation: { navigate } }) {
     return db.title;
   };
 
-  // 여행 목록 불러오기
-  useEffect(() => {
-    const plan_info = async () => {
-      try {
-        const usersCollection = firestore().collection('users').doc(usercode).get();
-        let db = (await usersCollection).data();
-
-        const list = db.plan
-        console.log('뭐임')
-        console.log(list)
-
-        let updateplan = [];
-        for (let id = 0; id < list.length; id++) {
-          console.log(list[id])
-          const usersCollection1 = firestore().collection('plan').doc(list[id]).get();
-          const db1 = (await usersCollection1).data();
-          console.log('돌아감1')
-          console.log(db1)
-          let title = db1.title
-          updateplan.push({ ...db1, title: title, id: id + 1 })
-          console.log('돌아감2')
-          console.log(db1.title)
-        }
-        setPlanTitle(updateplan)
-
-
-        // setplanlist(db)
-
-      } catch (error) {
-        console.log('안돌아감');
-      }
-    };
-    plan_info();
-  }, []);
 
 
   //여행 박스
   const renderItem = ({ item }) => {
 
     return (
-      <TouchableOpacity onPress={() => navigate('plande')}>
-        <LinearGradient style={styles.planebox} colors={['#EDF5FF', '#C5DCFF']} start={{ x: 0, y: 0 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 10 }}>
-            <Icon name='more-vert' size={24} color={fcolor.white} />
+      <LinearGradient style={styles.planebox} colors={['#EDF5FF', '#C5DCFF']} start={{ x: 0, y: 0 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 10 }}>
+          <Icon name='more-vert' size={24} color={fcolor.white} />
+        </View>
+        <View style={styles.planebox1}>
+          <View style={{ flexDirection: 'row', marginBottom: 7 }}>
+            <NeonGr><BText fontSize={16}>{item.title}</BText></NeonGr>
           </View>
-          <View style={styles.planebox1}>
-            <View style={{ flexDirection: 'row', marginBottom: 7 }}>
-              <NeonGr><BText fontSize={16}>{item.title}</BText></NeonGr>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', marginRight: 20, alignItems: 'center' }}>
+              <Icon name='location-on' size={24} style={{ marginRight: 5 }} />
+              <RText color={fcolor.gray4}>출발지 {'>'} 도착지</RText>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <View style={{ flexDirection: 'row', marginRight: 20, alignItems: 'center' }}>
-                <Icon name='location-on' size={24} style={{ marginRight: 5 }} />
-                <RText color={fcolor.gray4}>출발지 {'>'} 도착지</RText>
-              </View>
-              <View style={{ flexDirection: 'row', marginRight: 20, alignItems: 'center' }}>
-                <Icon name='calendar-today' size={24} style={{ marginRight: 5 }} />
-                <RText color={fcolor.gray4}>여행일자</RText>
-              </View>
-              <View style={{ flexDirection: 'row', marginRight: 20 }}>
-                <Icon name='share' size={24} />
-              </View>
+            <View style={{ flexDirection: 'row', marginRight: 20, alignItems: 'center' }}>
+              <Icon name='calendar-today' size={24} style={{ marginRight: 5 }} />
+              <RText color={fcolor.gray4}>여행일자</RText>
+            </View>
+            <View style={{ flexDirection: 'row', marginRight: 20 }}>
+              <Icon name='share' size={24} />
+            </View>
 
-            </View>
           </View>
-        </LinearGradient>
-      </TouchableOpacity>
+        </View>
+      </LinearGradient>
 
 
     )
@@ -135,17 +99,15 @@ export function Trvplanlist({ navigation: { navigate } }) {
       <View style={styles.container}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 40 }}>
           <View style={{ width: 66 }}></View>
-          <BText style={{ alignItems: 'center' }} fontSize={18}>여행 목록</BText>
+          <BText style={{ alignItems: 'center' }} fontSize={18}>여행 리뷰</BText>
           <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigate("addplan")}>
               <Icon style={{ marginRight: 18 }} name='search' size={24} color={fcolor.gray4} />
             </TouchableOpacity>
-
-            <Icons name='tune-vertical' size={24} color={fcolor.gray4} />
           </View>
 
         </View>
-        <View style={{ flexDirection: "row", marginTop: 20, marginBottom: 20 }}>
+        <View style={{ flexDirection: "row", marginTop: 20, marginBottom: 20,marginLeft: 12}}>
           {['최신 날짜 순', '최근 수정 순', '최근 조회 순'].map(id => (
             <TouchableOpacity key={id}
               style={[styles.clickbox1, isclick === id ? { backgroundColor: fcolor.blue, borderColor: fcolor.blue } : null]}
@@ -156,14 +118,22 @@ export function Trvplanlist({ navigation: { navigate } }) {
             </TouchableOpacity>
           ))}
         </View>
-        <FlatList
-          data={planTitle}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-        />
+        <View>
+          <View style={styles.planebox}>
+            <View style={styles.rv_photo}>
+            </View>
+          
+            <TouchableOpacity onPress={()=>navigate('reviewp')}>
+              <View style={{marginVertical:7,alignItems:'flex-start'}}>
+                <NeonGr><BText fontSize={17}>제목제목</BText></NeonGr>
+              </View>
+            </TouchableOpacity>
+            <RText fontSize={10} color={fcolor.gray4}>24.08.05 ~ 24.08.01</RText>
+          </View>
+
+        </View>
         <Pressable
-          style={({ pressed }) => pressed ? [styles.fab, { transform: [{ scale: 0.9 }] }] : [styles.fab]}
-          onPress={() => navigate("addplan")}>
+          style={({ pressed }) => pressed ? [styles.fab, { transform: [{ scale: 0.9 }] }] : [styles.fab]}>
           <Icon name='edit' size={24} color={fcolor.white} />
         </Pressable>
 
@@ -181,7 +151,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: fcolor.white,
-    paddingHorizontal:16
+    paddingHorizontal: 16,
 
   },
   header: {
@@ -207,14 +177,14 @@ const styles = StyleSheet.create({
 
   },
   clickbox1: {
+    width:80,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 30,
+    height: 32,
     borderWidth: 1,
     borderRadius: 16,
-    marginRight: 14,
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingHorizontal: 7,
+    marginRight:9,
     borderColor: fcolor.gray2
   },
   //일정내용
@@ -232,19 +202,18 @@ const styles = StyleSheet.create({
   },
   planebox: {
     width: '100%',
-    height: 158,
-    backgroundColor: fcolor.skyblue,
-    borderRadius: 10,
-    justifyContent: 'space-between',
-    marginVertical: 10
+    height: 242,
+    borderColor: fcolor.skyblue,
+    borderWidth:1,
+    borderRadius: 6,
+    paddingTop:20,
+    paddingHorizontal:16,
   },
-  planebox1: {
-    height: 74,
-    backgroundColor: fcolor.gray1,
-    paddingTop: 9,
-    paddingLeft: 20,
-    borderBottomRightRadius: 10,
-    borderBottomLeftRadius: 10,
+  rv_photo:{
+    width:'100%',
+    height:160,
+    backgroundColor:fcolor.gray3,
+    borderRadius:4,
   },
   //플로팅 버튼
   fab: {
@@ -255,10 +224,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    right: 15,
-    bottom: 90,
+    right:15,
+    bottom:90,
     elevation: 2
   }
 })
 
-export default Trvplanlist;
+export default Reviewlist;

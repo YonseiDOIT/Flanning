@@ -23,6 +23,8 @@ import AddPlan from './screens/addplan';
 import AddPlan1 from './screens/addplan1';
 import { UserProvider } from './src/components/common/UserContext';
 import { PlanProvider } from './src/components/common/PlanContext';
+import{ Reviewlist } from './screens/reviewlist';
+import Reviewpage from './screens/reviewpage';
 
 
 
@@ -59,6 +61,11 @@ const App = () => {
 
             {/* 여행목록리스트 */}
             <Stack.Screen name='planlist' component={Trvplanlist} />
+
+            {/* 여행리뷰 */}
+            <Stack.Screen name='reviewlist' component={Reviewlist} />
+            <Stack.Screen name='reviewp' component={Reviewpage} />
+
 
           </Stack.Navigator>
         </NavigationContainer>

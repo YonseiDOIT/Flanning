@@ -3,6 +3,7 @@ import { Animated, Button, FlatList, Pressable, StyleSheet, Text, View } from 'r
 import database from '@react-native-firebase/database';
 import { GestureHandlerRootView, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
+import Alarm from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import AppText from '../src/components/common/RText';
@@ -12,7 +13,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import fcolor from '../src/assets/colors/fcolors';
 import RText from '../src/components/common/RText';
 import BText from '../src/components/common/BText';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Circle, Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import NeonGr from '../src/components/neongr';
 import MText from '../src/components/common/MText';
 import BottomBar from '../src/components/common/BottomBar';
@@ -26,7 +27,7 @@ export type RootStackParam = {
 };
 
 
-export function PlanDetail1({navigation:{navigate}}) {
+export function PlanDetail1({ navigation: { navigate } }) {
   //메인 계획 코드 가져오기
   const { plancode } = usePlan();
 
@@ -89,18 +90,22 @@ export function PlanDetail1({navigation:{navigate}}) {
 
   const renderItem = ({ item }) => (
     <View style={styles.planebox}>
-      <View style={{ width: '23%',marginLeft:40 }}>
+      <View style={{flexDirection:'row',marginTop:3}}>
+        <RText fontSize={11} color={fcolor.gray3} style={{marginRight:10}}>18:00</RText>
+        <Alarm name='alarm-sharp' size={16} color={fcolor.gray3}/>
+      </View>
+      <View style={{ width: '23%', marginLeft: 15 }}>
         {item.state.map((ele, index) => (
           <BoxGr key={index} name={ele} />
         ))}
       </View>
       <View style={{ width: '60%' }}>
-        <View style={{ flexDirection: 'row'}}>
+        <View style={{ flexDirection: 'row' }}>
           <BText fontSize={13}>{item.location}</BText>
-          <RText fontSize={10} color={fcolor.gray4} style={{marginTop:3,marginLeft:5}}>{item.locationtyp}</RText>
+          <RText fontSize={10} color={fcolor.gray4} style={{ marginTop: 3, marginLeft: 5 }}>{item.locationtyp}</RText>
         </View>
-        <View style={{ flexDirection: 'row'}}>
-        {item.content[0] && <Icon name={item.content[0]} size={18} color="#717171" />}
+        <View style={{ flexDirection: 'row',marginTop:5  }}>
+          {item.content[0] && <Icon name={item.content[0]} size={18} color="#717171" />}
           <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
         </View>
       </View>
@@ -146,7 +151,7 @@ export function PlanDetail1({navigation:{navigate}}) {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <View style={{ paddingHorizontal: 30, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, marginTop: 10, alignItems: 'center' }}>
+        <View style={{ paddingHorizontal: 30, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20, marginTop: 10, alignItems: 'center' }}>
           <TouchableOpacity onPress={() => navigate('plande')}><Icons name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
           <BText fontSize={18}>여행 제목</BText>
           <Icons name='more-vert' size={24} color="#717171" />
@@ -156,7 +161,7 @@ export function PlanDetail1({navigation:{navigate}}) {
         </View>
 
         <View style={styles.imagebanner}>
-        <MapView
+          <MapView
             ref={mapRef}
             provider={PROVIDER_GOOGLE}
             style={StyleSheet.absoluteFill}
@@ -167,14 +172,29 @@ export function PlanDetail1({navigation:{navigate}}) {
               longitudeDelta: 0.0221
             }}>
 
+            <Polyline
+              coordinates={[
+                { latitude: 33.5070772, longitude: 126.4934311 },
+                { latitude: 33.51274309999999, longitude: 126.5283168 },
+                { latitude: 33.4934657, longitude: 126.5343138 },
+              ]}
+              strokeWidth={2}
+              strokeColor={fcolor.blue}
+            />
+
             {ismark.lat.map((coord, index) => (
-              <Marker
+              <Circle
                 key={index}
-                coordinate={{
+                center={{
                   latitude: coord,
                   longitude: ismark.lng[index],
                 }}
-                pinColor={fcolor.blue}
+                radius={400}
+                strokeColor={fcolor.blue}
+                strokeWidth={5}
+                fillColor={"#fff"}
+                zIndex={1}
+
               />
             ))}
           </MapView>
@@ -182,7 +202,7 @@ export function PlanDetail1({navigation:{navigate}}) {
 
 
 
-        <View style={{ marginVertical: 15, paddingHorizontal: 30, height: 330 }}>
+        <View style={{ marginVertical: 15, paddingHorizontal: 26, height: 330 }}>
           {/* 여행 일정 */}
           <FlatList
             data={planList.filter(dplan => dplan.date === plan.id)}

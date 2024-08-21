@@ -26,6 +26,7 @@
     "react-native": "0.73.6",
     "react-native-calendars": "^1.1305.0",
     "react-native-collapsible": "^1.6.1",
+    "react-native-date-picker": "^5.0.4",
     "react-native-dialog-input": "^1.0.8",
     "react-native-flexi-radio-button": "^0.2.2",
     "react-native-gesture-handler": "^2.16.0",

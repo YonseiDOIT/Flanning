@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     width:'100%',
     height:544,
     padding:25,
-    paddingHorizontal:28,
+    paddingHorizontal:16,
     backgroundColor:fcolor.white,
     elevation:30,
     marginBottom:60

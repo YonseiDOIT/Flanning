@@ -5,19 +5,19 @@ import MText from './MText';
 
 const BoxGr = ({name= '진행 완료'}) => {
   //상태에 따라 변환
-  if (name === '진행 완료') {
+  if (name === '공항') {
     sty= styles.statebox_g
     font_color=fcolors.gray4
-  }else if (name === "진행 예정"){
+  }else if (name === "예약 전"){
     sty= styles.statebox_bl
     font_color=fcolors.blue
-  }else if (name === "진행 중"){
+  }else if (name === "예약 확정"){
     sty= styles.statebox_skyb
     font_color='#A6C8FF'
-  }else if (name === "예약 전"){
+  }else if (name === "음식점"){
     sty= styles.statebox_Or
     font_color=fcolors.orange
-  }else if (name === "예약 확정"){
+  }else if (name === "숙소"){
     sty= styles.statebox_ng
     font_color='#A2D900'
   }
@@ -28,11 +28,11 @@ const BoxGr = ({name= '진행 완료'}) => {
       
         <MText fontSize={12} color={font_color}>
           {(() => {
-                    if (name === "진행 완료") return "진행 완료";
-                    else if (name === "진행 중") return "진행 중";
-                    else if (name === "진행 예정") return "진행 예정";
+                    if (name === "공항") return "공항";
                     else if (name === "예약 전") return "예약 전";
-                    else return "예약 확정";
+                    else if (name === "예약 확정") return "예약 확정";
+                    else if (name === "음식점") return "음식점";
+                    else return "숙소";
                 })()}
         </MText>
     </View>

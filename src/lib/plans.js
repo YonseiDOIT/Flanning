@@ -51,7 +51,7 @@ export function addplan({ codename, title, location, locationtyp, icon, content,
         location: location,
         locationtyp: locationtyp,
         content: [icon, content],
-        state: ['진행 예정'],
+        state: [locationtyp],
         latlng:[lat,lng]
       }]
     }).then(() => {
@@ -66,7 +66,7 @@ export function addplan({ codename, title, location, locationtyp, icon, content,
         location: location,
         locationtyp: locationtyp,
         content: [icon, content],
-        state: ['진행 예정'],
+        state: [locationtyp],
         latlng:[lat,lng]
       })
     }).then(() => {

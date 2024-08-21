@@ -14,6 +14,7 @@ import BoxGr from '../src/components/common/BoxGr';
 import BottomBar from '../src/components/common/BottomBar';
 import MText from '../src/components/common/MText';
 import { usePlan } from '../src/components/common/PlanContext';
+import { date } from '../src/lib/date';
 
 export type RootStackParam = {
   Home: undefined;
@@ -58,7 +59,11 @@ const PlanDetail = () => {
         setPlanTitle(plan);
 
         const planList = await get_plan_list();
-        setPlan(planList.map(item => ({ title: item.title, id: item.id })));
+        
+        setPlan(planList.map(item => {
+          let date_word = date(item.id);
+          return { title: item.title, id: item.id ,mon: date_word[0],day: date_word[1] };
+      }));
 
         let id1 = 0;
         let fullPlanList = [];
@@ -79,8 +84,8 @@ const PlanDetail = () => {
     <View style={styles.travelplane}>
       <View style={styles.trv_calendar}>
         <View style={{ width: '30%', alignItems: 'center', justifyContent: 'center' }}>
-          <RText fontSize={10} color={fcolor.gray4}>JULY</RText>
-          <BText fontSize={16} color={fcolor.gray4}>25</BText>
+          <RText fontSize={10} color={fcolor.gray4}>{item.mon}</RText>
+          <BText fontSize={16} color={fcolor.gray4}>{item.day}</BText>
         </View>
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginRight: 10 }}>
           <View>
@@ -103,7 +108,7 @@ const PlanDetail = () => {
 
   const renderItem1 = ({ item }) => (
     <View style={styles.planebox}>
-      <View style={{ width: '30%', marginRight: 10 }}>
+      <View style={{ width: '30%' }}>
         {item.state.map((ele, index) => (
           <BoxGr key={index} name={ele} />
         ))}
@@ -113,7 +118,7 @@ const PlanDetail = () => {
           <BText fontSize={13}>{item.location}</BText>
           <RText fontSize={10} color={fcolor.gray4} style={{ marginTop: 3, marginLeft: 5 }}>{item.locationtyp}</RText>
         </View>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row',marginTop:5 }}>
           {item.content[0] && <Icons name={item.content[0]} size={18} color="#717171" />}
           <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
         </View>
@@ -174,7 +179,7 @@ const PlanDetail = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 30,
+    padding: 16,
     paddingTop: 20,
     backgroundColor: fcolor.white,
   },

@@ -45,7 +45,7 @@ const BottomBar = ({ homecolor = fcolors.blue, checkcolor = fcolors.gray3, revie
         <Icon name='checklist' size={25} color={checkcolor} />
         <RText style={{ marginTop: 5 }} color={checkcolor} fontSize={10}>여행 목록</RText>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.icon}>
+      <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('reviewlist')}>
         <Icon name='edit' size={25} color={reviewcolor} />
         <RText style={{ marginTop: 5 }} color={reviewcolor} fontSize={10}>리뷰</RText>
       </TouchableOpacity>

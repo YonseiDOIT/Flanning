@@ -11,7 +11,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import fcolor from '../src/assets/colors/fcolors';
 import RText from '../src/components/common/RText';
 import BText from '../src/components/common/BText';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Circle, Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import NeonGr from '../src/components/neongr';
 import MText from '../src/components/common/MText';
 import BottomBar from '../src/components/common/BottomBar';
@@ -19,6 +19,7 @@ import BoxGr from '../src/components/common/BoxGr';
 import { usePlan } from '../src/components/common/PlanContext';
 
 import firestore from '@react-native-firebase/firestore';
+import { date } from '../src/lib/date';
 
 const { height: screenHeight } = Dimensions.get('window');  // 디바이스의 화면 높이
 
@@ -99,7 +100,7 @@ export function Plan() {
   };
 
   const [planTitle, setPlanTitle] = useState({ title: '', memo: '' });
-  const [plan, setPlan] = useState({ title: '', id: '' }); // 큰 계획
+  const [plan, setPlan] = useState({ title: '', id: '',mon:'',day:'' }); // 큰 계획
   const [planList, setPlanList] = useState([]); // 작은 계획
   const [isOpend, setOpend] = useState(false);
   const setlat = useRef(0);
@@ -117,7 +118,9 @@ export function Plan() {
         const planList = await get_plan_list();
         console.log(planList[0].title)
         // setPlan을 호출할 때 planList[0]의 각 item을 변환하여 설정
-        setPlan({ title: planList[0].title, id: planList[0].id });
+        let date_word= date(planList[0].id)
+        // setPlan을 호출할 때 planList[0]의 각 item을 변환하여 설정
+        setPlan({ title: planList[0].title, id: planList[0].id ,mon:date_word[0],day:date_word[1]});
 
 
         // planList[0]만을 사용하여 fullPlanList를 구성
@@ -154,7 +157,7 @@ export function Plan() {
           <BText fontSize={13}>{item.location}</BText>
           <RText fontSize={10} color={fcolor.gray4} style={{ marginTop: 3, marginLeft: 5 }}>{item.locationtyp}</RText>
         </View>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row' ,marginTop:5}}>
           {item.content[0] !== '' && <Icons name={item.content[0]} size={16} color="#717171" />}
           <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
         </View>
@@ -196,15 +199,30 @@ export function Plan() {
               latitudeDelta: 0.0722,
               longitudeDelta: 0.0221
             }}>
+            
+            <Polyline
+              coordinates={[
+                { latitude: 33.5070772, longitude: 126.4934311 },
+                { latitude: 33.51274309999999, longitude: 126.5283168 },
+                { latitude: 33.4934657, longitude: 126.5343138 },
+              ]}
+              strokeWidth={2}
+              strokeColor={fcolor.blue}
+            />
 
             {ismark.lat.map((coord, index) => (
-              <Marker
+              <Circle
                 key={index}
-                coordinate={{
+                center={{
                   latitude: coord,
                   longitude: ismark.lng[index],
                 }}
-                pinColor={fcolor.blue}
+                radius={400}
+                strokeColor={fcolor.blue}
+                strokeWidth={5}
+                fillColor={"#fff"}
+                zIndex={1}
+
               />
             ))}
           </MapView>
@@ -223,7 +241,7 @@ export function Plan() {
             {/* 여행 중요 메모 */}
             <View style={styles.trvmemo}>
               <BText fontSize={14} color={fcolor.blue} style={{ marginBottom: 5 }}>여행 중요 메모</BText>
-              <RText>{planTitle.memo}</RText>
+              <RText fontSize={13} color={fcolor.gray4}>{planTitle.memo}</RText>
             </View>
           </View>
 
@@ -233,8 +251,8 @@ export function Plan() {
             <View style={styles.travelplane}>
               <View style={styles.trv_calendar}>
                 <View style={{ width: '30%', alignItems: 'center', justifyContent: 'center' }}>
-                  <RText fontSize={10} color={fcolor.gray4}>JULY</RText>
-                  <BText fontSize={16} color={fcolor.gray4}>25</BText>
+                  <RText fontSize={10} color={fcolor.gray4}>{plan.mon}</RText>
+                  <BText fontSize={16} color={fcolor.gray4}>{plan.day}</BText>
                 </View>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                   <MText color={fcolor.gray4}>{plan.title}</MText>
@@ -280,7 +298,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 544,
     padding: 15,
-    paddingHorizontal: 28,
+    paddingHorizontal: 16,
     backgroundColor: fcolor.white,
     elevation: 30,
     marginBottom:40
@@ -299,7 +317,7 @@ const styles = StyleSheet.create({
     height: 314,
     backgroundColor: fcolor.white,
     borderColor: fcolor.skyblue,
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 10,
     padding: 14
   },
