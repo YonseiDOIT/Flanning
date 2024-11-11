@@ -25,6 +25,9 @@ import { UserProvider } from './src/components/common/UserContext';
 import { PlanProvider } from './src/components/common/PlanContext';
 import{ Reviewlist } from './screens/reviewlist';
 import Reviewpage from './screens/reviewpage';
+import AddReview from './screens/addreview';
+import Alarmlist from './screens/alarmlist';
+import Addfriend from './screens/addfriend';
 
 
 
@@ -51,10 +54,12 @@ const App = () => {
             <Stack.Screen name="main" component={Main} />
             <Stack.Screen name="main1" component={Main1} />
             <Stack.Screen name="friend" component={FriendList} />
+            <Stack.Screen name="addfriend" component={Addfriend} />
             <Stack.Screen name="plan" component={Plan} />
             <Stack.Screen name="map" component={MMap} />
             <Stack.Screen name="plande" component={PlanDetail} />
             <Stack.Screen name="plande1" component={PlanDetail1} />
+            <Stack.Screen name="alarmlist" component={Alarmlist} />
             {/* 여행 추가 */}
             <Stack.Screen name="addplan" component={AddPlan} />
             <Stack.Screen name="addplan1" component={AddPlan1} />
@@ -65,6 +70,7 @@ const App = () => {
             {/* 여행리뷰 */}
             <Stack.Screen name='reviewlist' component={Reviewlist} />
             <Stack.Screen name='reviewp' component={Reviewpage} />
+            <Stack.Screen name='addreview' component={AddReview} />
 
 
           </Stack.Navigator>

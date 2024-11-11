@@ -4,7 +4,7 @@ import BText from "../src/components/common/BText";
 import AppText from "../src/components/common/RText";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import fcolors from "../src/assets/colors/fcolors";
+import fcolor from "../src/assets/colors/fcolors";
 import NeonGr from "../src/components/neongr";
 import LinearGradient from "react-native-linear-gradient";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
@@ -25,29 +25,29 @@ const slides=[
         id:1,
         style:{padding:60,alignItems:'center',justifyContent:'center'},
         infoimg: require('../src/assets/images/CALENDAR.png'),
-        text:<BText fontSize={18}><BText color={fcolors.orange} fontSize={18}>일정</BText>을 <BText 
-        color={fcolors.orange} fontSize={18}>함께</BText> 세우고</BText>
+        text:<BText fontSize={18}><BText color={fcolor.orange} fontSize={18}>일정</BText>을 <BText 
+        color={fcolor.orange} fontSize={18}>함께</BText> 세우고</BText>
 
     },
     {
         id:2,
         style:{padding:50,alignItems:'center',justifyContent:'center'},
         infoimg: require('../src/assets/images/MAP.png'),
-        text: <BText fontSize={18}><BText color={fcolors.orange} fontSize={18}>동선</BText>을 <BText 
-        color={fcolors.orange} fontSize={18}>같이</BText> 확인하고</BText>
+        text: <BText fontSize={18}><BText color={fcolor.orange} fontSize={18}>동선</BText>을 <BText 
+        color={fcolor.orange} fontSize={18}>같이</BText> 확인하고</BText>
     },
     {
         id:3,
         style:{padding:50,alignItems:'center',justifyContent:'center'},
         infoimg: require('../src/assets/images/AIRPLANE.png'),
-        text:<BText color={fcolors.orange} fontSize={18}>떠나고</BText>
+        text:<BText color={fcolor.orange} fontSize={18}>떠나고</BText>
 
     },
     {
         id:4,
         style:{padding:60,alignItems:'center',justifyContent:'center'},
         infoimg: require('../src/assets/images/SHOOTING.png'),
-        text: <BText fontSize={18}>여행을 <BText color={fcolors.orange} fontSize={18}>기록해요</BText></BText>
+        text: <BText fontSize={18}>여행을 <BText color={fcolor.orange} fontSize={18}>기록해요</BText></BText>
 
     },
 ]
@@ -71,7 +71,7 @@ function Appinfo({navigation:{navigate}}) {
         <GestureHandlerRootView style={{ flex: 1}}>
             <View style={styles.container}>
                 <View style={{marginTop:60, marginBottom:30}}>
-                    <BText>이제 <BText color={fcolors.blue}>플래닝</BText>과 계획을 세우고</BText>
+                    <BText>이제 <BText color={fcolor.blue}>플래닝</BText>과 계획을 세우고</BText>
                     <View style={{flexWrap:'wrap'}}>
                         <NeonGr><BText>여행을 떠나볼까요?</BText></NeonGr>
                     </View>
@@ -104,7 +104,7 @@ function Appinfo({navigation:{navigate}}) {
                     <View style={{flex:1,justifyContent: 'flex-end',marginBottom:65}}>
                         <TouchableOpacity style={styles.nextbutton}
                         onPress={() => navigate('main')}>
-                                <MText fontSize={14} color={fcolors.white}>시작하기</MText>
+                                <MText fontSize={14} color={fcolor.white}>시작하기</MText>
                         </TouchableOpacity>
 
                     </View>
@@ -122,13 +122,13 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         padding:30,
-        backgroundColor: fcolors.white,
+        backgroundColor: fcolor.white,
     },
     infobox:{
         marginTop:30,
         width:'100%',
         height:320,
-        backgroundColor:fcolors.gray1,
+        backgroundColor:fcolor.gray1,
         borderRadius:5,
         alignItems:'center',
         justifyContent:'center'
@@ -141,11 +141,11 @@ const styles = StyleSheet.create({
         width:8,
         height:8,
         borderRadius:50,
-        backgroundColor:fcolors.gray2,
+        backgroundColor:fcolor.gray2,
         margin:5
     },
     dotfill:{
-        backgroundColor:fcolors.gray4
+        backgroundColor:fcolor.gray4
     }
     ,
     nextbutton:{

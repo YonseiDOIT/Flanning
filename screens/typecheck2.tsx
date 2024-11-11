@@ -5,7 +5,7 @@ import BText from "../src/components/common/BText";
 import RText from "../src/components/common/RText";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import fcolors from "../src/assets/colors/fcolors";
+import fcolor from "../src/assets/colors/fcolors";
 import MText from "../src/components/common/MText";
 import NeonGr from "../src/components/neongr";
 import database from '@react-native-firebase/database';
@@ -53,8 +53,8 @@ function Typecheck2({navigation: {navigate}}) {
                 <View style={{backgroundColor:maincol,width:"100%",height:4,borderRadius:40}}/>
             </View>
             <View style={{paddingTop:30}}>
-                <BText><BText color={fcolors.blue}>여행 성향</BText>을 알려주세요</BText>
-                <MText color={fcolors.gray3} fontSize={13} style={{marginTop:7}}>동행인이 여러분의 여행 성향에 대해 알 수 있도록 해주세요</MText>
+                <BText><BText color={fcolor.blue}>여행 성향</BText>을 알려주세요</BText>
+                <MText color={fcolor.gray3} fontSize={13} style={{marginTop:7}}>동행인이 여러분의 여행 성향에 대해 알 수 있도록 해주세요</MText>
             </View>
 
             <View style={styles.layout}>
@@ -67,12 +67,12 @@ function Typecheck2({navigation: {navigate}}) {
                                 key={id}
                                 style={[styles.clickbox, selectedCheckbox.prefertravel==id ? styles.click : null]} 
                                 onPress={() => [handlePress('prefertravel',id)]}
-                            ><Icon name="check" size={17} color={fcolors.white}/></TouchableOpacity>
+                            ><Icon name="check" size={17} color={fcolor.white}/></TouchableOpacity>
                         ))}
                 </View>
                 <View style={styles.smallinfo}>
-                        <RText color={fcolors.gray4}>활동적인 여행</RText>
-                        <RText color={fcolors.gray4}>정적인 여행</RText>
+                        <RText color={fcolor.gray4}>활동적인 여행</RText>
+                        <RText color={fcolor.gray4}>정적인 여행</RText>
                 </View>
             </View>
             <View style={styles.layout}>
@@ -85,12 +85,12 @@ function Typecheck2({navigation: {navigate}}) {
                                 key={id}
                                 style={[styles.clickbox, selectedCheckbox.travelpurpose === id ? styles.click : null]} 
                                 onPress={() => [handlePress('travelpurpose',id)]}
-                            ><Icon name="check" size={17} color={fcolors.white}/></TouchableOpacity>
+                            ><Icon name="check" size={17} color={fcolor.white}/></TouchableOpacity>
                         ))}
                 </View>
                 <View style={styles.smallinfo}>
-                        <RText color={fcolors.gray4}>동행자와 관계 형성</RText>
-                        <RText color={fcolors.gray4}>여행을 떠나는 것 자체</RText>
+                        <RText color={fcolor.gray4}>동행자와 관계 형성</RText>
+                        <RText color={fcolor.gray4}>여행을 떠나는 것 자체</RText>
                 </View>
                 
             </View>
@@ -104,12 +104,12 @@ function Typecheck2({navigation: {navigate}}) {
                                 key={id}
                                 style={[styles.clickbox, selectedCheckbox.howtrvplan === id ? styles.click : null]} 
                                 onPress={() => [handlePress('howtrvplan',id)]}
-                            ><Icon name="check" size={17} color={fcolors.white}/></TouchableOpacity>
+                            ><Icon name="check" size={17} color={fcolor.white}/></TouchableOpacity>
                         ))}
                 </View>
                 <View style={styles.smallinfo}>
-                        <RText color={fcolors.gray4}>철저하게</RText>
-                        <RText color={fcolors.gray4}>즉흥적으로</RText>
+                        <RText color={fcolor.gray4}>철저하게</RText>
+                        <RText color={fcolor.gray4}>즉흥적으로</RText>
                 </View>
                
             </View>
@@ -123,25 +123,25 @@ function Typecheck2({navigation: {navigate}}) {
                                 key={id}
                                 style={[styles.clickbox, selectedCheckbox.howtodayplan === id ? styles.click : null]} 
                                 onPress={() => [handlePress('howtodayplan',id)]}
-                            ><Icon name="check" size={17} color={fcolors.white}/></TouchableOpacity>
+                            ><Icon name="check" size={17} color={fcolor.white}/></TouchableOpacity>
                         ))}
                 </View>
                 <View style={styles.smallinfo}>
-                        <RText color={fcolors.gray4}>알차게</RText>
-                        <RText color={fcolors.gray4}>여유롭게</RText>
+                        <RText color={fcolor.gray4}>알차게</RText>
+                        <RText color={fcolor.gray4}>여유롭게</RText>
                 </View>
                 
             </View>
 
             {/* 다음 버튼 */}
             <View style={{flex:1,justifyContent: 'flex-end',marginBottom:20, alignItems:'center'}}>
-                <TouchableOpacity style={[styles.nextbutton,selectedCheckbox ? {backgroundColor:fcolors.blue}:null]}
+                <TouchableOpacity style={[styles.nextbutton,selectedCheckbox ? {backgroundColor:fcolor.blue}:null]}
                 onPress={selectedCheckbox ? ()=>[navigate('appinfo'),createtype(selectedCheckbox.prefertravel,selectedCheckbox.travelpurpose,selectedCheckbox.howtrvplan,selectedCheckbox.howtodayplan)]: null}>
                         <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>마지막이에요</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.laterbutton}
                 onPress={() => navigate('appinfo')}>
-                <MText color={fcolors.gray3} fontSize={14} style={{textDecorationLine:'underline'}}>다음에 할게요</MText>
+                <MText color={fcolor.gray3} fontSize={14} style={{textDecorationLine:'underline'}}>다음에 할게요</MText>
                 </TouchableOpacity>
             </View>
 
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         padding:25,
-        backgroundColor: fcolors.white,
+        backgroundColor: fcolor.white,
     },
     layout:{
         marginTop:20
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
         borderRadius:50,
         marginTop:10,
         marginRight:7,
-        borderColor: fcolors.gray3,
+        borderColor: fcolor.gray3,
        
     },
     clickbox1:{
@@ -195,12 +195,12 @@ const styles = StyleSheet.create({
         paddingRight:20,
         borderColor:"#C1C1C1",
     },click1:{
-        backgroundColor: fcolors.green,
-        borderColor:fcolors.blue
+        backgroundColor: fcolor.green,
+        borderColor:fcolor.blue
     },
     click:{
-        backgroundColor: fcolors.blue,
-        borderColor:fcolors.blue
+        backgroundColor: fcolor.blue,
+        borderColor:fcolor.blue
     },
     smallinfo:{
         flexDirection:'row',

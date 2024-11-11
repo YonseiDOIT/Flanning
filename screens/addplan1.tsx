@@ -21,20 +21,21 @@ import { addplan } from '../src/lib/plans';
 import { useUser } from '../src/components/common/UserContext';
 import { usePlan } from '../src/components/common/PlanContext';
 import { Marker } from 'react-native-maps';
+import DatePicker from 'react-native-date-picker';
 
 
-export function AddPlan1({ navigation: { navigate } }) {
+export function AddPlan1({ navigation,route }) {
 
+  //지도==========
+  const mapRef = useRef(null);
 
-  //지도
+  //지도 초기 위치
   const [islocation, setlocation] = useState({
     lat: 37.541,
     lng: 126.986
   })
 
-  //지도
-  const mapRef = useRef(null);
-
+  //지도 업데이트
   async function movelocation(latitude, longitude) {
     setlocation({ lat: latitude, lng: longitude }); // 위치 상태 업데이트
     if (mapRef.current) {
@@ -54,14 +55,59 @@ export function AddPlan1({ navigation: { navigate } }) {
   const [locationname, setlocationname] = useState('')
   const [isadd, setadd] = useState([])
 
+  //time picker=============
+  const [date, setDate] = useState(new Date())
+  const [open, setOpen] = useState(false)
+  const [istime, settime] = useState({})
+   
+   //timepicker 표시
+   const time_p = (index,time) => {
+    const time_f=time.toLocaleTimeString("ko-KR",{ hour: "numeric", minute: "numeric",hour12: false })
+    settime((prevState) => ({
+      ...prevState,
+      [index]: time_f, 
+    }));
+    const updatedtime = [...form.time]; 
+    updatedtime[index] = time_f; 
+    setForm({ ...form, time: updatedtime });
+  };
+
+  //timepicker
+  const handleOpenPicker = (index) => {
+    setSelectedIndex(index); // 현재 인덱스 설정
+    setOpen(true); // DatePicker 열기
+
+  };
+
+  //아이콘 선택==========
+  const [smallboxVisible, setSmallboxVisible] = useState({});
+  const [isicon, seticon] = useState({})
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  //아이콘 선택 함수
+  const toggleMenu = (index) => {
+    setSmallboxVisible((prevState) => ({
+      ...prevState,
+      [index]: !prevState[index], // 현재 아이템의 상태를 토글
+    }));
+  };
+  const select_icon = (index,item) => {
+    seticon((prevState) => ({
+      ...prevState,
+      [index]: item
+    }));
+  };
+
   //장소 추가
   const renderItem = (location, index) => {
 
     return (
-      <View style={{ backgroundColor: fcolor.lblue, marginVertical: 20}}>
+      <View style={{ backgroundColor: fcolor.lblue2, marginVertical: 10, paddingVertical:10,paddingHorizontal:20 }}>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
-            <RText fontSize={11} color={fcolor.gray3} style={{ textDecorationLine: 'underline' }}>시간 입력</RText>
+            <TouchableOpacity onPress={() => handleOpenPicker(index)}>
+              <RText fontSize={11} color={fcolor.gray3} style={{ textDecorationLine: 'underline' }}>{istime[index] || '시간 선택'}</RText>
+            </TouchableOpacity>
           </View>
           <View style={{ width: '80%' }}>
             <View style={styles.box}>
@@ -88,21 +134,13 @@ export function AddPlan1({ navigation: { navigate } }) {
             </View>
           </View>
         </View>
+
         <View style={{ flexDirection: 'row', marginVertical: 5 }}>
           <View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
-            <View style={styles.box}>
-              <TextInput
-                placeholder={"아이콘"}
-                onChangeText={(text) => {
-                  const updatedIcons = [...form.icons];
-                  updatedIcons[index] = text; // 해당 인덱스 업데이트
-                  setForm({ ...form, icons: updatedIcons });
-                }}
-                placeholderTextColor={fcolor.gray3}
-                style={{ fontSize: 11 }}
-                value={form.icons[index]} // 현재 인덱스 값 사용
-              />
-            </View>
+            <TouchableOpacity onPress={()=>{toggleMenu(index)}}>
+              <Icons name={isicon[index]||'plus-box'} size={24} color={isicon[index]? fcolor.blue:fcolor.gray3} />
+            </TouchableOpacity>
+            
           </View>
           <View style={{ width: '80%' }}>
             <View style={styles.box}>
@@ -121,31 +159,41 @@ export function AddPlan1({ navigation: { navigate } }) {
             </View>
           </View>
         </View>
-        <View style={{ flexDirection: 'row', marginVertical: 5 }}>
-          <View style={{ width: '20%', justifyContent: 'center', alignItems: 'center' }}>
-            <Icon name='add-box' size={24} color={fcolor.gray3} />
-          </View>
-          <View style={{ width: '80%' }}>
-            <View style={styles.box}>
-              <TextInput placeholder={"추가 내용을 작성해주세요 (예약, 교통 수단)"}
-                placeholderTextColor={fcolor.gray3}
-                style={{ fontSize: 11 }}
-              />
-              <Icon name='check' size={24} color={fcolor.blue} />
+        {smallboxVisible[index] && ( // 각 아이템에 대한 smallboxVisible 상태를 확인
+          <>
+            <View style={styles.iconbox}>
+            {['bus','subway','airplane','taxi','car','run','calendar','account'].map(id=>(
+                    <TouchableOpacity key={id} 
+                      onPress={()=>{
+                        toggleMenu(index); 
+                        select_icon(index,id);
+                        const updatedIcons = [...form.icons]; 
+                        updatedIcons[index] = id; 
+                        setForm({ ...form, icons: updatedIcons }); 
+                      }}>
+                      <Icons name={id} size={24} color={fcolor.gray3} style={{marginRight:5}}/>
+                    </TouchableOpacity>
+                ))}        
+              
+
             </View>
-          </View>
+          </>
+        )}
 
-        </View>
-
-        <View style={[styles.memobox, { marginBottom: 70 }]}>
-          <RText color={fcolor.gray3} fontSize={10}>추가 내용 메모를 작성해주세요(선택)</RText>
-        </View>
+        <TextInput placeholder={"추가 내용 메모를 작성해주세요(선택)"}
+                onChangeText={(text) => {
+                  const updatedContents = [...form.subcont];
+                  updatedContents[index] = text; // 해당 인덱스 업데이트
+                  setForm({ ...form, subcont: updatedContents });
+                }}
+                placeholderTextColor={fcolor.gray3}
+                style={[styles.memobox, {fontSize:10 }]}
+                multiline={true}
+              />
+  
       </View>
     );
   };
-
-
-
 
 
   //장소
@@ -158,7 +206,7 @@ export function AddPlan1({ navigation: { navigate } }) {
       lat: islocation.lat || '', // 위도
       lng: islocation.lng || '' // 경도
     };
-  
+
     setForm(prevForm => ({
       ...prevForm,
       id: prevForm.id + 1,
@@ -181,7 +229,9 @@ export function AddPlan1({ navigation: { navigate } }) {
     icons: [], // 아이콘 배열
     contents: [], // 내용 배열
     lat: [],
-    lng: []
+    lng: [],
+    subcont:[],
+    time:[]
   });
 
   //메인 계획 코드 가져오기
@@ -193,8 +243,13 @@ export function AddPlan1({ navigation: { navigate } }) {
 
     // 각 장소 정보를 반복하여 Firebase에 저장
     form.locations.forEach((location, index) => {
-      console.log('location : ', location)
+      console.log('title : ', form.title)
       console.log('index : ', form.contents[index])
+      console.log('icon : ', form.icons[index])
+      console.log('subcont : ', form.subcont[index])
+      console.log('time:',form.time[index])
+
+
       addplan({
         codename: plancode,
         title: form.title,
@@ -204,7 +259,9 @@ export function AddPlan1({ navigation: { navigate } }) {
         content: form.contents[index],
         date: form.date,
         lat: form.lat[index],
-        lng:form.lng[index]
+        lng: form.lng[index],
+        subcont:form.subcont[index],
+        time:form.time[index]
       }, index === 0)
     });
 
@@ -214,20 +271,26 @@ export function AddPlan1({ navigation: { navigate } }) {
 
 
   //날짜 가져오기
-  const get_date = async () => {
-    const planDoc = await firestore().collection('plan').doc(plancode).get();
-    const planData = planDoc.data();
-    console.log(planData)
+  // const get_date = async () => {
+  //   const planDoc = await firestore().collection('plan').doc(plancode).get();
+  //   const planData = planDoc.data();
+  //   console.log(planData)
 
-    return planData.startday;
-  };
+  //   return planData.startday;
+  // };
 
+  const [daysarrupdate,setdaysarrupdate]= useState()
+
+  //화면 넘어오면 바로 로딩되는 부분
   useEffect(() => {
     const plan_info = async () => {
       try {
-        const day = await get_date()
+        const day = route.params.days[route.params.day]
 
-        setForm({ ...form, date: day })
+        //가져온 날짜에서 지금 날짜만 삭제
+        setdaysarrupdate(route.params.days)
+        console.log("DAY"+ (route.params.day+1))
+        setForm({ ...form, title: "DAY"+ (route.params.day+1), date: day})
 
       } catch (error) {
         console.error(error);
@@ -237,32 +300,30 @@ export function AddPlan1({ navigation: { navigate } }) {
   }, []);
 
 
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <View style={{ paddingHorizontal: 25, paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, marginTop: 10, alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => navigate('addplan')}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
+        <View style={{ paddingHorizontal: 25, paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20, marginTop: 10, alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => {route.params.day-1<0? navigation.navigate('addplan'):navigation.push('addplan1',{days:route.params.days,day:route.params.day-1})}}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
           <BText fontSize={18}>여행 떠나기</BText>
           <TouchableOpacity
-            onPress={() => [navigate('main1'),onSubmit()]}>
-            <Icon name='check' size={24} color={fcolor.blue} />
+            onPress={() =>{route.params.day+1<route.params.days.length? [navigation.push('addplan1',{days:route.params.days,day:route.params.day+1}),onSubmit()]:[navigation.navigate('main1'),onSubmit()]}}>
+            {route.params.day+1 == route.params.days.length?
+              <Icon name='check' size={24} color={fcolor.blue} />
+              :
+              <Icon name='arrow-forward' size={24} color={fcolor.blue} />
+            }
+      
+            
           </TouchableOpacity>
         </View>
         <FlatList
           data={[]}
           renderItem={null}
+          style={{marginBottom:60}}
           ListEmptyComponent={
             <View>
               <View style={{ paddingHorizontal: 25 }}>
-                <View style={styles.boxset}>
-                  <BText fontSize={15} color={fcolor.gray4}>여행 소제목</BText>
-                  <TextInput style={styles.box}
-                    onChangeText={(text) => setForm({ ...form, title: text })}
-                    placeholder={"띄어쓰기 포함 12글자 이내로 작성해주세요"}
-                    placeholderTextColor={fcolor.gray3}
-                  />
-                </View>
                 <View style={styles.boxset}>
                   <BText fontSize={15} color={fcolor.gray4}>여행 일자</BText>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -272,7 +333,7 @@ export function AddPlan1({ navigation: { navigate } }) {
                     </View>
                   </View>
                 </View>
-                <View style={{ marginVertical: 15 }}>
+                <View style={{ marginVertical: 10 }}>
                   <BText fontSize={15} color={fcolor.gray4}>여행 일정</BText>
                 </View>
               </View>
@@ -313,7 +374,7 @@ export function AddPlan1({ navigation: { navigate } }) {
                       console.log(details.geometry.location.lat);
                       movelocation(details.geometry.location.lat, details.geometry.location.lng);
                       console.log(data.structured_formatting.main_text);
-                      setForm((prevForm) => ({ ...prevForm, location: data.structured_formatting.main_text,}));
+                      setForm((prevForm) => ({ ...prevForm, location: data.structured_formatting.main_text, }));
                       setlocationname(data.structured_formatting.main_text);
                     }
                   }}
@@ -324,7 +385,7 @@ export function AddPlan1({ navigation: { navigate } }) {
                   styles={{
                     textInput: {
                       borderWidth: 1,
-                      borderColor: fcolor.skyblue,
+                      borderColor: fcolor.lblue1,
                     },
                     textInputContainer: {
                       padding: 10,
@@ -332,7 +393,7 @@ export function AddPlan1({ navigation: { navigate } }) {
                   }}
                 />
               </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center',marginBottom:10 }}>
                 <View style={[styles.box, { width: 200, marginRight: 10 }]}>
                   <RText>{form.location}</RText>
                 </View>
@@ -345,14 +406,30 @@ export function AddPlan1({ navigation: { navigate } }) {
                 renderItem={({ item, index }) => renderItem(item, index)} // 인덱스를 함께 전달
                 keyExtractor={(item, index) => index.toString()}
               />
+              <DatePicker
+                modal
+                open={open}
+                date={date}
+                mode='time'
+                is24hourSource='locale'
+                onConfirm={(date) => {
+                  setOpen(false)
+                  setDate(date)
+                  console.log(date)
+                  time_p(selectedIndex,date)
+                  
+                }}
+                onCancel={() => {
+                  setOpen(false)
+                }}
+              />
+              
             </View>
-
-
 
           }
         />
       </View>
-      <BottomBar></BottomBar>
+      <BottomBar checkcolor={fcolor.blue}></BottomBar>
     </GestureHandlerRootView>
   );
 };
@@ -375,7 +452,7 @@ const styles = StyleSheet.create({
     marginTop: 7,
     height: 40,
     borderWidth: 1,
-    borderColor: fcolor.skyblue,
+    borderColor: fcolor.lblue1,
     borderRadius: 8,
     paddingLeft: 13,
     backgroundColor: fcolor.white,
@@ -385,10 +462,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingRight: 13
   },
+  iconbox:{
+    marginVertical:5,
+    padding:10,
+    borderWidth:1,
+    borderColor:fcolor.lblue1,
+    borderRadius: 8,
+    backgroundColor:fcolor.white,
+    flexDirection:'row'
+  },
   memobox: {
     marginLeft: 100,
     borderLeftWidth: 2,
-    borderColor: fcolor.skyblue,
+    borderColor: fcolor.lblue1,
     marginVertical: 15,
     paddingLeft: 10,
     paddingVertical: 7

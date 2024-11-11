@@ -5,7 +5,7 @@ import MText from "../src/components/common/RText";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import BText from "../src/components/common/BText";
-import fcolors from "../src/assets/colors/fcolors";
+import fcolor from "../src/assets/colors/fcolors";
 import { signUp } from "../src/lib/auth";
 import { createUser } from "../src/lib/users";
 import firestore from "@react-native-firebase/firestore";
@@ -36,12 +36,12 @@ function Nickname({ navigation: { navigate } }) {
 
     return (
         <View style={styles.container}>
-            <View style={{ height: 4, backgroundColor: fcolors.skyblue, marginTop: 26, borderRadius: 40 }}>
+            <View style={{ height: 4, backgroundColor: fcolor.lblue1, marginTop: 26, borderRadius: 40 }}>
                 <View style={{ backgroundColor: maincol, width: "75%", height: 4, borderRadius: 40 }} />
             </View>
             <View style={{ paddingTop: 40 }}>
-                <BText><BText color={fcolors.blue}>닉네임</BText>과 <BText color={fcolors.blue}>사진</BText>을 설정해주세요</BText>
-                <RText fontSize={13} color={fcolors.gray3} style={{ marginTop: 10 }}>동행인이 여러분을 알아볼 수 있도록 해주세요</RText>
+                <BText><BText color={fcolor.blue}>닉네임</BText>과 <BText color={fcolor.blue}>사진</BText>을 설정해주세요</BText>
+                <RText fontSize={13} color={fcolor.gray3} style={{ marginTop: 10 }}>동행인이 여러분을 알아볼 수 있도록 해주세요</RText>
             </View>
             <View style={{ marginVertical: 30, alignItems: 'center' }}>
                 <View style={{ backgroundColor: '#F1F1F1', height: 80, width: 80, borderRadius: 50, alignItems: 'center', justifyContent: 'center' }}>
@@ -52,18 +52,18 @@ function Nickname({ navigation: { navigate } }) {
 
             <View style={styles.boxset}>
                 <View style={styles.box}>
-                    <MText color={fcolors.gray4} fontSize={13} style={{ marginTop: 20, marginLeft: 20, marginRight: 40 }}>닉네임</MText>
+                    <MText color={fcolor.gray4} fontSize={13} style={{ marginTop: 20, marginLeft: 20, marginRight: 40 }}>닉네임</MText>
                     <TextInput style={styles.boxinput}
                         onChangeText={(text) => setForm({ ...form, nickname: text })}
                         placeholder={"닉네임을 입력해주세요"}
-                        placeholderTextColor={fcolors.gray3} />
+                        placeholderTextColor={fcolor.gray3} />
                 </View>
                 <View style={styles.box}>
-                    <MText color={fcolors.gray4} fontSize={13} style={{ marginTop: 20, marginLeft: 20, marginRight: 40 }}>자기 소개</MText>
+                    <MText color={fcolor.gray4} fontSize={13} style={{ marginTop: 20, marginLeft: 20, marginRight: 40 }}>자기 소개</MText>
                     <TextInput style={styles.boxinput}
                         onChangeText={(text) => setForm({ ...form, intro: text })}
                         placeholder={"한 줄 자기소개를 입력해주세요"}
-                        placeholderTextColor={fcolors.gray3}
+                        placeholderTextColor={fcolor.gray3}
                     />
                 </View>
 
@@ -76,7 +76,7 @@ function Nickname({ navigation: { navigate } }) {
             </View>
 
             <View style={{ flex: 1, marginTop: 150, alignItems: 'center' }}>
-                <TouchableOpacity style={[styles.nextbutton, form.nickname && form.intro ? { backgroundColor: fcolors.blue } : null]}
+                <TouchableOpacity style={[styles.nextbutton, form.nickname && form.intro ? { backgroundColor: fcolor.blue } : null]}
                     onPress={form.nickname && form.intro ? () => [onSubmit(form.nickname, form.intro), navigate('typecheck1')] : null}>
                     <Text style={{ color: 'white', fontFamily: "Pretendard-Regular" }}>다음</Text>
                 </TouchableOpacity>
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 25,
-        backgroundColor: fcolors.white,
+        backgroundColor: fcolor.white,
     },
     boxset: {
     },
@@ -105,21 +105,21 @@ const styles = StyleSheet.create({
         marginTop: 20,
         height: 62,
         borderWidth: 1,
-        borderColor: fcolors.gray1,
+        borderColor: fcolor.gray1,
         borderRadius: 10,
         flexDirection: "row",
-        backgroundColor: fcolors.gray1
+        backgroundColor: fcolor.gray1
 
     },
     boxinput: {
         fontSize: 13,
         fontFamily: "Pretendard-Regular",
-        color: fcolors.gray4,
+        color: fcolor.gray4,
     },
 
     nextbutton: {
         width: 332,
-        backgroundColor: fcolors.gray4,
+        backgroundColor: fcolor.gray4,
         height: 45,
         borderRadius: 10,
         justifyContent: 'center',

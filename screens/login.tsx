@@ -42,8 +42,12 @@ function Login ({navigation:{navigate}}) {
       setUsercode(usercode);
       setPlancode(main)
       console.log('main')
-
-      navigate('main')
+      if (main){
+        navigate('main1')
+      }else{
+        navigate('main')
+      }
+      
     } catch (e) {
       Alert.alert("로그인에 실패하였습니다.");
     }

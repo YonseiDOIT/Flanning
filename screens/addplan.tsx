@@ -9,11 +9,8 @@ import RText from '../src/components/common/RText';
 import BText from '../src/components/common/BText';
 import MText from '../src/components/common/MText';
 import fcolor from '../src/assets/colors/fcolors';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import NeonGr from '../src/components/neongr';
 import BottomBar from '../src/components/common/BottomBar';
-import LinearGradient from 'react-native-linear-gradient';
 
 import firestore, { FieldValue } from "@react-native-firebase/firestore";
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
@@ -24,38 +21,18 @@ import { usePlan } from '../src/components/common/PlanContext';
 
 
 
-export function AddPlan({ navigation: { navigate } }) {
+export function AddPlan({ navigation: { navigate } }:any) {
   //유저코드 가져오기
-  const { usercode } = useUser();
+  const { usercode }:any = useUser();
 
-  //여행태그
-  const [isclick, setclick] = useState();
-
-  //여행태그 클릭
-  const handle = (clickbox) => {
-    setclick(prevState => prevState === clickbox ? null : clickbox);
-
-  };
-
-  //목록 가져오기
-  const [planTitle, setPlanTitle] = useState([]);
-
-  const get_plan = async (plan_id) => {
-    const usersCollection = firestore().collection('plan').doc(plan_id).get();
-    const db = (await usersCollection).data();
-    console.log(db.title);
-    return db.title;
-  };
-
+  //달력 관련=====================
   //변수
   const [selected, setSelected] = useState({ start: '', end: '' });
   const [selecttwo, setSelecttwo] = useState(0);
   //const [selectdays, setSelectdays] = useState<string[]>([]);
 
-
-
   //날짜 선택 함수
-  const daysclick = (day) => {
+  const daysclick = (day:string) => {
     console.log(day)
     console.log(selecttwo)
     if (selecttwo == 0) {
@@ -81,35 +58,41 @@ export function AddPlan({ navigation: { navigate } }) {
 
   }
 
+  const [daysarr,setdaysarr]=useState()
   //기간
-  const createDateRange = (start, end) => {
+  const createDateRange = (start:Date, end:Date) => {
     const startday = new Date(start);
     const endday = new Date(end);
-    console.log(end)
+  
     let diff = Math.abs(startday.getTime() - endday.getTime());
     diff = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    console.log(diff);
 
-    //하나씩 더하기
+    //날짜 하나씩 더하기
     let ary = [];
     ary.push(start)
-    for (let i = 0; i < diff; i++) {
+    for (let i = 1; i < diff; i++) {
       startday.setDate(startday.getDate() + 1)
       ary.push(startday.toISOString().substring(0, 10))
     }
     ary.push(end)
 
-    console.log(ary)
+    //1일이면 리스트에 저장되는 날짜가 중복이라 지워준다.
+    if(ary[0]==ary[1]){
+      ary= [ary.shift()]
+    }
+    
+    //console.log(ary)
+    setdaysarr(ary)
     setDates(ary);
     handleDayPress(ary)
   }
 
-  const [markedDates, setMarkedDates] = React.useState(null);
-  const [dates, setDates] = React.useState(['']);
+  const [markedDates, setMarkedDates] = useState(null);
+  const [dates, setDates] = useState(['']);
 
-
-  const handleDayPress = (datearray) => {
-    console.log('핸들프레스')
+  //달력에서 날짜 선택 시 색깔
+  const handleDayPress = (datearray: any[]) => {
+    console.log('핸들프레스 날짜리스트')
     console.log(datearray)
 
     if (datearray.length === 0) return;
@@ -138,19 +121,21 @@ export function AddPlan({ navigation: { navigate } }) {
       }
     }, {});
 
-    console.log(obj);
     setMarkedDates(obj);
   }
 
-  //페이지
+  //여행 계획====================
+  //여행계획 제목,장소,메모 
   const [form, setForm] = useState({
-    title: "",
+    title: '',
+    place:'',
     memo: ''
   });
 
   //메인계획 코드
   const { plancode, setPlancode } = usePlan();
 
+  //파이어베이스에 데이터 입력
   const onSubmit = (title: string, date1: string, date2: string, memo: string, userid: undefined) => {
     console.log('파이어베이스 데이터 입력 성공!');
     const plancode = createplan({ // 회원 프로필 생성
@@ -173,7 +158,7 @@ export function AddPlan({ navigation: { navigate } }) {
     return plancode
   }
 
-  //여행 친구
+  //여행 친구=================
   const [users, setUsers] = useState([]);
   const [useradd, setUseradd] = useState('');
 
@@ -236,7 +221,7 @@ export function AddPlan({ navigation: { navigate } }) {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, marginTop: 10, alignItems: 'center' }}>
           <TouchableOpacity onPress={() => navigate('main')}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
           <BText fontSize={18}>여행 떠나기</BText>
-          <TouchableOpacity onPress={() => [navigate('addplan1'), onSubmit(form.title, selected.start, selected.end, form.memo, usercode)]}>
+          <TouchableOpacity onPress={() => [navigate('addplan1',{days:daysarr,day:0}),onSubmit(form.title, selected.start, selected.end, form.memo, usercode)]}>
             <Icon name='arrow-forward' size={24} color={fcolor.blue} />
           </TouchableOpacity>
         </View>
@@ -247,7 +232,7 @@ export function AddPlan({ navigation: { navigate } }) {
             ListEmptyComponent={
               <View>
                 <View style={styles.boxset}>
-                  <BText fontSize={15} color={fcolor.gray4}>여행 제목</BText>
+                  <BText fontSize={15} color={fcolor.black}>여행 제목</BText>
                   <TextInput style={styles.box}
                     onChangeText={(text) => setForm({ ...form, title: text })}
                     placeholder={"띄어쓰기 포함 12글자 이내로 작성해주세요"}
@@ -255,7 +240,15 @@ export function AddPlan({ navigation: { navigate } }) {
                   />
                 </View>
                 <View style={styles.boxset}>
-                  <BText fontSize={15} color={fcolor.gray4}>여행 기간</BText>
+                  <BText fontSize={15} color={fcolor.black}>여행 장소</BText>
+                  <TextInput style={styles.box}
+                    onChangeText={(text) => setForm({ ...form, place: text })}
+                    placeholder={"띄어쓰기 포함 12글자 이내로 작성해주세요"}
+                    placeholderTextColor={fcolor.gray3}
+                  />
+                </View>
+                <View style={styles.boxset}>
+                  <BText fontSize={15} color={fcolor.black}>여행 기간</BText>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <View style={[styles.box, { width: 123 }]}>
                       <RText fontSize={11} color={fcolor.gray4} style={{ marginRight: 10 }}>{selected.start}</RText>
@@ -276,7 +269,7 @@ export function AddPlan({ navigation: { navigate } }) {
                       selectedDayTextColor: '#ffffff',
                       todayTextColor: fcolor.blue,
                       dayTextColor: '#2d4150',
-                      arrowColor: fcolor.skyblue
+                      arrowColor: fcolor.lblue1
                     }}
                     markingType={'period'}
 
@@ -291,7 +284,7 @@ export function AddPlan({ navigation: { navigate } }) {
 
                 <View style={styles.boxset}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <BText fontSize={15} color={fcolor.gray4}>여행 메모</BText>
+                    <BText fontSize={15} color={fcolor.black}>여행 메모</BText>
                     <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 10 }}>선택</RText>
                   </View>
                   <TextInput style={styles.box}
@@ -303,7 +296,7 @@ export function AddPlan({ navigation: { navigate } }) {
 
                 <View style={styles.boxset}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <BText fontSize={15} color={fcolor.gray4}>여행 친구</BText>
+                    <BText fontSize={15} color={fcolor.black}>여행 친구</BText>
                     <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 10 }}>선택</RText>
                   </View>
                   <View style={styles.box}>
@@ -317,7 +310,7 @@ export function AddPlan({ navigation: { navigate } }) {
                       <Icon name='search' size={24} color={fcolor.blue} />
                     </TouchableOpacity>
                   </View>
-                  <View style={{ marginVertical: 10 }}>
+                  <View style={{ marginVertical: 10, marginBottom: 80  }}>
                     <FlatList
                       style={styles.frdbox}
                       data={users}
@@ -326,19 +319,6 @@ export function AddPlan({ navigation: { navigate } }) {
                     />
                   </View>
 
-                  <View style={[styles.boxset, { marginBottom: 80 }]}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <BText fontSize={15} color={fcolor.gray4}>여행 예산</BText>
-                      <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 10 }}>선택</RText>
-                    </View>
-                    <View style={styles.box}>
-                      <TextInput placeholder={"여행의 예산을 작성해주세요"}
-                        placeholderTextColor={fcolor.gray3}
-                        style={{ fontSize: 11 }}
-                      />
-                      <Icon name='check' size={24} color={fcolor.blue} />
-                    </View>
-                  </View>
                 </View>
               </View>
 
@@ -350,7 +330,7 @@ export function AddPlan({ navigation: { navigate } }) {
         </View>
 
       </View>
-      <BottomBar></BottomBar>
+      <BottomBar checkcolor={fcolor.blue}></BottomBar>
 
     </GestureHandlerRootView>
 
@@ -376,7 +356,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: fcolor.skyblue,
+    borderColor: fcolor.lblue1,
     justifyContent:'center'
     
   },
@@ -387,7 +367,7 @@ const styles = StyleSheet.create({
     marginTop: 7,
     height: 40,
     borderWidth: 1,
-    borderColor: fcolor.skyblue,
+    borderColor: fcolor.lblue1,
     borderRadius: 8,
     paddingLeft: 17,
     backgroundColor: fcolor.white,

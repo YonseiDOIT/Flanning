@@ -14,7 +14,7 @@ import RText from './RText';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-const BottomBar = ({ homecolor = fcolors.blue, checkcolor = fcolors.gray3, reviewcolor = fcolors.gray3, settingcolor = fcolors.gray3 }) => {
+const BottomBar = ({ homecolor = fcolors.gray3, checkcolor = fcolors.gray3, reviewcolor = fcolors.gray3, settingcolor = fcolors.gray3 }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
   const [visible, setVisible] = useState(true);
 
@@ -68,7 +68,8 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     position: 'absolute',
-    bottom: 0
+    bottom: 0,
+    elevation:15
   },
   icon: {
     flexDirection: 'column',

@@ -10,7 +10,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import NeonGr from "../src/components/neongr";
 import MText from "../src/components/common/MText";
 import RText from "../src/components/common/RText";
-import fcolors from "../src/assets/colors/fcolors";
 
 export type RootStackParam = {
   
@@ -53,7 +52,7 @@ function Signup() {
 
   return (
     <View style={styles.container}>
-      <View style={{height: 4, backgroundColor: fcolor.skyblue, marginTop: 26, borderRadius: 40}}>
+      <View style={{height: 4, backgroundColor: fcolor.lblue1, marginTop: 26, borderRadius: 40}}>
         <View style={{backgroundColor: fcolor.blue, width: "25%", height: 4, borderRadius: 40}}/>
       </View>
       <View style={{marginTop: 40}}>
@@ -149,7 +148,7 @@ function Signup() {
           checkboxStates.personalInfo && checkboxStates.privacyPolicy ? {backgroundColor:fcolor.blue} : null]}
           onPress={checkboxStates.termsAgree && checkboxStates.overFourteen && 
           checkboxStates.personalInfo && checkboxStates.privacyPolicy ? () => navigation.navigate('idnpass') : null}>
-          <MText color={fcolors.white} fontSize={13}>다음</MText>
+          <MText color={fcolor.white} fontSize={13}>다음</MText>
         </TouchableOpacity>
       </View>
     </View>

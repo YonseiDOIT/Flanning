@@ -40,7 +40,7 @@ export function createplan({title,date1,date2,memo,userid}) {
 };
 
 
-export function addplan({ codename, title, location, locationtyp, icon, content, date ,lat,lng}, isFirstElement) {
+export function addplan({ codename, title, location, locationtyp, icon, content, date ,lat,lng,subcont,time}, isFirstElement) {
   const userCollection = firestore().collection("plan").doc(codename).collection('planlist').doc(date);
 
   if (isFirstElement) {
@@ -51,8 +51,10 @@ export function addplan({ codename, title, location, locationtyp, icon, content,
         location: location,
         locationtyp: locationtyp,
         content: [icon, content],
-        state: [locationtyp],
-        latlng:[lat,lng]
+        state: ['진행예정'],
+        latlng:[lat,lng],
+        subcont:subcont,
+        time:time
       }]
     }).then(() => {
       console.log("Document successfully created!");
@@ -66,8 +68,10 @@ export function addplan({ codename, title, location, locationtyp, icon, content,
         location: location,
         locationtyp: locationtyp,
         content: [icon, content],
-        state: [locationtyp],
-        latlng:[lat,lng]
+        state: ['진행예정'],
+        latlng:[lat,lng],
+        subcont:subcont,
+        time:time
       })
     }).then(() => {
       console.log("Document successfully updated!");
@@ -78,3 +82,35 @@ export function addplan({ codename, title, location, locationtyp, icon, content,
 }
 
   
+export function addreview({ codename, title, date, photo, star, rv_cont }, isFirstElement) {
+  console.log(codename);
+  // 특정 문서 참조 생성
+  const reviewDocRef = firestore().collection("plan").doc(codename).collection('reviewlist').doc(date);
+  if (isFirstElement) {
+    // 첫 번째 요소일 때 새로 문서 생성
+    reviewDocRef.set({
+      plantext: [{
+        photo: photo,
+        star: star,
+        rv_cont: rv_cont
+      }]
+    }).then(() => {
+      console.log("Document successfully created!");
+    }).catch((error) => {
+      console.error("Error creating document: ", error);
+    });
+  } else {
+    // 첫 번째 요소가 아닐 때 기존 문서에 업데이트
+    reviewDocRef.update({
+      plantext: firestore.FieldValue.arrayUnion({
+        photo: photo,
+        star: star,
+        rv_cont: rv_cont
+      })
+    }).then(() => {
+      console.log("Document successfully updated!");
+    }).catch((error) => {
+      console.error("Error updating document: ", error);
+    });
+  }
+}

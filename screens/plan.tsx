@@ -11,7 +11,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import fcolor from '../src/assets/colors/fcolors';
 import RText from '../src/components/common/RText';
 import BText from '../src/components/common/BText';
-import MapView, { Circle, Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Circle, LatLng, Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import NeonGr from '../src/components/neongr';
 import MText from '../src/components/common/MText';
 import BottomBar from '../src/components/common/BottomBar';
@@ -31,7 +31,7 @@ export type RootStackParam = {
 
 export function Plan() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
-  const heightAnim = useRef(new Animated.Value(550)).current; // 초기 높이 값 설정
+  const heightAnim = useRef(new Animated.Value(500)).current; // 초기 높이 값 설정
 
   //지도
   const [islocation, setlocation] = useState({
@@ -50,7 +50,7 @@ export function Plan() {
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: (event, gesture) => {
         if (gesture.dy < 0) {
-          let newHeight = 550 - gesture.dy;
+          let newHeight = 500 - gesture.dy;
           if (newHeight > screenHeight) newHeight = screenHeight; // 높이 제한
           heightAnim.setValue(newHeight);
         }
@@ -62,7 +62,7 @@ export function Plan() {
         } else {
           // 그렇지 않을 경우 원래 크기로 복귀
           Animated.spring(heightAnim, {
-            toValue: 550,
+            toValue: 500,
             useNativeDriver: false
           }).start();
         }
@@ -73,7 +73,7 @@ export function Plan() {
   useFocusEffect(
     React.useCallback(() => {
       // 화면이 포커스될 때 높이를 초기값으로 재설정
-      heightAnim.setValue(550);
+      heightAnim.setValue(500);
     }, [heightAnim])
   );
 
@@ -105,7 +105,7 @@ export function Plan() {
   const [isOpend, setOpend] = useState(false);
   const setlat = useRef(0);
   const setlng = useRef(0);
-
+  var region;
 
   useEffect(() => {
     const plan_info = async () => {
@@ -130,12 +130,19 @@ export function Plan() {
           fullPlanList.push({ ...planItem, id: id1 += 1, date: planList[0].id });
         });
 
+        //지도 좌표 배열
+        const polylist1 : LatLng[] = [];
+
+        //좌표
         setPlanList(fullPlanList);
         fullPlanList.map((num) => {
+          polylist1.push({ latitude: num.latlng[0], longitude: num.latlng[1]}),
           setmark((prev) => ({ lat: [...prev.lat, num.latlng[0]], lng: [...prev.lng, num.latlng[1]] }))
         })
 
-        movelocation(fullPlanList[0].latlng[0], fullPlanList[0].latlng[1])
+        console.log(polylist1);
+        region = calculateRegion(polylist1);
+        movelocation(region);
 
       } catch (error) {
         console.error(error);
@@ -147,19 +154,19 @@ export function Plan() {
 
   const renderItem = ({ item }) => (
     <View style={styles.planebox}>
-      <View style={{ width: '30%' }}>
+      <View style={{ width: '25%',marginLeft:7 }}>
         {item.state.map((ele, index) => (
           <BoxGr key={index} name={ele} />
         ))}
       </View>
-      <View style={{ width: '60%' }}>
+      <View style={{ width: '72%' }}>
         <View style={{ flexDirection: 'row' }}>
-          <BText fontSize={13}>{item.location}</BText>
-          <RText fontSize={10} color={fcolor.gray4} style={{ marginTop: 3, marginLeft: 5 }}>{item.locationtyp}</RText>
+          <BText fontSize={14}>{item.location}</BText>
+          <RText fontSize={11} color={fcolor.gray4} style={{ marginTop: 3, marginLeft: 5 }}>{item.locationtyp}</RText>
         </View>
         <View style={{ flexDirection: 'row' ,marginTop:5}}>
-          {item.content[0] !== '' && <Icons name={item.content[0]} size={16} color="#717171" />}
-          <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
+          {item.content[0] !== '' && <Icons name={item.content[0]} size={17} color="#717171" />}
+          <RText fontSize={11} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
         </View>
       </View>
     </View>
@@ -169,21 +176,50 @@ export function Plan() {
   //지도
   const mapRef = useRef(null);
 
+  //지도 중심 계산
+  const calculateRegion = (coordinates) => {
+    const latitudes = coordinates.map(coord => coord.latitude);
+    const longitudes = coordinates.map(coord => coord.longitude);
+  
+    const minLatitude = Math.min(...latitudes);
+    const maxLatitude = Math.max(...latitudes);
+    const minLongitude = Math.min(...longitudes);
+    const maxLongitude = Math.max(...longitudes);
+  
+    const latitudeDelta = maxLatitude - minLatitude;
+    const longitudeDelta = maxLongitude - minLongitude;
+  
+    const centerLatitude = (minLatitude + maxLatitude) / 2;
+    const centerLongitude = (minLongitude + maxLongitude) / 2;
+  
+    return {
+      latitude: centerLatitude,
+      longitude: centerLongitude,
+      latitudeDelta: latitudeDelta * 1.4, // 여유 공간을 위해 1.2를 곱해줌
+      longitudeDelta: longitudeDelta * 1.4,
+    };
+  };
+  
+
+
   //지도
-  async function movelocation(latitude, longitude) {
-    setlocation({ lat: latitude, lng: longitude }); // 위치 상태 업데이트
+  async function movelocation(region) {
+    setlocation({ lat: region.latitude, lng: region.longitude }); // 위치 상태 업데이트
+    console.log(region.latitude)
     if (mapRef.current) {
       mapRef.current.animateToRegion(
         {
-          latitude: latitude,
-          longitude: longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0321
+          latitude: region.latitude,
+          longitude: region.longitude,
+          latitudeDelta: region.latitudeDelta,
+          longitudeDelta: region.longitudeDelta
         },
         0.1,
       );
     }
   }
+
+  var polylist: LatLng[] = [];
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -193,38 +229,27 @@ export function Plan() {
             ref={mapRef}
             provider={PROVIDER_GOOGLE}
             style={StyleSheet.absoluteFill}
-            initialRegion={{
-              latitude: 37.541,
-              longitude: 126.986,
-              latitudeDelta: 0.0722,
-              longitudeDelta: 0.0221
-            }}>
+            initialRegion={region}>
             
+            {ismark.lat.map((coord, index) => (
+              polylist.push({ latitude: ismark.lat[index], longitude: ismark.lng[index] }),
+              <Marker
+                key={index}
+                coordinate={{
+                  latitude: ismark.lat[index],
+                  longitude: ismark.lng[index],
+                }}
+                pinColor={fcolor.blue}
+              />
+              
+              
+            ))}
+
             <Polyline
-              coordinates={[
-                { latitude: 33.5070772, longitude: 126.4934311 },
-                { latitude: 33.51274309999999, longitude: 126.5283168 },
-                { latitude: 33.4934657, longitude: 126.5343138 },
-              ]}
+              coordinates={polylist}
               strokeWidth={2}
               strokeColor={fcolor.blue}
             />
-
-            {ismark.lat.map((coord, index) => (
-              <Circle
-                key={index}
-                center={{
-                  latitude: coord,
-                  longitude: ismark.lng[index],
-                }}
-                radius={400}
-                strokeColor={fcolor.blue}
-                strokeWidth={5}
-                fillColor={"#fff"}
-                zIndex={1}
-
-              />
-            ))}
           </MapView>
         </View>
 
@@ -239,10 +264,10 @@ export function Plan() {
 
           <View>
             {/* 여행 중요 메모 */}
-            <View style={styles.trvmemo}>
+            {/* <View style={styles.trvmemo}>
               <BText fontSize={14} color={fcolor.blue} style={{ marginBottom: 5 }}>여행 중요 메모</BText>
               <RText fontSize={13} color={fcolor.gray4}>{planTitle.memo}</RText>
-            </View>
+            </View> */}
           </View>
 
           <View style={{ marginTop: 15 }}>
@@ -250,12 +275,12 @@ export function Plan() {
 
             <View style={styles.travelplane}>
               <View style={styles.trv_calendar}>
-                <View style={{ width: '30%', alignItems: 'center', justifyContent: 'center' }}>
-                  <RText fontSize={10} color={fcolor.gray4}>{plan.mon}</RText>
-                  <BText fontSize={16} color={fcolor.gray4}>{plan.day}</BText>
+                <View style={{ width: '28%', alignItems: 'center', justifyContent: 'center' }}>
+                  <RText fontSize={11} color={fcolor.gray4}>{plan.mon}</RText>
+                  <BText fontSize={17} color={fcolor.gray4}>{plan.day}</BText>
                 </View>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                  <MText color={fcolor.gray4}>{plan.title}</MText>
+                  <MText color={fcolor.gray4} fontSize={15}>{plan.title}</MText>
                 </View>
               </View>
               <View style={styles.planecontent}>
@@ -296,10 +321,10 @@ const styles = StyleSheet.create({
 
   white: {
     width: '100%',
-    height: 544,
+    height: 500,
     padding: 15,
     paddingHorizontal: 16,
-    backgroundColor: fcolor.white,
+    backgroundColor: fcolor.lblue2,
     elevation: 30,
     marginBottom:40
 
@@ -308,7 +333,9 @@ const styles = StyleSheet.create({
   trvmemo: {
     height: 90,
     flexDirection: 'column',
-    backgroundColor: '#EEF6FF',
+    backgroundColor: fcolor.white,
+    borderWidth:1,
+    borderColor:fcolor.lblue1,
     padding: 24,
     borderRadius: 10
   },
@@ -316,7 +343,7 @@ const styles = StyleSheet.create({
   travelplane: {
     height: 314,
     backgroundColor: fcolor.white,
-    borderColor: fcolor.skyblue,
+    borderColor: fcolor.lblue1,
     borderWidth: 1,
     borderRadius: 10,
     padding: 14
@@ -324,63 +351,13 @@ const styles = StyleSheet.create({
   trv_calendar: {
     height: 50,
     borderRadius: 5,
-    backgroundColor: fcolor.lblue,
+    borderBottomWidth:1,
+    borderColor:fcolor.gray2,
     flexDirection: 'row',
     marginBottom: 5
   },
   planecontent: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 10,
 
-  },
-  statebox_g: {
-    marginTop: 5,
-    width: 50,
-    height: 20,
-    marginRight: 5,
-    backgroundColor: fcolor.gray1,
-    borderWidth: 1,
-    borderColor: fcolor.gray4,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  statebox_b: {
-    marginTop: 5,
-    width: 50,
-    height: 20,
-    marginRight: 5,
-    backgroundColor: '#F3F7FF',
-    borderWidth: 1,
-    borderColor: fcolor.blue,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  statebox_p: {
-    marginTop: 5,
-    width: 50,
-    height: 20,
-    marginRight: 5,
-    backgroundColor: '#F3ECFF',
-    borderWidth: 1,
-    borderColor: '#6F19FC',
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  statebox_o: {
-    marginTop: 5,
-    width: 50,
-    height: 20,
-    marginRight: 5,
-    backgroundColor: '#FEF3EA',
-    borderWidth: 1,
-    borderColor: fcolor.orange,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center'
   },
   planebox: {
     margin: 10,

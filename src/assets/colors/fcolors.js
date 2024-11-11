@@ -6,10 +6,13 @@ const fcolors = {
     gray1: '#F7F7F7',
     orange: '#FC7819',
     green:'#C2FC19',
-    skyblue:'#D4E5FF',
-    lblue:'#F6FAFF',
+    lblue1:'#D4E5FF',
+    lblue2:'#F6FAFF',
+    lblue3:'#EEF6FF',
+    lblue4:'#8CB9FF',
     blue: "#005BEA",
     white:'#FFFFFF'
+    
 }
 
 export default fcolors;

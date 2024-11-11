@@ -53,7 +53,7 @@ export function Main({ navigation: { navigate }}) {
           <View style={{marginTop:15}}>
             {/* 여행 일정 */}
             <View style={{flexDirection:'row',justifyContent:'space-between',paddingHorizontal:20, alignItems:'center'}}>
-              <BText fontSize={15} color={fcolor.gray4}>여행 일정</BText>
+              <BText fontSize={15}>여행 일정</BText>
               <TouchableOpacity onPress={()=>navigate('main1')}><RText color={fcolor.gray4}>상세보기{'>'}</RText></TouchableOpacity>
             </View>
             <View style={styles.travelplane}>
@@ -69,7 +69,7 @@ export function Main({ navigation: { navigate }}) {
           <View style={{marginTop:15}}>
             {/* 여행 예산 */}
             <View style={{flexDirection:'row',justifyContent:'space-between',paddingHorizontal:20, alignItems:'center'}}>
-              <BText fontSize={15} color={fcolor.gray4}>여행 예산</BText>
+              <BText fontSize={15}>여행 예산</BText>
               
             </View>
             <View style={styles.trvmoney}>
@@ -84,7 +84,7 @@ export function Main({ navigation: { navigate }}) {
       </View>
       </View>
 
-      <BottomBar></BottomBar>
+      <BottomBar homecolor={fcolor.blue}></BottomBar>
     
     </GestureHandlerRootView>
     
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   travelplane:{
     height:235,
     marginTop:10,
-    backgroundColor:fcolor.skyblue,
+    backgroundColor:fcolor.lblue1,
     borderRadius:10,
     padding:14,
     alignItems:'center',
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   trv_calendar:{
     height:50,
     borderRadius:5,
-    backgroundColor:fcolor.lblue,
+    backgroundColor:fcolor.lblue2,
     flexDirection:'row'
   },
   planecontent:{

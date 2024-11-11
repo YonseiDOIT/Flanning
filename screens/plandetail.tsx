@@ -15,6 +15,7 @@ import BottomBar from '../src/components/common/BottomBar';
 import MText from '../src/components/common/MText';
 import { usePlan } from '../src/components/common/PlanContext';
 import { date } from '../src/lib/date';
+import LinearGradient from 'react-native-linear-gradient';
 
 export type RootStackParam = {
   Home: undefined;
@@ -59,11 +60,11 @@ const PlanDetail = () => {
         setPlanTitle(plan);
 
         const planList = await get_plan_list();
-        
+
         setPlan(planList.map(item => {
           let date_word = date(item.id);
-          return { title: item.title, id: item.id ,mon: date_word[0],day: date_word[1] };
-      }));
+          return { title: item.title, id: item.id, mon: date_word[0], day: date_word[1] };
+        }));
 
         let id1 = 0;
         let fullPlanList = [];
@@ -81,6 +82,7 @@ const PlanDetail = () => {
   }, []);
 
   const renderItem = ({ item }) => (
+
     <View style={styles.travelplane}>
       <View style={styles.trv_calendar}>
         <View style={{ width: '30%', alignItems: 'center', justifyContent: 'center' }}>
@@ -89,9 +91,9 @@ const PlanDetail = () => {
         </View>
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginRight: 10 }}>
           <View>
-            <MText color={fcolor.gray4}>{item.title}</MText>
+            <MText color={fcolor.gray4}>DAY{item.title}</MText>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('plande1')}>
+          <TouchableOpacity onPress={() => navigation.navigate('plande1',{day:item.title-1})}>
             <Icon name='arrow-forward' size={24} color={fcolor.blue} />
           </TouchableOpacity>
         </View>
@@ -104,23 +106,25 @@ const PlanDetail = () => {
         />
       </View>
     </View>
+
   );
 
   const renderItem1 = ({ item }) => (
     <View style={styles.planebox}>
-      <View style={{ width: '30%' }}>
-        {item.state.map((ele, index) => (
-          <BoxGr key={index} name={ele} />
-        ))}
+      <View style={{ width: '12%' }}>
+        <RText fontSize={12} color={fcolor.gray4}>{item.time}</RText>
       </View>
-      <View>
+      <View style={{ width: '12%' }}>
+        <BoxGr name={item.locationtyp} />
+      </View>
+      <View style={{ width: '65%' }}>
         <View style={{ flexDirection: 'row' }}>
-          <BText fontSize={13}>{item.location}</BText>
-          <RText fontSize={10} color={fcolor.gray4} style={{ marginTop: 3, marginLeft: 5 }}>{item.locationtyp}</RText>
+          <BText fontSize={15}>{item.location}</BText>
+
         </View>
-        <View style={{ flexDirection: 'row',marginTop:5 }}>
-          {item.content[0] && <Icons name={item.content[0]} size={18} color="#717171" />}
-          <RText fontSize={10} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
+        <View style={{ flexDirection: 'row', marginTop: 8 }}>
+          {item.content[0] !== '' && <Icons name={item.content[0]} size={22} color="#6AA1F7" />}
+          <RText fontSize={12} color={fcolor.gray4} style={{ marginLeft: 5 }}>{item.content[1]}</RText>
         </View>
       </View>
     </View>
@@ -133,8 +137,8 @@ const PlanDetail = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, marginTop: 10, alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => navigation.navigate('plan')}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15, marginTop: 10, alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => navigation.navigate('main1')}>
             <Icon name='arrow-back-ios' size={24} color="#717171" />
           </TouchableOpacity>
           <BText fontSize={18}>{planTitle.title}</BText>
@@ -143,35 +147,29 @@ const PlanDetail = () => {
           </TouchableOpacity>
         </View>
         <View>
-          <View style={[styles.trvmemo, isOpend ? { height: 80 } : null]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <BText fontSize={14} color={fcolor.blue}>여행 중요 메모</BText>
-              <TouchableOpacity onPress={handlePress}>
-                <Icon name='expand-more' size={30} color={fcolor.gray2} />
-              </TouchableOpacity>
+          <View style={{ flexDirection: "row", marginBottom: 20, marginLeft: 12 }}>
+            <View style={styles.clickbox}>
+              <RText color={fcolor.blue}>6.1</RText>
             </View>
-            {isOpend &&
-              <View style={{ marginHorizontal: 8 }}>
-                <RText fontSize={13} color={fcolor.gray4}>{planTitle.memo}</RText>
-              </View>
-            }
           </View>
         </View>
-        <View style={[{ paddingVertical: 10 }, isOpend ? { height: 530 } : { height: 565 }]}>
+        <View style={[{ paddingVertical: 10,alignItems:'center' }, isOpend ? { height: 530 } : { height: 565 }]}>
           <FlatList
             data={plan}
             renderItem={renderItem}
             keyExtractor={(item) => String(item.id)}
             initialNumToRender={10}
             windowSize={21}
+            horizontal={true}
           />
         </View>
         <Pressable
           style={({ pressed }) => pressed ? [styles.fab, { transform: [{ scale: 0.9 }] }] : [styles.fab]}>
           <Icon name='edit' size={24} color={fcolor.white} />
         </Pressable>
+
       </View>
-      <BottomBar />
+      <BottomBar checkcolor={fcolor.blue} />
     </GestureHandlerRootView>
   );
 };
@@ -181,10 +179,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     paddingTop: 20,
-    backgroundColor: fcolor.white,
+    backgroundColor: fcolor.lblue2,
   },
   statebox: {
-    backgroundColor: fcolor.lblue,
+    backgroundColor: fcolor.lblue2,
     height: 50,
     borderRadius: 10,
     padding: 17,
@@ -200,87 +198,50 @@ const styles = StyleSheet.create({
   },
 
   //여행 중요 메모
-  trvmemo: {
-    height: 50,
-    flexDirection: 'column',
-    backgroundColor: '#EEF6FF',
-    paddingHorizontal: 24,
-    paddingVertical: 10,
-    borderRadius: 10
+  clickbox: {
+    width: 44,
+    height: 31,
+    backgroundColor: fcolor.white,
+    borderWidth: 1,
+    borderColor: fcolor.lblue1,
+    borderRadius: 27,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   //일정내용
   travelplane: {
-    width: '100%',
-    height: 314,
+    width: 350,
+    height: 500,
     marginVertical: 10,
+    marginHorizontal:10,
     backgroundColor: fcolor.white,
-    borderColor: fcolor.skyblue,
-    borderWidth: 2,
+    borderColor: fcolor.lblue1,
+    borderWidth: 1,
     borderRadius: 10,
-    padding: 14
+    paddingVertical: 10,
+    paddingHorizontal: 13,
+    
   },
   trv_calendar: {
     height: 50,
     borderRadius: 5,
-    backgroundColor: fcolor.lblue,
+    borderBottomWidth: 1,
+    borderColor: fcolor.lblue1,
     flexDirection: 'row',
     marginBottom: 5,
     alignItems: 'center',
   },
   planecontent: {
-    justifyContent: 'center',
-    paddingHorizontal: 10
+    justifyContent: 'center'
 
   },
-  statebox_g: {
-    width: 50,
-    height: 20,
-    marginRight: 5,
-    backgroundColor: fcolor.gray1,
-    borderWidth: 1,
-    borderColor: fcolor.gray4,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  statebox_b: {
-    width: 50,
-    height: 20,
-    marginRight: 5,
-    backgroundColor: '#F3F7FF',
-    borderWidth: 1,
-    borderColor: fcolor.blue,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  statebox_p: {
-    width: 50,
-    height: 20,
-    marginRight: 5,
-    backgroundColor: '#F3ECFF',
-    borderWidth: 1,
-    borderColor: '#6F19FC',
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  statebox_o: {
-    width: 50,
-    height: 20,
-    marginRight: 5,
-    backgroundColor: '#FEF3EA',
-    borderWidth: 1,
-    borderColor: fcolor.orange,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
   planebox: {
-    margin: 10,
+    marginVertical: 12,
     flexDirection: 'row',
-    height: 60,
+    height: 50,
     width: '100%',
+    justifyContent: 'space-around',
+    alignItems: 'baseline'
   },
 
 

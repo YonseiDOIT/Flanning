@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, FlatList, StyleSheet, Text, View, Alert, Animated, Image } from 'react-native';
 import database, { firebase } from '@react-native-firebase/database';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { GestureHandlerRootView, Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
-import fcolors from '../src/assets/colors/fcolors';
+import fcolor from '../src/assets/colors/fcolors';
 import BText from '../src/components/common/BText';
 import RText from '../src/components/common/RText';
 import NeonGr from '../src/components/neongr';
@@ -14,6 +14,7 @@ import firestore, { FieldValue } from "@react-native-firebase/firestore";
 import DialogInput from 'react-native-dialog-input';
 import BottomBar from '../src/components/common/BottomBar';
 import { useUser } from '../src/components/common/UserContext';
+import { FadeDownView } from '../src/components/common/buttonAnimation';
 
 const mycode = 'GPlyn';
 
@@ -24,31 +25,6 @@ function FriendList({ navigation: { navigate } }) {
 
   //유저코드 가져오기
   const { usercode } = useUser();
-
-  // 친구 추가 코드
-  async function add_frd(frdcode) {
-    // 해당 친구가 있는지 확인
-    const usersCollection = await firestore().collection('users').doc(frdcode).get();
-    const db = usersCollection.data();
-    if (db) {
-      console.log("있는뎁쇼");
-      // 추가
-      const userCollection = firestore().collection("users").doc(usercode);
-      userCollection.update("friend", FieldValue.arrayUnion(frdcode));
-
-      //상대 쪽에도 추가
-      const userCollection1 = firestore().collection("users").doc(frdcode);
-      userCollection1.update("friend", FieldValue.arrayUnion(usercode));
-
-      // 새 친구를 추가하고 상태를 업데이트
-      setUsers(prevState => [...prevState, { ...db, id: prevState.length + 1, code: frdcode }]);
-
-
-    } else {
-      console.log("없음");
-      Alert.alert('', '해당 친구코드는 없는 코드입니다.');
-    }
-  };
 
   // 친구 삭제 코드
   function delete_frd(frdcode) {
@@ -85,32 +61,34 @@ function FriendList({ navigation: { navigate } }) {
     }
   };
 
-  useEffect(() => {
-    frd_info();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      frd_info();
+    }, [])
+  );
 
   const [collapsed, setCollapsed] = useState(true);
 
   const rotateAnimValueRef = useRef(new Animated.Value(0));
 
-  useEffect(() => {
-    const targetValue = collapsed ? 0 : 1;
 
-    const config = {
-      duration: 200,
-      useNativeDriver: false,
-      toValue: targetValue,
-    };
-
-    Animated.parallel([
-      Animated.timing(rotateAnimValueRef.current, config),
-    ]).start();
-  }, [collapsed]);
 
   // 친구 목록
   const renderItem = ({ item }) => {
     const isExpanded = item.id === moreview;
     console.log(item);
+
+    const toggleExpand = () => {
+        const newValue = collapsed ? 1 : 0;
+        Animated.timing(rotateAnimValueRef.current, {
+            toValue: newValue,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+
+        more_frd(item.id);
+        setCollapsed(!collapsed);
+    };
 
     return (
       <View style={[styles.friendbox, isExpanded ? { height: 196 } : null]}>
@@ -126,27 +104,15 @@ function FriendList({ navigation: { navigate } }) {
 
           <View style={{ flexDirection: 'row' }}>
             <View style={{ flexDirection: 'column' }}>
-              <BText fontSize={16} style={{ marginBottom: 4 }}>{item.nickname}</BText>
-              <NeonGr><RText color={fcolors.gray4}>{item.intro}</RText></NeonGr>
+              <View style={{marginBottom:5, flexDirection:'row'}}>
+                <NeonGr><BText fontSize={16}>{item.nickname}</BText></NeonGr>
+              </View>
+              
+              <RText color={fcolor.gray4}>{item.intro}</RText>
             </View>
             <View style={{ position: 'absolute', left: 210, top: -5 }}>
-              <TouchableOpacity onPress={() => { more_frd(item.id), setCollapsed(!collapsed) }}>
-                <Animated.View
-                  style={[
-                    {
-                      transform: [
-                        {
-                          rotate: rotateAnimValueRef.current.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: ['0deg', '180deg'],
-                          }),
-                        },
-                      ],
-                    },
-                  ]}
-                >
-                  <Icon name='expand-more' size={30} color={!collapsed ? fcolors.blue : fcolors.gray2} />
-                </Animated.View>
+              <TouchableOpacity onPress={toggleExpand}>
+                  <Icon name='expand-more' size={30} color={isExpanded ? fcolor.blue : fcolor.gray2} />
               </TouchableOpacity>
             </View>
           </View>
@@ -175,7 +141,7 @@ function FriendList({ navigation: { navigate } }) {
     setSmallboxVisible(!smallboxVisible);
   };
 
-  // 친구 확대 버튼 이벤트
+  // 친구 정보 더 보기 버튼 이벤트
   const [moreview, setmoreview] = useState(null);
 
   const more_frd = (id) => {
@@ -185,12 +151,19 @@ function FriendList({ navigation: { navigate } }) {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 30, marginTop: 10, alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => navigate('main')}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
-          <BText fontSize={18}>친구 목록</BText>
-          <TouchableOpacity onPress={toggleMenu}>
-            <Icon name='person-add-alt' size={24} color="#717171" />
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15, marginTop: 10, alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => navigate('main1')}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
+          <BText fontSize={18} style={{marginLeft:35}}>친구 목록</BText>
+          <View style={{flexDirection:'row'}}>
+          <TouchableOpacity onPress={toggleMenu} style={{marginRight:10}}>
+            <Icon name='group-add' size={24} color="#717171" />
           </TouchableOpacity>
+          <TouchableOpacity >
+            <Icon name='person-remove' size={24} color="#717171" />
+          </TouchableOpacity>
+
+          </View>
+          
         </View>
 
         <FlatList
@@ -201,44 +174,24 @@ function FriendList({ navigation: { navigate } }) {
 
         {smallboxVisible && (
           <>
-            <TouchableOpacity style={styles.smallbox} onPress={() => setshowaddf(true)}>
-              <Text style={{ color: fcolors.blue }}>친구 추가하기</Text>
+          <FadeDownView duration={200}>
+            {/* onpress 옆에 setshowaddf(true)넣었었ㅇ므 */}
+            <TouchableOpacity style={styles.smallbox1} onPress={() => navigate('addfriend')}>
+              <Text style={{ color: fcolor.blue }}>친구 추가하기</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity style={styles.smallbox1} onPress={() => add_frd('tmBaD')}>
-              <Text style={{ color: fcolors.blue }}>친구 초대하기</Text>
+          </FadeDownView>
+          <FadeDownView duration={200}>
+            <TouchableOpacity style={styles.smallbox} onPress={() => {}}>
+              <Text style={{ color: fcolor.blue }}>친구 초대하기</Text>
             </TouchableOpacity>
+          </FadeDownView>
+            
           </>
         )}
       </View>
-      <BottomBar></BottomBar>
+      <BottomBar homecolor={fcolor.blue}></BottomBar>
 
-      <DialogInput
-        isDialogVisible={showaddf}
-        message={'친구 코드를 입력해주세요.'}
-        dialogStyle={{ backgroundColor: 'white', borderRadius: 10 }}
-        textInputProps={{
-          autoCorrect: false,
-          autoCapitalize: false,
-          maxLength: 10,
-        }}
-        hintInput={this.state?.name}
-        initValueTextInput={""}
-        submitText={'추가'}
-        cancelText={'취소'}
-        submitInput={(inputNickName) => {
-          if (inputNickName.trim() == "")
-            Alert.alert('', '공백은 추가할 수 없습니다.');
-          else {
-            console.log(inputNickName);
-            add_frd(inputNickName);
-            setshowaddf(false);
-          }
-        }}
-        closeDialog={() => {
-          setshowaddf(false);
-        }}
-      />
+      
     </GestureHandlerRootView>
   );
 };
@@ -247,14 +200,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 25,
-    backgroundColor: fcolors.white,
+    backgroundColor: fcolor.lblue2,
     flexDirection: 'column'
   },
   friendbox: {
     width: '100%',
     height: 74,
     borderRadius: 10,
-    backgroundColor: fcolors.lblue,
+    backgroundColor: fcolor.white,
     paddingHorizontal: 20,
     paddingVertical: 15,
     marginTop: 10,
@@ -263,7 +216,7 @@ const styles = StyleSheet.create({
   },
   tgbox: {
     height: 34,
-    backgroundColor: fcolors.white,
+    backgroundColor: fcolor.lblue2,
     paddingHorizontal: 20,
     paddingVertical: 9,
     borderRadius: 10,
@@ -275,7 +228,7 @@ const styles = StyleSheet.create({
     height: 196,
     flexDirection: 'row',
     borderRadius: 10,
-    backgroundColor: fcolors.lblue,
+    backgroundColor: fcolor.lblue2,
     padding: 20,
     alignItems: 'flex-start',
     marginTop: 10,
@@ -284,7 +237,7 @@ const styles = StyleSheet.create({
   frd_delet: {
     width: 76,
     height: 74,
-    backgroundColor: fcolors.orange,
+    backgroundColor: fcolor.orange,
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -292,7 +245,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: -10,
     top: -630,
-    backgroundColor: fcolors.skyblue,
+    backgroundColor: fcolor.lblue1,
     padding: 8,
     borderRadius: 10,
     zIndex: 10,
@@ -302,7 +255,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: -10,
     top: -680,
-    backgroundColor: fcolors.skyblue,
+    backgroundColor: fcolor.lblue1,
     padding: 8,
     borderRadius: 10,
     zIndex: 11,
