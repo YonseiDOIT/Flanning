@@ -61,3 +61,15 @@ export async function getUserid(email) {
   
   return {usercode, main};
 }
+
+
+export async function getMain(usercode){
+  const usersCollection1 = await firestore().collection('users').doc(usercode).get();
+  const db = usersCollection1.data();
+  console.log('maincode')
+  console.log(db.main)
+  let main=db.main
+  
+  return main;
+
+}

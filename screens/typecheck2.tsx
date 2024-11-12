@@ -14,7 +14,7 @@ import firestore from "@react-native-firebase/firestore";
 import { useUser } from "../src/components/common/UserContext";
 
 
-function Typecheck2({navigation: {navigate}}) {
+function Typecheck2({navigation: {navigate},route}) {
     
 
     //선호 여행지
@@ -136,7 +136,7 @@ function Typecheck2({navigation: {navigate}}) {
             {/* 다음 버튼 */}
             <View style={{flex:1,justifyContent: 'flex-end',marginBottom:20, alignItems:'center'}}>
                 <TouchableOpacity style={[styles.nextbutton,selectedCheckbox ? {backgroundColor:fcolor.blue}:null]}
-                onPress={selectedCheckbox ? ()=>[navigate('appinfo'),createtype(selectedCheckbox.prefertravel,selectedCheckbox.travelpurpose,selectedCheckbox.howtrvplan,selectedCheckbox.howtodayplan)]: null}>
+                onPress={selectedCheckbox ? ()=>[navigate('loading',{nickname:route.params.nickname}),createtype(selectedCheckbox.prefertravel,selectedCheckbox.travelpurpose,selectedCheckbox.howtrvplan,selectedCheckbox.howtodayplan)]: null}>
                         <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>마지막이에요</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.laterbutton}

@@ -17,7 +17,7 @@ import { useUser } from "../src/components/common/UserContext";
 
 
 
-function Typecheck1({navigation: {navigate}}) {
+function Typecheck1({navigation: {navigate},route}) {
     const [issave,setsave]= useState({
         preferlocation:'',
         trvtg: []
@@ -165,7 +165,7 @@ function Typecheck1({navigation: {navigate}}) {
         {/* 다음 버튼 */}
         <View style={{flex:1,justifyContent: 'flex-end',marginBottom:20, alignItems:'center'}}>
             <TouchableOpacity style={[styles.nextbutton,selectedCheckbox ? {backgroundColor:fcolor.blue}:null]} 
-                onPress={selectedCheckbox ? () => [navigate('typecheck2'),createtype(issave.preferlocation,issave.trvtg)]:null}>
+                onPress={selectedCheckbox ? () => [navigate('typecheck2',{nickname:route.params.nickname}),createtype(issave.preferlocation,issave.trvtg)]:null}>
                     <Text style={{color:'white',fontFamily:"Pretendard-Regular"}}>거의 다 왔어요</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.laterbutton}

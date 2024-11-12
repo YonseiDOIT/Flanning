@@ -77,7 +77,7 @@ function Nickname({ navigation: { navigate } }) {
 
             <View style={{ flex: 1, marginTop: 150, alignItems: 'center' }}>
                 <TouchableOpacity style={[styles.nextbutton, form.nickname && form.intro ? { backgroundColor: fcolor.blue } : null]}
-                    onPress={form.nickname && form.intro ? () => [onSubmit(form.nickname, form.intro), navigate('typecheck1')] : null}>
+                    onPress={form.nickname && form.intro ? () => [onSubmit(form.nickname, form.intro), navigate('typecheck1',{nickname:form.nickname})] : null}>
                     <Text style={{ color: 'white', fontFamily: "Pretendard-Regular" }}>다음</Text>
                 </TouchableOpacity>
             </View>

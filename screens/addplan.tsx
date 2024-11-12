@@ -136,14 +136,15 @@ export function AddPlan({ navigation: { navigate } }:any) {
   const { plancode, setPlancode } = usePlan();
 
   //파이어베이스에 데이터 입력
-  const onSubmit = (title: string, date1: string, date2: string, memo: string, userid: undefined) => {
+  const onSubmit = (title: string, date1: string, date2: string, memo: string, userid: undefined, place: undefined) => {
     console.log('파이어베이스 데이터 입력 성공!');
     const plancode = createplan({ // 회원 프로필 생성
       title: title,
       date1: date1,
       date2: date2,
       memo: memo,
-      userid: userid
+      userid: userid,
+      place: place
     })
 
 
@@ -221,7 +222,7 @@ export function AddPlan({ navigation: { navigate } }:any) {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, marginTop: 10, alignItems: 'center' }}>
           <TouchableOpacity onPress={() => navigate('main')}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
           <BText fontSize={18}>여행 떠나기</BText>
-          <TouchableOpacity onPress={() => [navigate('addplan1',{days:daysarr,day:0}),onSubmit(form.title, selected.start, selected.end, form.memo, usercode)]}>
+          <TouchableOpacity onPress={() => [navigate('addplan1',{days:daysarr,day:0}),onSubmit(form.title, selected.start, selected.end, form.memo, usercode, form.place)]}>
             <Icon name='arrow-forward' size={24} color={fcolor.blue} />
           </TouchableOpacity>
         </View>

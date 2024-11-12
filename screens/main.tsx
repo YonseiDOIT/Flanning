@@ -66,20 +66,7 @@ export function Main({ navigation: { navigate }}) {
             </View>
           </View>
 
-          <View style={{marginTop:15}}>
-            {/* 여행 예산 */}
-            <View style={{flexDirection:'row',justifyContent:'space-between',paddingHorizontal:20, alignItems:'center'}}>
-              <BText fontSize={15}>여행 예산</BText>
-              
-            </View>
-            <View style={styles.trvmoney}>
-              <View style={styles.moneybar}></View>            
-              <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:7}}>
-                <RText fontSize={10} color={fcolor.gray4}>예산 - 원</RText>
-                <MText fontSize={10} color={fcolor.gray4}>남은 예산 - 원</MText>
-              </View>
-            </View>
-          </View>
+          
                
       </View>
       </View>
@@ -126,7 +113,7 @@ const styles = StyleSheet.create({
   },
   //일정내용
   travelplane:{
-    height:235,
+    height:357,
     marginTop:10,
     backgroundColor:fcolor.lblue1,
     borderRadius:10,

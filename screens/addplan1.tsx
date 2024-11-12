@@ -290,7 +290,7 @@ export function AddPlan1({ navigation,route }) {
         //가져온 날짜에서 지금 날짜만 삭제
         setdaysarrupdate(route.params.days)
         console.log("DAY"+ (route.params.day+1))
-        setForm({ ...form, title: "DAY"+ (route.params.day+1), date: day})
+        setForm({ ...form, title: route.params.day+1, date: day})
 
       } catch (error) {
         console.error(error);

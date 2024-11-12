@@ -15,8 +15,8 @@ import DialogInput from 'react-native-dialog-input';
 import BottomBar from '../src/components/common/BottomBar';
 import { useUser } from '../src/components/common/UserContext';
 import { FadeDownView } from '../src/components/common/buttonAnimation';
+import { getMain } from '../src/lib/users';
 
-const mycode = 'GPlyn';
 
 function FriendList({ navigation: { navigate } }) {
   const [isMore, setMore] = useState(false);
@@ -25,6 +25,7 @@ function FriendList({ navigation: { navigate } }) {
 
   //유저코드 가져오기
   const { usercode } = useUser();
+  const [main, setmain] = useState('');
 
   // 친구 삭제 코드
   function delete_frd(frdcode) {
@@ -56,6 +57,8 @@ function FriendList({ navigation: { navigate } }) {
         console.log(db);
       }
       setUsers(updatedUsers);
+      setmain(await getMain(usercode))
+      
     } catch (error) {
       console.log(error.message);
     }
@@ -152,7 +155,7 @@ function FriendList({ navigation: { navigate } }) {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15, marginTop: 10, alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => navigate('main1')}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
+          <TouchableOpacity onPress={() => {if (main){navigate('main1')}else{navigate('main')}}}><Icon name='arrow-back-ios' size={24} color="#717171" /></TouchableOpacity>
           <BText fontSize={18} style={{marginLeft:35}}>친구 목록</BText>
           <View style={{flexDirection:'row'}}>
           <TouchableOpacity onPress={toggleMenu} style={{marginRight:10}}>

@@ -1,5 +1,5 @@
-import React, { memo, useEffect, useState } from 'react';
-import { Animated, Button, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+import { Animated, Button, Dimensions, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -16,6 +16,7 @@ import MText from '../src/components/common/MText';
 import { usePlan } from '../src/components/common/PlanContext';
 import { date } from '../src/lib/date';
 import LinearGradient from 'react-native-linear-gradient';
+import NeonGr from '../src/components/neongr';
 
 export type RootStackParam = {
   Home: undefined;
@@ -85,13 +86,12 @@ const PlanDetail = () => {
 
     <View style={styles.travelplane}>
       <View style={styles.trv_calendar}>
-        <View style={{ width: '30%', alignItems: 'center', justifyContent: 'center' }}>
-          <RText fontSize={10} color={fcolor.gray4}>{item.mon}</RText>
-          <BText fontSize={16} color={fcolor.gray4}>{item.day}</BText>
+        <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
+          <BText fontSize={15} color={"#6AA1F7"}>{item.mon}/{item.day}</BText>
         </View>
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginRight: 10 }}>
           <View>
-            <MText color={fcolor.gray4}>DAY{item.title}</MText>
+          <NeonGr colors={['#ffffff00', fcolor.lblue1]}><MText color={fcolor.gray4}>DAY{item.title}</MText></NeonGr>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate('plande1',{day:item.title-1})}>
             <Icon name='arrow-forward' size={24} color={fcolor.blue} />
@@ -134,10 +134,18 @@ const PlanDetail = () => {
     setOpend(!isOpend);
   };
 
+  //그... 뭐냐... 칸 넘기기
+  const [activeIndex, setActiveIndex]=useState(0);
+  const handleOnScroll = (event) => {
+    const scrollPosition = event.nativeEvent.contentOffset.x;
+    const indexOfActiveSlide = Math.round(scrollPosition / event.nativeEvent.layoutMeasurement.width);
+    setActiveIndex(indexOfActiveSlide);
+  };
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15, marginTop: 10, alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 17, marginTop: 10, alignItems: 'center',marginHorizontal:24 }}>
           <TouchableOpacity onPress={() => navigation.navigate('main1')}>
             <Icon name='arrow-back-ios' size={24} color="#717171" />
           </TouchableOpacity>
@@ -147,10 +155,18 @@ const PlanDetail = () => {
           </TouchableOpacity>
         </View>
         <View>
-          <View style={{ flexDirection: "row", marginBottom: 20, marginLeft: 12 }}>
-            <View style={styles.clickbox}>
-              <RText color={fcolor.blue}>6.1</RText>
-            </View>
+          <View style={{flexDirection:'row',marginBottom: 20, marginLeft: 12}}>
+                          {
+                              plan.map((_, idx)=>{
+                                  return <View key={idx.toString()}style={[styles.clickbox, idx === activeIndex && styles.dotfill]}>
+                                    {idx === activeIndex?
+                                    <RText color={fcolor.white}>{plan[idx].mon+'.'+plan[idx].day}</RText>
+                                    :
+                                    <RText color={fcolor.blue}>{plan[idx].mon+'.'+plan[idx].day}</RText>
+                                    }
+                                    </View>
+                              })
+                          }
           </View>
         </View>
         <View style={[{ paddingVertical: 10,alignItems:'center' }, isOpend ? { height: 530 } : { height: 565 }]}>
@@ -160,13 +176,19 @@ const PlanDetail = () => {
             keyExtractor={(item) => String(item.id)}
             initialNumToRender={10}
             windowSize={21}
-            horizontal={true}
+            horizontal
+            pagingEnabled
+            snapToAlignment="center"
+            showsHorizontalScrollIndicator={false} 
+            onScroll={handleOnScroll}
+            
           />
         </View>
-        <Pressable
+        
+        {/* <Pressable
           style={({ pressed }) => pressed ? [styles.fab, { transform: [{ scale: 0.9 }] }] : [styles.fab]}>
           <Icon name='edit' size={24} color={fcolor.white} />
-        </Pressable>
+        </Pressable> */}
 
       </View>
       <BottomBar checkcolor={fcolor.blue} />
@@ -199,20 +221,20 @@ const styles = StyleSheet.create({
 
   //여행 중요 메모
   clickbox: {
-    width: 44,
-    height: 31,
     backgroundColor: fcolor.white,
     borderWidth: 1,
     borderColor: fcolor.lblue1,
     borderRadius: 27,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal:13,
+    paddingVertical:8,
+    marginHorizontal:5
   },
   //일정내용
   travelplane: {
     width: 350,
-    height: 500,
-    marginVertical: 10,
+    height: 540,
     marginHorizontal:10,
     backgroundColor: fcolor.white,
     borderColor: fcolor.lblue1,
@@ -243,7 +265,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'baseline'
   },
-
+  dot:{
+    width:8,
+    height:8,
+    borderRadius:50,
+    backgroundColor:fcolor.gray2,
+    margin:5
+  },
+  dotfill:{
+      backgroundColor:fcolor.blue,
+      borderColor:fcolor.blue,
+  }
+  ,
 
   //플로팅 버튼
   fab: {

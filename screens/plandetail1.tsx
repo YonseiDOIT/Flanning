@@ -67,7 +67,9 @@ export function PlanDetail1({ navigation: { navigate },route }) {
         // setPlan을 호출할 때 planList[0]의 각 item을 변환하여 설정
 
         let s_date= planlist[route.params.day].id.split('-')
-        let start_d=s_date[route.params.day].slice(2,4)+'.'+s_date[1]+'.'+s_date[2]
+        console.log('뭐임?')
+        console.log(s_date)
+        let start_d=s_date[0].slice(2,4)+'.'+s_date[1]+'.'+s_date[2]
 
         setPlan({ title: planlist[route.params.day].title, id: planlist[route.params.day].id,date:start_d });
 

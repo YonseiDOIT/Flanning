@@ -12,13 +12,14 @@ export function userplan({title,date1,date2,memo}) {
 };
 
 //문서 만들기
-export function createplan({title,date1,date2,memo,userid}) {
+export function createplan({title,date1,date2,memo,userid,place}) {
   const userCollection = firestore().collection("plan").doc();
   userCollection.set({
     title:title,
     startday:date1,
     endday:date2,
-    memo:memo
+    memo:memo,
+    place:place
   })
 
   const userCollection1 = firestore().collection("users").doc(userid);

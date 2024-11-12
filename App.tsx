@@ -28,6 +28,7 @@ import Reviewpage from './screens/reviewpage';
 import AddReview from './screens/addreview';
 import Alarmlist from './screens/alarmlist';
 import Addfriend from './screens/addfriend';
+import LoadingPage from './screens/loading';
 
 
 
@@ -50,6 +51,7 @@ const App = () => {
             <Stack.Screen name="appinfo" component={Appinfo} />
             <Stack.Screen name="test" component={TestScreen} />
             <Stack.Screen name="test1" component={TestScreen2} />
+            <Stack.Screen name="loading" component={LoadingPage} />
             {/* 아래는 일정 없는 홈과 일정 있는 홈 잠시 나눔 */}
             <Stack.Screen name="main" component={Main} />
             <Stack.Screen name="main1" component={Main1} />

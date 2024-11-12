@@ -99,12 +99,12 @@ export function Main1({ navigation: { navigate } }) {
         <RText fontSize={12} color={fcolor.gray4}>{item.time}</RText>
       </View>
       <View style={{ width: '12%' }}>
-        <BoxGr name={item.locationtyp}/>
+        <BoxGr name={item.locationtyp} />
       </View>
       <View style={{ width: '65%' }}>
         <View style={{ flexDirection: 'row' }}>
           <BText fontSize={15}>{item.location}</BText>
-          
+
         </View>
         <View style={{ flexDirection: 'row', marginTop: 8 }}>
           {item.content[0] !== '' && <Icons name={item.content[0]} size={22} color="#6AA1F7" />}
@@ -168,52 +168,54 @@ export function Main1({ navigation: { navigate } }) {
     )
   }
 
-  
+
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
         {planTitle.hav_p ? (
-          <View style={{flex:1}}>
-          <ImageBackground
-            source={{ uri: `data:image/jpeg;base64,${planTitle.photo}` }}
-            style={{ width:"100%",height:"100%", zIndex: 1 }}
-            resizeMode="cover"
-          >
-            <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              paddingTop: 30,
-              paddingLeft: 30,
-              paddingRight: 30,
-              paddingBottom: 10,}}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 50 }}>
-            <Image source={require('../src/assets/images/logo.png')} style={{ width: 89, height: 34 }} />
-            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-              <TouchableOpacity onPress={() => navigate('alarmlist')}><Icons name='bell' size={22} color={fcolor.white}></Icons></TouchableOpacity>
-              <TouchableOpacity onPress={() => navigate('friend')}><Icon name='group' size={25} color={fcolor.white} style={{ marginHorizontal: 16 }} /></TouchableOpacity>
-              <TouchableOpacity onPress={toggleMenu}><Icon name='settings' size={25} color={fcolor.white} /></TouchableOpacity>
-            </View>
-          </View>
-          {smallboxVisible && (
-            <>
-              <FadeDownView>
-                <TouchableOpacity style={styles.smallbox} onPress={() => { }}>
-                  <RText color={fcolor.blue} fontSize={13}>사진 촬영하기</RText>
-                </TouchableOpacity>
-              </FadeDownView>
-              <FadeDownView>
-                <TouchableOpacity style={styles.smallbox1} onPress={onSelectImage}>
-                  <RText color={fcolor.blue} fontSize={13}>앨범 선택하기</RText>
-                </TouchableOpacity>
-              </FadeDownView>
-            </>
-          )}
+          <View style={{ flex: 1 }}>
+            <ImageBackground
+              source={{ uri: `data:image/jpeg;base64,${planTitle.photo}` }}
+              style={{ width: "100%", height: "100%", zIndex: 1 }}
+              resizeMode="cover"
+            >
+              <View style={{
+                flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                paddingTop: 30,
+                paddingLeft: 30,
+                paddingRight: 30,
+                paddingBottom: 10,
+              }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 50 }}>
+                  <Image source={require('../src/assets/images/logo.png')} style={{ width: 89, height: 34 }} />
+                  <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    <TouchableOpacity onPress={() => navigate('alarmlist')}><Icons name='bell' size={22} color={fcolor.white}></Icons></TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigate('friend')}><Icon name='group' size={25} color={fcolor.white} style={{ marginHorizontal: 16 }} /></TouchableOpacity>
+                    <TouchableOpacity onPress={toggleMenu}><Icon name='settings' size={25} color={fcolor.white} /></TouchableOpacity>
+                  </View>
+                </View>
+                {smallboxVisible && (
+                  <>
+                    <FadeDownView>
+                      <TouchableOpacity style={styles.smallbox} onPress={() => { }}>
+                        <RText color={fcolor.blue} fontSize={13}>사진 촬영하기</RText>
+                      </TouchableOpacity>
+                    </FadeDownView>
+                    <FadeDownView>
+                      <TouchableOpacity style={styles.smallbox1} onPress={onSelectImage}>
+                        <RText color={fcolor.blue} fontSize={13}>앨범 선택하기</RText>
+                      </TouchableOpacity>
+                    </FadeDownView>
+                  </>
+                )}
 
-          <BText color='white' fontSize={23} style={{ marginBottom: 5 }}>{planTitle.title}</BText>
+                <BText color='white' fontSize={23} style={{ marginBottom: 5 }}>{planTitle.title}</BText>
+              </View>
+
+            </ImageBackground>
           </View>
 
-          </ImageBackground>
-        </View>
-          
         ) : (
           <View style={styles.imagebanner}>
 
@@ -227,18 +229,18 @@ export function Main1({ navigation: { navigate } }) {
             </View>
             {smallboxVisible && (
               <>
-              <FadeDownView duration={500}>
-                <TouchableOpacity style={styles.smallbox} onPress={() => { }}>
-                  <RText color={fcolor.blue} fontSize={13}>사진 촬영하기</RText>
-                </TouchableOpacity>
-              </FadeDownView>
-              
-              <FadeDownView duration={300}>
-                <TouchableOpacity style={styles.smallbox1} onPress={onSelectImage}>
-                  <RText color={fcolor.blue} fontSize={13}>앨범 선택하기</RText>
-                </TouchableOpacity>
-              </FadeDownView>
-                
+                <FadeDownView duration={300}>
+                  <TouchableOpacity style={styles.smallbox} onPress={() => { navigate('loading') }}>
+                    <RText color={fcolor.blue} fontSize={13}>사진 촬영하기</RText>
+                  </TouchableOpacity>
+                </FadeDownView>
+
+                <FadeDownView duration={300}>
+                  <TouchableOpacity style={styles.smallbox1} onPress={onSelectImage}>
+                    <RText color={fcolor.blue} fontSize={13}>앨범 선택하기</RText>
+                  </TouchableOpacity>
+                </FadeDownView>
+
               </>
             )}
 
@@ -269,12 +271,11 @@ export function Main1({ navigation: { navigate } }) {
             </View>
             <View style={styles.travelplane}>
               <View style={styles.trv_calendar}>
-                <View style={{ width: '25%', alignItems: 'center', justifyContent: 'center' }}>
-                  <RText fontSize={10} color={fcolor.gray4}>{plan.mon}</RText>
-                  <BText fontSize={16} color={fcolor.gray4}>{plan.day}</BText>
+                <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
+                  <BText fontSize={15} color={"#6AA1F7"}>{plan.mon}/{plan.day}</BText>
                 </View>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                  <NeonGr colors={['#ffffff00',fcolor.lblue1]}><BText fontSize={16}>DAY{plan.title}</BText></NeonGr>
+                  <NeonGr colors={['#ffffff00', fcolor.lblue1]}><BText fontSize={16}>DAY{plan.title}</BText></NeonGr>
                 </View>
               </View>
               <View style={styles.planecontent}>
@@ -327,7 +328,7 @@ const styles = StyleSheet.create({
   smallbox1: {
     position: 'absolute',
     right: -8,
-    top: -5,
+    top: -6,
     backgroundColor: fcolor.lblue1,
     padding: 7,
     borderRadius: 8,
@@ -349,26 +350,26 @@ const styles = StyleSheet.create({
     height: 88,
     flexDirection: 'column',
     backgroundColor: fcolor.white,
-    borderWidth:1,
-    borderColor:fcolor.lblue1,
+    borderWidth: 1,
+    borderColor: fcolor.lblue1,
     padding: 24,
     borderRadius: 10
   },
   //일정내용
   travelplane: {
-    height:357,
+    height: 357,
     marginTop: 10,
     backgroundColor: fcolor.white,
-    borderWidth:1,
-    borderColor:fcolor.lblue1,
+    borderWidth: 1,
+    borderColor: fcolor.lblue1,
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 13
   },
   trv_calendar: {
     height: 50,
-    borderBottomWidth:1,
-    borderColor:fcolor.gray2,
+    borderBottomWidth: 1,
+    borderColor: fcolor.gray2,
     flexDirection: 'row',
     marginBottom: 5,
   },
@@ -383,7 +384,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: '100%',
     justifyContent: 'space-around',
-    alignItems:'baseline'
+    alignItems: 'baseline'
   },
 
 
