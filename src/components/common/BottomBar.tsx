@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   TouchableOpacity,
@@ -11,21 +11,32 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import fcolors from '../../assets/colors/fcolors';
 import RText from './RText';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-const BottomBar = ({ homecolor = fcolors.gray3, checkcolor = fcolors.gray3, reviewcolor = fcolors.gray3, settingcolor = fcolors.gray3 }) => {
+const BottomBar = ({
+  homecolor = fcolors.gray3,
+  checkcolor = fcolors.gray3,
+  reviewcolor = fcolors.gray3,
+  settingcolor = fcolors.gray3,
+}) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
-      setVisible(false);
-    });
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setVisible(false);
+      },
+    );
 
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      setVisible(true);
-    });
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setVisible(true);
+      },
+    );
 
     return () => {
       keyboardDidShowListener.remove();
@@ -33,25 +44,41 @@ const BottomBar = ({ homecolor = fcolors.gray3, checkcolor = fcolors.gray3, revi
     };
   }, []);
 
-  if (!visible) return null;
+  if (!visible) {
+    return null;
+  }
 
   return (
     <View style={styles.bottombar}>
-      <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('main1')}>
-        <Icon name='home-filled' size={25} color={homecolor} />
-        <RText style={{ marginTop: 5 }} color={homecolor} fontSize={10}>홈</RText>
+      <TouchableOpacity
+        style={styles.icon}
+        onPress={() => navigation.navigate('main1')}>
+        <Icon name="home-filled" size={25} color={homecolor} />
+        <RText style={{marginTop: 5}} color={homecolor} fontSize={10}>
+          홈
+        </RText>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('planlist')}>
-        <Icon name='checklist' size={25} color={checkcolor} />
-        <RText style={{ marginTop: 5 }} color={checkcolor} fontSize={10}>여행 목록</RText>
+      <TouchableOpacity
+        style={styles.icon}
+        onPress={() => navigation.navigate('planlist')}>
+        <Icon name="checklist" size={25} color={checkcolor} />
+        <RText style={{marginTop: 5}} color={checkcolor} fontSize={10}>
+          여행 목록
+        </RText>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('reviewlist')}>
-        <Icon name='edit' size={25} color={reviewcolor} />
-        <RText style={{ marginTop: 5 }} color={reviewcolor} fontSize={10}>리뷰</RText>
+      <TouchableOpacity
+        style={styles.icon}
+        onPress={() => navigation.navigate('reviewlist')}>
+        <Icon name="edit" size={25} color={reviewcolor} />
+        <RText style={{marginTop: 5}} color={reviewcolor} fontSize={10}>
+          리뷰
+        </RText>
       </TouchableOpacity>
       <TouchableOpacity style={styles.icon}>
-        <Icon name='settings' size={25} color={settingcolor} />
-        <RText style={{ marginTop: 5 }} color={settingcolor} fontSize={10}>설정</RText>
+        <Icon name="settings" size={25} color={settingcolor} />
+        <RText style={{marginTop: 5}} color={settingcolor} fontSize={10}>
+          설정
+        </RText>
       </TouchableOpacity>
     </View>
   );
@@ -59,17 +86,17 @@ const BottomBar = ({ homecolor = fcolors.gray3, checkcolor = fcolors.gray3, revi
 
 const styles = StyleSheet.create({
   bottombar: {
-    width: "100%",
-    height: 70,
+    width: '100%',
+    height: Platform.OS === 'ios' ? 100 : 60,
     backgroundColor: fcolors.gray1,
-    flexDirection: "row",
+    flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingLeft: 10,
     paddingRight: 10,
     position: 'absolute',
     bottom: 0,
-    elevation:15
+    elevation: 15,
   },
   icon: {
     flexDirection: 'column',
@@ -78,9 +105,9 @@ const styles = StyleSheet.create({
   },
   icontext: {
     fontSize: 10,
-    fontFamily: "Pretendard-Regular",
+    fontFamily: 'Pretendard-Regular',
     padding: 5,
-    color: fcolors.gray4
+    color: fcolors.gray4,
   },
 });
 

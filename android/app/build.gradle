@@ -118,11 +118,12 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
     implementation("com.facebook.react:flipper-integration")
-    implementation platform('com.google.firebase:firebase-bom:32.2.2')
+    implementation 'androidx.core:core-splashscreen:1.0.0-beta01'
+    // implementation platform('com.google.firebase:firebase-bom:32.2.2')
     implementation project(':react-native-linear-gradient')
 
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-firestore")
+    // implementation("com.google.firebase:firebase-auth")
+    // implementation("com.google.firebase:firebase-firestore")
     
 
     if (hermesEnabled.toBoolean()) {
