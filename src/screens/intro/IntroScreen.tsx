@@ -200,7 +200,7 @@ function IntroScreen({navigation}) {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.loginbutton}
-          // onPress={() => signInSubmit()}
+          onPress={() => navigation.navigate('Signin')}
         >
           <Image
             style={{width: '100%', height: 30}}
