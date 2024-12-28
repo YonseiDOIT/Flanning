@@ -12,6 +12,11 @@ import MText from 'src/components/common/MText';
 import RText from 'src/components/common/RText';
 import Step1Screen from './Step1Screen';
 import Step2Screen from './Step2Screen';
+import SignupCompleteScreen from './SignupCompleteScreen';
+import Step5Screen from './Step5Screen';
+import Step4Screen from './Step4Screen';
+import Step3Screen from './Step3Screen';
+import {SignupProvider} from './SignupProvider';
 
 export type RootStackParam = {};
 
@@ -20,12 +25,18 @@ const Stack = createNativeStackNavigator();
 // 회원가입 스택
 function SignupStack({navigation}) {
   return (
-    <Stack.Navigator
-      initialRouteName="Step1"
-      screenOptions={{headerShown: false}}>
-      <Stack.Screen name="Step1" component={Step1Screen} />
-      <Stack.Screen name="Step2" component={Step2Screen} />
-    </Stack.Navigator>
+    <SignupProvider>
+      <Stack.Navigator
+        initialRouteName="Step1"
+        screenOptions={{headerShown: false}}>
+        <Stack.Screen name="Step1" component={Step1Screen} />
+        <Stack.Screen name="Step2" component={Step2Screen} />
+        <Stack.Screen name="Step3" component={Step3Screen} />
+        <Stack.Screen name="Step4" component={Step4Screen} />
+        <Stack.Screen name="Step5" component={Step5Screen} />
+        <Stack.Screen name="StepComplete" component={SignupCompleteScreen} />
+      </Stack.Navigator>
+    </SignupProvider>
   );
 }
 
