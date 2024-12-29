@@ -6,15 +6,19 @@ import fcolor from 'src/assets/colors/fcolors';
 import {useSignup} from 'src/screens/auth/Signup/SignupProvider';
 
 function BackHeader({navigation, isSignup = false}) {
-  const {signupStep, setSignupStep} = useSignup();
-
-  // console.log(navigation);
+  let signupContext;
+  try {
+    signupContext = useSignup();
+  } catch (error) {
+    // SignupProvider가 없으면 기본 동작 설정
+    signupContext = null;
+  }
 
   const handleStepPrev = () => {
-    if (isSignup && signupStep > 0) {
-      setSignupStep(signupStep - 1); // signupStep 감소
+    if (isSignup && signupContext && signupContext.signupStep > 0) {
+      signupContext.setSignupStep(signupContext.signupStep - 1);
     } else {
-      navigation.goBack(); // 이전 화면으로 이동
+      navigation.goBack();
     }
   };
 
