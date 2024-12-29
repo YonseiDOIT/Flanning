@@ -1,9 +1,30 @@
-import React from 'react';
-import {View, Text} from 'react-native';
+import React, {useEffect, useRef} from 'react';
+import {View, Text, Animated} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import fcolor from 'src/assets/colors/fcolors';
 
 const AuthProgress = ({currentStep}) => {
+  const animatedValues = useRef(
+    [...Array(4)].map(() => new Animated.Value(0)),
+  ).current;
+
+  useEffect(() => {
+    animatedValues.forEach((animValue, index) => {
+      Animated.timing(animValue, {
+        toValue: index <= currentStep ? 1 : 0,
+        duration: 500,
+        useNativeDriver: false,
+      }).start();
+    });
+  }, [currentStep]);
+
+  const backgroundColors = animatedValues.map(animValue =>
+    animValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [fcolor.gray2, fcolor.blue],
+    }),
+  );
+
   return (
     <View
       style={{
@@ -14,15 +35,15 @@ const AuthProgress = ({currentStep}) => {
         marginTop: 10,
         marginBottom: 20,
       }}>
-      {Array.from({length: 4}, (_, idx) => (
-        <View
+      {backgroundColors.map((bgColor, idx) => (
+        <Animated.View
           key={`step-${idx}`}
           style={{
             width: 10,
             height: 10,
-            borderRadius: 50,
-            marginHorizontal: 5,
-            backgroundColor: idx < currentStep + 1 ? fcolor.blue : fcolor.gray2,
+            borderRadius: 5,
+            marginHorizontal: 4,
+            backgroundColor: bgColor,
           }}
         />
       ))}

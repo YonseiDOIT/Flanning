@@ -1,54 +1,58 @@
 // @ts-nocheck
-import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {useEffect, useRef} from 'react';
+import {Animated, StyleSheet, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+
+import {useSignup} from './SignupProvider';
 import fcolor from 'src/assets/colors/fcolors';
 import BText from 'src/components/common/BText';
 import MText from 'src/components/common/MText';
 import NeonGr from 'src/components/neongr';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import globalStyles from 'src/assets/styles/globalStyles';
 
-import AuthProgress from 'src/screens/auth/components/AuthProgress';
-import BackHeader from 'src/components/common/BackHeader';
-import {useSignup} from './SignupProvider';
+const Step1Screen = () => {
+  const {signupData, handleStepNext, setSignupData} = useSignup();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
-const Step1Screen = ({navigation}) => {
-  const {signupStep, handleStepNext, updateSignupData} = useSignup();
-
-  const [checkboxStates, setCheckboxStates] = useState({
-    overFourteen: false,
-    termsAgree: false,
-    privacyPolicy: false,
-    personalInfo: false,
-    marketing: false,
-  });
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
 
   const termList = [
+    // 1. 만 14세 이상 이용 가능 동의
     {
       name: 'overFourteen',
       label: '만 14세 이상',
       other: '입니다.',
       url: 'www.naver.com',
     },
+    // 2. 서비스 이용약관 동의
     {
       name: 'termsAgree',
       label: '서비스 이용약관',
       other: ' 동의',
       url: 'www.naver.com',
     },
+    // 3. 개인정보 처리방침 동의
     {
       name: 'privacyPolicy',
       label: '개인전보 처리방침',
       other: ' 동의',
       url: 'www.naver.com',
     },
+    // 4. 개인정보 수집 및 이용 동의
     {
       name: 'personalInfo',
       label: '개인정보 수집 및 이용',
       other: ' 동의',
       url: 'www.naver.com',
     },
+    // 5. 마케팅 수신 동의
     {
       name: 'marketing',
       label: '마케팅 수신',
@@ -58,24 +62,31 @@ const Step1Screen = ({navigation}) => {
   ];
 
   // 모두 동의 처리
-  const isAllAgree = () => Object.values(checkboxStates).every(value => value);
+  const isAllAgree = () =>
+    Object.values(signupData.step1).every(value => value);
 
   const handleChange = checkbox => {
     // 모두 동의 체크박스 처리
     if (checkbox === 'allAgree') {
-      const newState = !isAllAgree();
-      setCheckboxStates({
-        overFourteen: newState,
-        termsAgree: newState,
-        privacyPolicy: newState,
-        personalInfo: newState,
-        marketing: newState,
-      });
+      const newState = !Object.values(signupData.step1).every(value => value);
+      setSignupData(prevData => ({
+        ...prevData,
+        step1: {
+          overFourteen: newState,
+          termsAgree: newState,
+          privacyPolicy: newState,
+          personalInfo: newState,
+          marketing: newState,
+        },
+      }));
     } else {
       // 개별 항목 처리
-      setCheckboxStates(prevState => ({
-        ...prevState,
-        [checkbox]: !prevState[checkbox],
+      setSignupData(prevData => ({
+        ...prevData,
+        step1: {
+          ...prevData.step1,
+          [checkbox]: !prevData.step1[checkbox],
+        },
       }));
     }
   };
@@ -83,23 +94,12 @@ const Step1Screen = ({navigation}) => {
   // 다음으로 넘어가기 위한 조건 처리
   const validationNext = () => {
     const {overFourteen, termsAgree, privacyPolicy, personalInfo} =
-      checkboxStates;
+      signupData.step1;
     return overFourteen && termsAgree && privacyPolicy && personalInfo;
   };
 
-  // 현재 Step 내용 Provider state에 저장 및 navigation
-  const handleNext = () => {
-    updateSignupData('step1', checkboxStates);
-    handleStepNext();
-    navigation.navigate('Step2');
-  };
-
   return (
-    <View style={globalStyles.container}>
-      {/* 회원가입 헤더 */}
-      <BackHeader navigation={navigation} isSignup={true} />
-      <AuthProgress currentStep={signupStep} />
-
+    <Animated.View style={{flex: 1, opacity: fadeAnim}}>
       {/* 타이틀 및 설명 */}
       <View style={{marginTop: 0, gap: 9}}>
         <BText>
@@ -164,10 +164,10 @@ const Step1Screen = ({navigation}) => {
                 style={[
                   styles.checkbox,
                   globalStyles.centered,
-                  checkboxStates[term.name] ? styles.check : null,
+                  signupData.step1[term.name] ? styles.check : null,
                 ]}
                 onPress={() => handleChange(term.name)}>
-                {checkboxStates[term.name] && (
+                {signupData.step1[term.name] && (
                   <MaterialIcon name="check" size={14} color={fcolor.white} />
                 )}
               </TouchableOpacity>
@@ -203,11 +203,11 @@ const Step1Screen = ({navigation}) => {
               : {backgroundColor: fcolor.gray4},
           ]}
           disabled={!validationNext()}
-          onPress={handleNext}>
+          onPress={handleStepNext}>
           <MText color={fcolor.white}>다음</MText>
         </TouchableOpacity>
       </View>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -239,11 +239,6 @@ const styles = StyleSheet.create({
   check: {
     backgroundColor: fcolor.blue,
     borderColor: fcolor.gray3,
-  },
-  nextbutton: {
-    backgroundColor: fcolor.gray4,
-    height: 45,
-    borderRadius: 10,
   },
 });
 

@@ -24,7 +24,7 @@ import fcolor from 'src/assets/colors/fcolors';
 // import {createUser, getUserid} from '../src/lib/users';
 // import {useUser} from '../src/components/common/UserContext';
 // import {usePlan} from '../src/components/common/PlanContext';
-import FlanningLogo from 'src/assets/images/logo/flanning-logo-white-v1.svg';
+import FlanningV1Logo from 'src/assets/images/logo/flanning-logo-white-v1.svg';
 import Video from 'react-native-video';
 // import {useNavigation} from '@react-navigation/native';
 
@@ -38,7 +38,7 @@ function IntroScreen({navigation}) {
   //   password: '',
   //   confirmPassword: '',
   // });
-  const [locationText, setLocationText] = useState('서울');
+  const [locationText, setLocationText] = useState('');
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const prevLocationRef = useRef('');
 
@@ -121,7 +121,8 @@ function IntroScreen({navigation}) {
 
   useEffect(() => {
     const locations = ['전주', '경주', '가평', '강릉', '원주'];
-    const intervalId = setInterval(() => {
+
+    const startAnimation = () => {
       let randomLocation;
       do {
         randomLocation =
@@ -136,19 +137,26 @@ function IntroScreen({navigation}) {
         toValue: 1,
         duration: 1000,
         useNativeDriver: true,
-      }).start();
+      }).start(() => {
+        setTimeout(() => {
+          Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 1000,
+            useNativeDriver: true,
+          }).start();
+        }, 4000);
+      });
+    };
 
-      // Fade-out 애니메이션
-      setTimeout(() => {
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 1000,
-          useNativeDriver: true,
-        }).start();
-      }, 5000);
-    }, 6000);
+    // 처음 1초 지연 후 시작
+    const initialTimeout = setTimeout(() => {
+      startAnimation();
+      // 이후 주기적으로 실행
+      const intervalId = setInterval(startAnimation, 6000); // 6초마다 업데이트
+      return () => clearInterval(intervalId);
+    }, 1000);
 
-    return () => clearInterval(intervalId);
+    return () => clearTimeout(initialTimeout);
   }, [fadeAnim]);
 
   return (
@@ -183,11 +191,7 @@ function IntroScreen({navigation}) {
           </Animated.Text>
 
           {/* </Text> */}
-          <FlanningLogo
-            width={110}
-            height={50}
-            // style={{flex: 1, width: '100%', height: '100%'}}
-          />
+          <FlanningV1Logo width={110} height={50} />
         </View>
         <TouchableOpacity
           style={styles.kakaobutton}

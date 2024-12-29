@@ -4,41 +4,52 @@ import {useSignup} from './SignupProvider';
 import BackHeader from '../../../components/common/BackHeader';
 import AuthProgress from '../components/AuthProgress';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import fcolors from '../../../assets/colors/fcolors';
+
+import globalStyles from 'src/assets/styles/globalStyles';
+import fcolor from 'src/assets/colors/fcolors';
+import MText from 'src/components/common/MText';
+import BText from 'src/components/common/BText';
 
 // 회원가입 완료 시 보여줄 분류 페이지
 const SignupCompleteScreen = ({navigation}) => {
-  const {signupStep, handleStepNext} = useSignup();
+  const {signupStep, handleStepNext, signupData} = useSignup();
+
+  const validationNext = () => {
+    return true;
+  };
 
   return (
-    <View style={styles.container}>
+    <View style={{flex: 1}}>
       {/* 회원가입 헤더 */}
 
-      <View style={{marginTop: 0}}>
-        <Text>회원가입 완료</Text>
+      <View style={[globalStyles.centered, {marginVertical: 100}]}>
+        <BText>이용자 별 여행 분류</BText>
       </View>
 
       <View style={{flex: 1, justifyContent: 'flex-end', marginBottom: 100}}>
         <TouchableOpacity
+          style={[
+            globalStyles.buttonBase,
+            globalStyles.centered,
+            validationNext()
+              ? {backgroundColor: fcolor.blue}
+              : {backgroundColor: fcolor.gray4},
+          ]}
+          disabled={!validationNext()}
           onPress={() => {
-            handleStepNext();
-            navigation.navigate('Home');
+            console.log(signupData);
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'Home'}],
+            });
           }}>
-          <Text>다음</Text>
+          <MText color={fcolor.white}>플래닝 시작하기</MText>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    padding: 30,
-    backgroundColor: fcolors.white,
-  },
-});
+const styles = StyleSheet.create({});
 
 export default SignupCompleteScreen;

@@ -8,11 +8,14 @@ import {useSignup} from 'src/screens/auth/Signup/SignupProvider';
 function BackHeader({navigation, isSignup = false}) {
   const {signupStep, setSignupStep} = useSignup();
 
+  // console.log(navigation);
+
   const handleStepPrev = () => {
     if (isSignup && signupStep > 0) {
       setSignupStep(signupStep - 1); // signupStep 감소
+    } else {
+      navigation.goBack(); // 이전 화면으로 이동
     }
-    navigation.goBack(); // 이전 화면으로 이동
   };
 
   return (
