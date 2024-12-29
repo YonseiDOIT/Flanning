@@ -33,7 +33,7 @@ import SplashScreen from 'react-native-splash-screen';
 import React, {useEffect} from 'react';
 import AppProvider from 'src/context/AppProvider';
 import HomeScreen from './src/screens/home/HomeScreen';
-import SigninScreen from './src/screens/intro/IntroScreen';
+import SigninScreen from './src/screens/auth/Signin/SigninScreen';
 import IntroScreen from './src/screens/intro/IntroScreen';
 // import SignupStack from './src/screens/auth/Signup/SignupStack';
 import NotificationScreen from './src/screens/notification/NotificationScreen';
