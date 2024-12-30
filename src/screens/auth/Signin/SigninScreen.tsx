@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Keyboard,
   StyleSheet,
@@ -8,16 +8,43 @@ import {
   View,
 } from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import fcolors from 'src/assets/colors/fcolors';
+import fcolor from 'src/assets/colors/fcolors';
 import globalStyles from 'src/assets/styles/globalStyles';
 import BackHeader from 'src/components/common/BackHeader';
 import BText from 'src/components/common/BText';
 import MText from 'src/components/common/MText';
-import {useNavigation} from '@react-navigation/native';
+import auth from "@react-native-firebase/auth";
+import { validateEmail, validatePassword } from 'src/utils/validators';
 
 // 이메일 비밀번호를 받는 로그인 화면
 const SigninScreen = ({navigation}) => {
-  // const navigation = useNavigation();
+  //이메일 비밀번호 입력
+  const [form, setForm] = useState({
+    email: "",
+    password: ""
+  });
+  //오류 문구 보여주기
+  const [fail, setfail] = useState(false);
+
+  //로그인
+  const SignIn = async () => {
+    try {
+      await auth().signInWithEmailAndPassword(form.email, form.password)
+      setfail(false)
+      navigation.navigate('Home')
+
+    } catch (e) {
+      setfail(true)
+    }
+  }
+
+  // 버튼 색 활성화(로그인 가능)
+  const validationNext = () => {
+      return (
+        validateEmail(form.email) &&
+        validatePassword(form.password)
+      );
+  };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -27,18 +54,18 @@ const SigninScreen = ({navigation}) => {
           <BText fontSize={25} style={{marginBottom: 6}}>
             이메일 로그인
           </BText>
-          <MText fontSize={13} color={fcolors.gray3}>
+          <MText fontSize={13} color={fcolor.gray3}>
             플래닝과 함께 여행을 시작해요
           </MText>
         </View>
-        <View style={{marginBottom: 6}}>
+        <View style={{marginBottom:16}}>
           <View>
             <MText fontSize={13} style={styles.boxname}>
               이메일
             </MText>
             <TextInput
               style={styles.inputbox}
-              onChangeText={text => ''}
+              onChangeText={(text)=>(setForm({...form,email:text}))}
               placeholder={'example@flanning.com'}
             />
           </View>
@@ -48,20 +75,31 @@ const SigninScreen = ({navigation}) => {
             </MText>
             <TextInput
               style={styles.inputbox}
-              onChangeText={text => ''}
+              onChangeText={(text)=>(setForm({...form,password:text}))}
               secureTextEntry={true}
-              placeholder={'8자 이상으로 입력'}
+              placeholder={'영문 대·소문자/숫자 조합, 8자 이상'}
             />
           </View>
+          {fail &&
+            <View style={styles.fail}>
+              <MText fontSize={13} color={fcolor.orange}>아이디 또는 비밀번호가 올바르지 않습니다.</MText>
+            </View>
+          }
         </View>
-        <TouchableOpacity style={styles.loginbutton}>
-          <MText fontSize={13} color={fcolors.white}>
+        <TouchableOpacity 
+          style={[globalStyles.buttonBase,
+            validationNext()
+            ? {backgroundColor: fcolor.blue}
+            : {backgroundColor: fcolor.gray4}]}
+          disabled={!validationNext()}
+          onPress={()=>SignIn()}>
+          <MText fontSize={13} color={fcolor.white}>
             로그인
           </MText>
         </TouchableOpacity>
         <TouchableOpacity
-          style={{alignItems: 'center', justifyContent: 'center'}}>
-          <MText fontSize={13} color={fcolors.gray4}>
+          style={{alignItems: 'center', justifyContent: 'center', marginTop:16}}>
+          <MText fontSize={13} color={fcolor.gray4}>
             이메일/비밀번호 찾기
           </MText>
         </TouchableOpacity>
@@ -79,21 +117,17 @@ const styles = StyleSheet.create({
   inputbox: {
     width: '100%',
     height: 45,
-    backgroundColor: fcolors.gray1,
+    backgroundColor: fcolor.gray1,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
-    marginBottom: 16,
+    marginBottom:16,
+    fontSize:13
   },
-  loginbutton: {
-    width: '100%',
-    height: 45,
-    backgroundColor: fcolors.gray4,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 27,
+  fail:{
+    alignItems:'center',
+    justifyContent:'center'
   },
 });
 
