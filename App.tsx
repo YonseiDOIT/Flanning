@@ -51,11 +51,6 @@ const App = () => {
   }, []);
 
   return (
-    // <SafeAreaView style={{backgroundColor: 'white'}}>
-    //   <ScrollView style={{backgroundColor: 'white', height: '100%'}}>
-    //     <Text>Testffsdfasdfasfffdsfasdfd</Text>
-    //   </ScrollView>
-    // </SafeAreaView>
     <AppProvider>
       <GestureHandlerRootView>
         <NavigationContainer>

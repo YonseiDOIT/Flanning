@@ -22,7 +22,7 @@ const SigninScreen = ({navigation}) => {
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={globalStyles.container}>
-        <BackHeader navigation={navigation} isSignup={false} />
+        <BackHeader navigation={navigation} />
         <View style={{marginVertical: 36}}>
           <BText fontSize={25} style={{marginBottom: 6}}>
             이메일 로그인

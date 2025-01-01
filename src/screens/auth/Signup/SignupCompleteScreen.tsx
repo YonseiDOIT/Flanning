@@ -1,5 +1,5 @@
 import {View, Text, StyleSheet} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useSignup} from './SignupProvider';
 import BackHeader from '../../../components/common/BackHeader';
 import AuthProgress from '../components/AuthProgress';
@@ -13,6 +13,10 @@ import BText from 'src/components/common/BText';
 // 회원가입 완료 시 보여줄 분류 페이지
 const SignupCompleteScreen = ({navigation}) => {
   const {signupStep, handleStepNext, signupData} = useSignup();
+
+  useEffect(() => {
+    console.log(signupData);
+  }, []);
 
   const validationNext = () => {
     return true;
@@ -37,7 +41,6 @@ const SignupCompleteScreen = ({navigation}) => {
           ]}
           disabled={!validationNext()}
           onPress={() => {
-            console.log(signupData);
             navigation.reset({
               index: 0,
               routes: [{name: 'Home'}],

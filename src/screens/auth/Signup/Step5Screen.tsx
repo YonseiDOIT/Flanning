@@ -76,7 +76,7 @@ const Step5Screen = () => {
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [fadeAnim, currentLoadingIndex, loadingList, handleStepNext]);
+  }, [fadeAnim, currentLoadingIndex, loadingList]);
 
   const coverWidth = coverWidthAnim.interpolate({
     inputRange: [0, 100],

@@ -1,4 +1,4 @@
-import {View} from 'react-native';
+import {Platform, View} from 'react-native';
 import React from 'react';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import FontASIcon from 'react-native-vector-icons/FontAwesome';
@@ -25,13 +25,13 @@ function BackHeader({navigation, isSignup = false}) {
   return (
     <View
       style={{
+        marginTop: Platform.OS === 'ios' ? 40 : 0,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-start',
       }}>
       <TouchableOpacity
         style={{
-          marginTop: Platform.OS === 'ios' ? 40 : 0,
           paddingTop: 10,
           paddingBottom: 10,
           paddingRight: 20,

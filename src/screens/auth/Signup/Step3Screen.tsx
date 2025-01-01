@@ -8,8 +8,13 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Image,
+  KeyboardAvoidingView,
 } from 'react-native';
-import {TextInput, TouchableOpacity} from 'react-native-gesture-handler';
+import {
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native-gesture-handler';
 import FontAS5Icon from 'react-native-vector-icons/FontAwesome5';
 import {launchImageLibrary} from 'react-native-image-picker';
 
@@ -81,90 +86,106 @@ const Step3Screen = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <Animated.View style={{flex: 1, opacity: fadeAnim}}>
-        <View style={{marginTop: 0, gap: 9}}>
-          <BText>
-            <BText color={fcolor.blue}>닉네임</BText>과{' '}
-            <BText color={fcolor.blue}>사진</BText>을 설정해주세요
-          </BText>
-          <MText color={fcolor.gray3}>
-            닉네임과 사진은 나중에 변경할 수 있어요
-          </MText>
-        </View>
+    <KeyboardAvoidingView
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <Animated.View style={{flex: 1, opacity: fadeAnim}}>
+          <ScrollView
+            contentContainerStyle={{flexGrow: 1}}
+            showsVerticalScrollIndicator={false}>
+            <View style={{marginTop: 0, gap: 9}}>
+              <BText>
+                <BText color={fcolor.blue}>닉네임</BText>과{' '}
+                <BText color={fcolor.blue}>사진</BText>을 설정해주세요
+              </BText>
+              <MText color={fcolor.gray3}>
+                닉네임과 사진은 나중에 변경할 수 있어요
+              </MText>
+            </View>
 
-        <View style={styles.infoContainer}>
-          <View style={globalStyles.centered}>
-            <TouchableOpacity
-              activeOpacity={0.6}
-              style={[globalStyles.centered, styles.userImageContainer]}
-              onPress={handleSelectImage}>
-              <View style={[globalStyles.centered, styles.userImage]}>
-                {signupData.step3.userImage ? (
-                  <Image
-                    source={{uri: signupData.step3.userImage}}
-                    style={styles.imagePreview}
-                    resizeMode="cover"
+            <View style={styles.infoContainer}>
+              <View style={globalStyles.centered}>
+                <TouchableOpacity
+                  activeOpacity={0.6}
+                  style={[globalStyles.centered, styles.userImageContainer]}
+                  onPress={handleSelectImage}>
+                  <View style={[globalStyles.centered, styles.userImage]}>
+                    {signupData.step3.userImage ? (
+                      <Image
+                        source={{uri: signupData.step3.userImage}}
+                        style={styles.imagePreview}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <FontAS5Icon
+                        name="user-alt"
+                        size={36}
+                        color={fcolor.gray2}
+                      />
+                    )}
+
+                    <View style={[globalStyles.centered, styles.ImageEdit]}>
+                      <FontAS5Icon name="pen" size={14} color={fcolor.white} />
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.inputContainer}>
+                <View style={styles.inputGroup}>
+                  <MText style={{marginHorizontal: 20, fontWeight: 700}}>
+                    닉네임<MText color={fcolor.orange}>*</MText>
+                  </MText>
+                  <TextInput
+                    style={styles.loginbox}
+                    value={signupData.step3.nickname}
+                    onChangeText={text => handleChange('nickname', text)}
+                    placeholder={'닉네임을 입력해주세요'}
+                    placeholderTextColor={fcolor.gray4}
                   />
-                ) : (
-                  <FontAS5Icon name="user-alt" size={36} color={fcolor.gray2} />
-                )}
-
-                <View style={[globalStyles.centered, styles.ImageEdit]}>
-                  <FontAS5Icon name="pen" size={14} color={fcolor.white} />
+                  {signupData.step3.nickname === '' ? null : !validateNickname(
+                      signupData.step3.nickname,
+                    ) ? (
+                    <RText color={fcolor.orange} style={{marginHorizontal: 20}}>
+                      특수문자를 제외하고 최소 2자에서 최대 10자까지 작성
+                      가능합니다
+                    </RText>
+                  ) : null}
+                </View>
+                <View style={styles.inputGroup}>
+                  <MText style={{marginHorizontal: 20, fontWeight: 700}}>
+                    한 줄 소개
+                  </MText>
+                  <TextInput
+                    style={styles.loginbox}
+                    value={signupData.step3.introduction}
+                    onChangeText={text => handleChange('introduction', text)}
+                    placeholder={'30자 이내로 작성해주세요'}
+                    placeholderTextColor={fcolor.gray4}
+                  />
                 </View>
               </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputGroup}>
-              <MText style={{marginHorizontal: 20, fontWeight: 700}}>
-                닉네임<MText color={fcolor.orange}>*</MText>
-              </MText>
-              <TextInput
-                style={styles.loginbox}
-                value={signupData.step3.nickname}
-                onChangeText={text => handleChange('nickname', text)}
-                placeholder={'닉네임을 입력해주세요'}
-              />
-              {signupData.step3.nickname === '' ? null : !validateNickname(
-                  signupData.step3.nickname,
-                ) ? (
-                <RText color={fcolor.orange} style={{marginHorizontal: 20}}>
-                  특수문자를 제외하고 최소 2자에서 최대 10자까지 작성 가능합니다
-                </RText>
-              ) : null}
             </View>
-            <View style={styles.inputGroup}>
-              <MText style={{marginHorizontal: 20, fontWeight: 700}}>
-                한 줄 소개
-              </MText>
-              <TextInput
-                style={styles.loginbox}
-                value={signupData.step3.introduction}
-                onChangeText={text => handleChange('introduction', text)}
-                placeholder={'30자 이내로 작성해주세요'}
-              />
-            </View>
-          </View>
-        </View>
 
-        <View style={{flex: 1, justifyContent: 'flex-end', marginBottom: 100}}>
-          <TouchableOpacity
-            style={[
-              globalStyles.buttonBase,
-              globalStyles.centered,
-              validationNext()
-                ? {backgroundColor: fcolor.blue}
-                : {backgroundColor: fcolor.gray4},
-            ]}
-            disabled={!validationNext()}
-            onPress={handleStepNext}>
-            <MText color={fcolor.white}>거의 다 왔어요</MText>
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
-    </TouchableWithoutFeedback>
+            <View
+              style={{flex: 1, justifyContent: 'flex-end', marginBottom: 100}}>
+              <TouchableOpacity
+                style={[
+                  globalStyles.buttonBase,
+                  globalStyles.centered,
+                  validationNext()
+                    ? {backgroundColor: fcolor.blue}
+                    : {backgroundColor: fcolor.gray4},
+                ]}
+                disabled={!validationNext()}
+                onPress={handleStepNext}>
+                <MText color={fcolor.white}>거의 다 왔어요</MText>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </Animated.View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

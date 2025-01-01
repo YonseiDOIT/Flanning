@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyBQXixDXU_j4mgT3l9qOYTuuKNZutuKJTs</string>
+	<string>${FIREBASE_API_KEY}</string>
 	<key>GCM_SENDER_ID</key>
 	<string>679186802001</string>
 	<key>PLIST_VERSION</key>
@@ -15,17 +15,17 @@
 	<key>STORAGE_BUCKET</key>
 	<string>flanning-dfbe1.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_GCM_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:679186802001:ios:f159ea11f6203e962b1f70</string>
+	<string>1:679186802001:ios:b5d0cb3952aa72262b1f70</string>
 	<key>DATABASE_URL</key>
 	<string>https://flanning-dfbe1-default-rtdb.asia-southeast1.firebasedatabase.app</string>
 </dict>

@@ -27,36 +27,31 @@ const Step1Screen = () => {
     // 1. 만 14세 이상 이용 가능 동의
     {
       name: 'overFourteen',
-      label: '만 14세 이상',
-      other: '입니다.',
+      label: '만 14세 이상입니다.',
       url: 'www.naver.com',
     },
     // 2. 서비스 이용약관 동의
     {
       name: 'termsAgree',
-      label: '서비스 이용약관',
-      other: ' 동의',
+      label: '서비스 이용약관 동의',
       url: 'www.naver.com',
     },
     // 3. 개인정보 처리방침 동의
     {
       name: 'privacyPolicy',
-      label: '개인전보 처리방침',
-      other: ' 동의',
+      label: '개인전보 처리방침 동의',
       url: 'www.naver.com',
     },
     // 4. 개인정보 수집 및 이용 동의
     {
       name: 'personalInfo',
-      label: '개인정보 수집 및 이용',
-      other: ' 동의',
+      label: '개인정보 수집 및 이용 동의',
       url: 'www.naver.com',
     },
     // 5. 마케팅 수신 동의
     {
       name: 'marketing',
-      label: '마케팅 수신',
-      other: ' 동의 (선택)',
+      label: '마케팅 수신 동의 (선택)',
       url: 'www.naver.com',
     },
   ];
@@ -138,9 +133,7 @@ const Step1Screen = () => {
                 alignItems: 'flex-start',
                 gap: 10,
               }}>
-              <NeonGr>
-                <MText>모두 동의</MText>
-              </NeonGr>
+              <MText>모두 동의</MText>
               <MText fontSize={13} color={fcolor.gray4}>
                 서비스 이용을 위해 약관에 모두 동의합니다
               </MText>
@@ -172,10 +165,7 @@ const Step1Screen = () => {
                 )}
               </TouchableOpacity>
               <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
-                <NeonGr>
-                  <MText>{term.label}</MText>
-                </NeonGr>
-                <MText>{term.other}</MText>
+                <MText>{term.label}</MText>
               </View>
             </View>
             <View style={{alignItems: 'center'}}>
