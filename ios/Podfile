@@ -21,6 +21,8 @@ target 'flanningapp' do
   use_frameworks! :linkage => :static
 
   pod 'react-native-config', :path => '../node_modules/react-native-config'
+  pod 'Firebase/Core'
+  pod 'Firebase/Auth'
 
   use_react_native!(
     :path => config[:reactNativePath],

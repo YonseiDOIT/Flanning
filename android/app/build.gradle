@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -117,6 +118,7 @@ apply plugin: 'com.google.gms.google-services' // <- Add this line
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    implementation project(':react-native-config')
     implementation("com.facebook.react:flipper-integration")
     implementation 'androidx.core:core-splashscreen:1.0.0-beta01'
     // implementation platform('com.google.firebase:firebase-bom:32.2.2')

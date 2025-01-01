@@ -2,7 +2,7 @@
 #import "RNSplashScreen.h"
 
 #import <React/RCTBundleURLProvider.h>
-//#import <Firebase.h>
+#import <Firebase.h>
 //#import <FirebaseCore.h>
 
 @implementation AppDelegate
@@ -10,6 +10,13 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 //  [FIRApp configure];
+  if ([FIRApp defaultApp] == nil) {
+    NSLog(@"Initializing Firebase...");
+    [FIRApp configure];
+    NSLog(@"Firebase initialized.");
+  } else {
+    NSLog(@"Firebase already initialized.");
+  }
   self.moduleName = @"flanningapp";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.

@@ -1,0 +1,6 @@
+FIREBASE_API_KEY=AIzaSyBQXixDXU_j4mgT3l9qOYTuuKNZutuKJTs
+FIREBASE_AUTH_DOMAIN=https:/$()/flanning-dfbe1-default-rtdb.asia-southeast1.firebasedatabase.app
+FIREBASE_PROJECT_ID=flanning-dfbe1
+FIREBASE_STORAGE_BUCKET=flanning-dfbe1.appspot.com
+FIREBASE_MESSAGING_SENDER_ID=679186802001
+FIREBASE_APP_ID=1:679186802001:ios:b5d0cb3952aa72262b1f70
