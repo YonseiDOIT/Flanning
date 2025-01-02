@@ -39,7 +39,7 @@ const Step1Screen = () => {
     // 3. 개인정보 처리방침 동의
     {
       name: 'privacyPolicy',
-      label: '개인전보 처리방침 동의',
+      label: '개인정보 처리방침 동의',
       url: 'www.naver.com',
     },
     // 4. 개인정보 수집 및 이용 동의

@@ -125,7 +125,7 @@ dependencies {
     implementation project(':react-native-linear-gradient')
 
     // implementation("com.google.firebase:firebase-auth")
-    // implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-firestore")
     
 
     if (hermesEnabled.toBoolean()) {

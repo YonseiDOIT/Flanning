@@ -9,7 +9,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-//  [FIRApp configure];
   if ([FIRApp defaultApp] == nil) {
     NSLog(@"Initializing Firebase...");
     [FIRApp configure];

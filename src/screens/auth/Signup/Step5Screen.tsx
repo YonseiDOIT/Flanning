@@ -1,5 +1,5 @@
 // @ts-nocheck
-import {View, StyleSheet, Animated, Image} from 'react-native';
+import {View, StyleSheet, Animated, Image, Alert} from 'react-native';
 import fcolor from 'src/assets/colors/fcolors';
 import React, {useEffect, useRef, useState} from 'react';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -11,6 +11,7 @@ import {useSignup} from './SignupProvider';
 import BText from 'src/components/common/BText';
 import MText from 'src/components/common/MText';
 import NeonGr from 'src/components/neongr';
+import {auth, firestore, storage} from 'src/utils/firebase';
 
 // 스타일 분석하고 있는 것을 보여주는 로딩 페이지
 const Step5Screen = () => {
@@ -18,65 +19,155 @@ const Step5Screen = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const coverWidthAnim = useRef(new Animated.Value(100)).current;
   const [currentLoadingIndex, setCurrentLoadingIndex] = useState(0);
+
+  const signUpAuth = async () => {
+    try {
+      const response = await auth().createUserWithEmailAndPassword(
+        signupData.step2.email,
+        signupData.step2.password,
+      );
+      if (response.additionalUserInfo?.isNewUser) {
+        return true;
+      }
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
+  const signUpStore = async () => {
+    try {
+      let downloadURL = '';
+
+      // 프로필 이미지가 있을 경우 업로드
+      if (signupData.step3.userImage) {
+        downloadURL = await uploadProfileImageToStorage(
+          signupData.step2.email,
+          signupData.step3.userImage,
+        );
+      }
+
+      const fetchData = {
+        marketingTerm: signupData.step1.marketing,
+        email: signupData.step2.email,
+        nickname: signupData.step3.nickname,
+        introduction: signupData.step3.introduction,
+        userImage: downloadURL,
+        userTravelStyle: {
+          tripType: signupData.step4.tripType,
+          tripReason: signupData.step4.tripReason,
+          tripDestinationType: signupData.step4.tripDestinationType,
+          tripLocationType: signupData.step4.tripLocationType,
+          tripCompanionsType: signupData.step4.tripCompanionsType,
+          tripActivityType: signupData.step4.tripActivityType,
+          tripPlanningType: signupData.step4.tripPlanningType,
+          tripScheduleType: signupData.step4.tripScheduleType,
+          tripFoodType: signupData.step4.tripFoodType,
+          tripNewPerson: signupData.step4.tripNewPerson,
+        },
+      };
+      await firestore()
+        .collection('users')
+        .doc(signupData.step2.email)
+        .set(fetchData);
+      return true;
+    } catch (error) {
+      console.error('데이터 저장 중 에러 발생');
+      return false;
+    }
+  };
+
+  const uploadProfileImageToStorage = async (userEmail, path) => {
+    try {
+      const fileName = `${userEmail}.jpg`;
+
+      const reference = storage().ref(`/profile/${fileName}`);
+      const task = reference.putFile(path);
+
+      await task;
+
+      const downloadURL = await reference.getDownloadURL();
+      return downloadURL;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
   const [loadingList, setLoadingList] = useState([
     {
       title: '선호 여행지를 파악하는 중',
+      feature: signUpAuth,
       loading: false,
     },
     {
       title: '여행 태그를 기록하는 중',
+      feature: signUpStore,
       loading: false,
     },
     {
       title: '여행 스타일을 파악하는 중',
+      feature: async () => true,
       loading: false,
     },
     {
       title: '플래닝과 함께 여행 할 준비 중',
+      feature: async () => true,
       loading: false,
     },
   ]);
 
   useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
+    let executionCount = 0;
 
     const interval = setInterval(() => {
       setLoadingList(prevList => {
         const updatedList = [...prevList];
-        if (currentLoadingIndex < updatedList.length) {
-          updatedList[currentLoadingIndex].loading = true;
+        if (executionCount < updatedList.length) {
+          const response = updatedList[executionCount].feature();
+          if (response) {
+            updatedList[executionCount].loading = true;
+            return updatedList;
+          } else {
+            Alert('데이터 저장 중 문제가 발생하였습니다');
+            return;
+          }
         }
-        return updatedList;
       });
 
       Animated.timing(coverWidthAnim, {
-        toValue: 100 - (currentLoadingIndex + 1) * (100 / loadingList.length),
+        toValue: 100 - (executionCount + 1) * (100 / loadingList.length),
         duration: 2000,
         useNativeDriver: false,
       }).start();
 
+      executionCount += 1;
+
       setCurrentLoadingIndex(prevIndex => {
         if (prevIndex >= loadingList.length - 1) {
           clearInterval(interval);
-
-          // 모든 항목이 로딩되었을 때 handleStepNext 호출
-          const allLoaded = loadingList.every(item => item.loading);
-          if (allLoaded) {
-            setTimeout(() => {
-              handleStepNext();
-            }, 3000);
-          }
         }
         return prevIndex + 1;
       });
+
+      if (executionCount >= loadingList.length) {
+        clearInterval(interval);
+      }
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [fadeAnim, currentLoadingIndex, loadingList]);
+  }, [loadingList.length, coverWidthAnim]);
+
+  useEffect(() => {
+    const allLoaded = loadingList.every(item => item.loading);
+    if (allLoaded && loadingList.length > 0) {
+      const timeout = setTimeout(() => {
+        handleStepNext();
+      }, 3000);
+
+      return () => clearTimeout(timeout); // 컴포넌트 언마운트 시 정리
+    }
+  }, [loadingList]);
 
   const coverWidth = coverWidthAnim.interpolate({
     inputRange: [0, 100],

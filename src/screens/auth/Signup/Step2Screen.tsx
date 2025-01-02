@@ -23,10 +23,14 @@ import fcolor from 'src/assets/colors/fcolors';
 import BText from 'src/components/common/BText';
 import MText from 'src/components/common/MText';
 import RText from 'src/components/common/RText';
+import {auth, firestore} from 'src/utils/firebase';
+import {fetchSignInMethodsForEmail} from 'firebase/auth';
 
 const Step2Screen = () => {
   const {signupStep, handleStepNext, signupData, setSignupData} = useSignup();
   const [showPW, setShowPW] = useState(true);
+  const [emailError, setEmailError] = useState('');
+  const [isCheckEmail, setIsCheckEmail] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -42,16 +46,68 @@ const Step2Screen = () => {
       ...prevData,
       step2: {
         ...prevData.step2,
-        [field]: value,
+        [field]: field === 'email' ? value.toLowerCase() : value,
+        ...(field === 'email' && {emailVerify: false}),
       },
     }));
+
+    if (field === 'email') {
+      setEmailError('');
+    }
+  };
+
+  const validationEmail = async () => {
+    setIsCheckEmail(true);
+    setEmailError('');
+
+    try {
+      const users = await firestore()
+        .collection('users')
+        .where('email', '==', signupData.step2.email)
+        .get();
+
+      if (!users.empty) {
+        // 이미 가입된 이메일
+        setEmailError('이미 가입된 이메일입니다');
+        setSignupData(prevData => ({
+          ...prevData,
+          step2: {
+            ...prevData.step2,
+            emailVerify: false,
+          },
+        }));
+      } else {
+        // 사용 가능한 이메일
+        setEmailError('사용 가능한 이메일입니다');
+        setSignupData(prevData => ({
+          ...prevData,
+          step2: {
+            ...prevData.step2,
+            emailVerify: true,
+          },
+        }));
+      }
+    } catch (error) {
+      console.error(error);
+      setEmailError('이메일 확인 중 오류가 발생했습니다');
+      setSignupData(prevData => ({
+        ...prevData,
+        step2: {
+          ...prevData.step2,
+          emailVerify: false,
+        },
+      }));
+    } finally {
+      setIsCheckEmail(false);
+    }
   };
 
   // 다음으로 넘어가기 위한 조건 처리
   const validationNext = () => {
-    const {email, password, passwordRe} = signupData.step2;
+    const {email, password, passwordRe, emailVerify} = signupData.step2;
     return (
       email &&
+      emailVerify &&
       password &&
       passwordRe &&
       validateEmail(email) &&
@@ -86,18 +142,25 @@ const Step2Screen = () => {
                   placeholder={'example@flanning.com'}
                   placeholderTextColor={fcolor.gray4}
                   autoFocus
+                  onBlur={() => {
+                    if (validateEmail(signupData.step2.email)) {
+                      validationEmail();
+                    } else {
+                      setEmailError('이메일 형식이 올바르지 않습니다');
+                    }
+                  }}
                 />
-                {signupData.step2.email === '' ? null : !validateEmail(
-                    signupData.step2.email,
-                  ) ? (
-                  <RText color={fcolor.orange} style={{marginHorizontal: 20}}>
-                    이메일 형식이 올바르지 않습니다
+                {isCheckEmail ? null : emailError ? (
+                  <RText
+                    style={{marginHorizontal: 20}}
+                    color={
+                      emailError === '사용 가능한 이메일입니다'
+                        ? fcolor.lblue4
+                        : fcolor.orange
+                    }>
+                    {emailError}
                   </RText>
-                ) : (
-                  <RText color={fcolor.lblue4} style={{marginHorizontal: 20}}>
-                    가입 가능한 이메일입니다
-                  </RText>
-                )}
+                ) : null}
               </View>
               <View style={styles.inputGroup}>
                 <View
@@ -109,7 +172,6 @@ const Step2Screen = () => {
                   <MText style={{marginHorizontal: 20, fontWeight: 700}}>
                     비밀번호<MText color={fcolor.orange}>*</MText>
                   </MText>
-                  {/* TODO: 패스워드 보기 버튼 동작 안하므로 수정해야함 */}
                   <TouchableOpacity
                     style={[styles.iconWrapper]}
                     onPress={() => setShowPW(!showPW)}>

@@ -22,25 +22,27 @@ export const SignupProvider = ({children}) => {
     }, // Step1의 데이터
     step2: {
       email: '', // 사용자 이메일
+      emailVerify: false,
       password: '', // 사용자 패스워드
       passwordRe: '', // 사용자 패스워드 확인
     }, // Step2의 데이터
     step3: {
       nickname: '', // 사용자 닉네임
+      nicknameVerify: false,
       introduction: '', // 사용자 한 줄 소개
       userImage: null, // 사용자 프로필이미지 저장 경로
     }, // Step3의 데이터
     step4: {
-      tripType: 0, // 여행 스타일 유형 선호도 파악
-      tripReason: 0, // 여행 이유 파악
-      tripDestinationType: 0, // 여행지 선호도 파악
-      tripLocationType: 0, // 여행지 유형 선호도 파악
-      tripCompanionsType: 0, // 여행 인원 파악
-      tripActivityType: 0, // 여행 관광 스타일
-      tripPlanningType: 0, // 여행 계획 스타일
-      tripScheduleType: 0, // 하루 일정 스타일
-      tripFoodType: 0, // 여행지 음식 선호도 스타일
-      tripNewPerson: 0, // 여행에서 새로운 만남 추구 스타일
+      tripType: 1, // 여행 스타일 유형 선호도 파악
+      tripReason: 1, // 여행 이유 파악
+      tripDestinationType: 1, // 여행지 선호도 파악
+      tripLocationType: 1, // 여행지 유형 선호도 파악
+      tripCompanionsType: 1, // 여행 인원 파악
+      tripActivityType: 1, // 여행 관광 스타일
+      tripPlanningType: 1, // 여행 계획 스타일
+      tripScheduleType: 1, // 하루 일정 스타일
+      tripFoodType: 1, // 여행지 음식 선호도 스타일
+      tripNewPerson: 1, // 여행에서 새로운 만남 추구 스타일
     }, // Step4의 데이터
   });
 

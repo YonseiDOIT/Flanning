@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 // import database from '@react-native-firebase/database';
 import {
@@ -20,6 +20,7 @@ import RText from 'src/components/common/RText';
 import MText from 'src/components/common/MText';
 // import NeonGr from '../src/components/neongr';
 import BottomBar from 'src/components/common/BottomBar';
+import {auth} from 'src/utils/firebase';
 
 function HomeScreen({navigation}) {
   return (

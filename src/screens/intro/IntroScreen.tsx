@@ -26,6 +26,7 @@ import fcolor from 'src/assets/colors/fcolors';
 // import {usePlan} from '../src/components/common/PlanContext';
 import FlanningV1Logo from 'src/assets/images/logo/flanning-logo-white-v1.svg';
 import Video from 'react-native-video';
+import {storage} from 'src/utils/firebase';
 // import {useNavigation} from '@react-navigation/native';
 
 // const firebaseAuth = auth();

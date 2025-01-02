@@ -23,6 +23,8 @@ target 'flanningapp' do
   pod 'react-native-config', :path => '../node_modules/react-native-config'
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+  pod 'Firebase/Storage'
 
   use_react_native!(
     :path => config[:reactNativePath],

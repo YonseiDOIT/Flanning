@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import fcolor from 'src/assets/colors/fcolors';
 import {
   View,
@@ -24,9 +24,12 @@ import BText from 'src/components/common/BText';
 import MText from 'src/components/common/MText';
 import {validateIntroduction, validateNickname} from 'src/utils/validators';
 import RText from 'src/components/common/RText';
+import {firestore} from 'src/utils/firebase';
 
 const Step3Screen = () => {
   const {handleStepNext, signupData, setSignupData} = useSignup();
+  const [nicknameError, setNicknameError] = useState('');
+  const [isCheckNickname, setIsCheckNickname] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -43,14 +46,62 @@ const Step3Screen = () => {
       step3: {
         ...prevData.step3,
         [field]: value,
+        ...(field === 'nickname' && {nicknameVerify: false}),
       },
     }));
   };
 
+  const validationNickname = async () => {
+    setIsCheckNickname(true);
+    setNicknameError('');
+
+    try {
+      const users = await firestore()
+        .collection('users')
+        .where('nickname', '==', signupData.step3.nickname)
+        .get();
+
+      if (!users.empty) {
+        // 이미 가입된 닉네임
+        setNicknameError('이미 가입된 닉네임입니다');
+        setSignupData(prevData => ({
+          ...prevData,
+          step3: {
+            ...prevData.step3,
+            nicknameVerify: false,
+          },
+        }));
+      } else {
+        // 이미 가입된 닉네임
+        setNicknameError('사용 가능한 닉네임입니다');
+        setSignupData(prevData => ({
+          ...prevData,
+          step3: {
+            ...prevData.step3,
+            nicknameVerify: true,
+          },
+        }));
+      }
+    } catch (error) {
+      // 이미 가입된 닉네임
+      setNicknameError('닉네임 검증 중 오류가 발생했습니다');
+      setSignupData(prevData => ({
+        ...prevData,
+        step3: {
+          ...prevData.step3,
+          nicknameVerify: false,
+        },
+      }));
+    } finally {
+      setIsCheckNickname(false);
+    }
+  };
+
   const validationNext = () => {
-    const {nickname, introduction} = signupData.step3;
+    const {nickname, introduction, nicknameVerify} = signupData.step3;
     return (
       nickname &&
+      nicknameVerify &&
       validateNickname(nickname) &&
       validateIntroduction(introduction)
     );
@@ -142,13 +193,25 @@ const Step3Screen = () => {
                     onChangeText={text => handleChange('nickname', text)}
                     placeholder={'닉네임을 입력해주세요'}
                     placeholderTextColor={fcolor.gray4}
+                    onBlur={() => {
+                      if (validateNickname(signupData.step2.nickname)) {
+                        validationNickname();
+                      } else {
+                        setNicknameError(
+                          '특수문자를 제외하고 최소 2자에서 10자 이내로 작성해주세요',
+                        );
+                      }
+                    }}
                   />
-                  {signupData.step3.nickname === '' ? null : !validateNickname(
-                      signupData.step3.nickname,
-                    ) ? (
-                    <RText color={fcolor.orange} style={{marginHorizontal: 20}}>
-                      특수문자를 제외하고 최소 2자에서 최대 10자까지 작성
-                      가능합니다
+                  {isCheckNickname ? null : nicknameError ? (
+                    <RText
+                      style={{marginHorizontal: 20}}
+                      color={
+                        nicknameError === '사용 가능한 닉네임입니다'
+                          ? fcolor.lblue4
+                          : fcolor.orange
+                      }>
+                      {nicknameError}
                     </RText>
                   ) : null}
                 </View>

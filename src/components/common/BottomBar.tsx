@@ -7,12 +7,14 @@ import {
   Platform,
   Animated,
   Easing,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import fcolors from '../../assets/colors/fcolors';
 import RText from './RText';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {auth, firestore} from 'src/utils/firebase';
 
 const BottomBar = ({
   homecolor = fcolors.gray3,
@@ -22,6 +24,36 @@ const BottomBar = ({
 }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
   const [visible, setVisible] = useState(true);
+  const [user, setUser] = useState({});
+
+  const fetchUserDataByToken = async () => {
+    try {
+      // 현재 로그인한 사용자의 UID 가져오기
+      const currentUser = auth().currentUser;
+      const currentUserEmail = currentUser?.email;
+
+      // Firestore에서 UID에 해당하는 데이터 가져오기
+      const userDoc = await firestore()
+        .collection('users')
+        .doc(currentUserEmail || '')
+        .get();
+
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        setUser(userData || {});
+      } else {
+        console.log('해당 사용자의 데이터가 없습니다.');
+        return null;
+      }
+    } catch (error) {
+      console.error('Firestore 데이터 가져오기 실패:', error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    fetchUserDataByToken();
+  }, []);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -75,9 +107,13 @@ const BottomBar = ({
         </RText>
       </TouchableOpacity>
       <TouchableOpacity style={styles.icon}>
-        <Icon name="settings" size={25} color={settingcolor} />
+        {/* <Icon name="settings" size={25} color={settingcolor} /> */}
+        <Image
+          source={{uri: user.userImage}}
+          style={{width: 25, height: 25, borderRadius: 200}}
+        />
         <RText style={{marginTop: 5}} color={settingcolor} fontSize={10}>
-          설정
+          내 계정
         </RText>
       </TouchableOpacity>
     </View>
@@ -87,7 +123,8 @@ const BottomBar = ({
 const styles = StyleSheet.create({
   bottombar: {
     width: '100%',
-    height: Platform.OS === 'ios' ? 100 : 60,
+    height: Platform.OS === 'ios' ? 100 : 80,
+    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
     backgroundColor: fcolors.gray1,
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -96,7 +133,17 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     position: 'absolute',
     bottom: 0,
-    elevation: 15,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 15,
+      },
+    }),
   },
   icon: {
     flexDirection: 'column',

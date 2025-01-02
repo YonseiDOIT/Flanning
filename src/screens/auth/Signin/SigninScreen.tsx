@@ -31,16 +31,11 @@ const SigninScreen = ({navigation}) => {
   //로그인
   const SignIn = async () => {
     try {
-      const response = await auth().signInWithEmailAndPassword(
-        form.email,
-        form.password,
-      );
-      console.log(response);
+      await auth().signInWithEmailAndPassword(form.email, form.password);
       setfail(false);
-      // navigation.navigate('Home');
+      navigation.navigate('Home');
     } catch (error) {
       setfail(true);
-      console.error(error);
     }
   };
 
@@ -68,8 +63,11 @@ const SigninScreen = ({navigation}) => {
             </MText>
             <TextInput
               style={styles.inputbox}
-              onChangeText={text => setForm({...form, email: text})}
+              onChangeText={text =>
+                setForm({...form, email: text.toLowerCase()})
+              }
               placeholder={'example@flanning.com'}
+              placeholderTextColor={fcolor.gray4}
             />
           </View>
           <View>
@@ -81,6 +79,7 @@ const SigninScreen = ({navigation}) => {
               onChangeText={text => setForm({...form, password: text})}
               secureTextEntry={true}
               placeholder={'영문 대·소문자/숫자 조합, 8자 이상'}
+              placeholderTextColor={fcolor.gray4}
             />
           </View>
           {fail && (

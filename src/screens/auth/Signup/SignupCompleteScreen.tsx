@@ -9,14 +9,11 @@ import globalStyles from 'src/assets/styles/globalStyles';
 import fcolor from 'src/assets/colors/fcolors';
 import MText from 'src/components/common/MText';
 import BText from 'src/components/common/BText';
+import {auth} from 'src/utils/firebase';
 
 // 회원가입 완료 시 보여줄 분류 페이지
 const SignupCompleteScreen = ({navigation}) => {
   const {signupStep, handleStepNext, signupData} = useSignup();
-
-  useEffect(() => {
-    console.log(signupData);
-  }, []);
 
   const validationNext = () => {
     return true;
@@ -43,7 +40,7 @@ const SignupCompleteScreen = ({navigation}) => {
           onPress={() => {
             navigation.reset({
               index: 0,
-              routes: [{name: 'Home'}],
+              routes: [{name: 'Intro'}],
             });
           }}>
           <MText color={fcolor.white}>플래닝 시작하기</MText>
