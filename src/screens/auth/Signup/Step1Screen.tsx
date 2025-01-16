@@ -133,7 +133,9 @@ const Step1Screen = () => {
                 alignItems: 'flex-start',
                 gap: 10,
               }}>
-              <MText>모두 동의</MText>
+              <NeonGr>
+                <MText>모두 동의</MText>
+              </NeonGr>
               <MText fontSize={13} color={fcolor.gray4}>
                 서비스 이용을 위해 약관에 모두 동의합니다
               </MText>
