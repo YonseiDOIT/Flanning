@@ -94,13 +94,13 @@
 //       <View style={[styles.friendbox, isExpanded ? { height: 196 } : null]}>
 //         {/* 친구 프사 */}
 //         <View style={{ flexDirection: 'row' }}>
-//           <Image source={require('../src/assets/images/userframe.png')}
+//           {/* <Image source={require('../src/assets/images/userframe.png')}
 //             style={{
 //               width: 47,
 //               height: 47,
 //               marginRight: 20
 //             }}
-//           />
+//           /> */}
 
 //           <View style={{ flexDirection: 'row' }}>
 //             <View style={{ flexDirection: 'column' }}>

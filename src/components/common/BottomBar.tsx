@@ -37,7 +37,7 @@ const BottomBar = ({
         .collection('users')
         .doc(currentUserEmail || '')
         .get();
-
+        
       if (userDoc.exists) {
         const userData = userDoc.data();
         setUser(userData || {});
@@ -107,11 +107,14 @@ const BottomBar = ({
         </RText>
       </TouchableOpacity>
       <TouchableOpacity style={styles.icon}>
-        {/* <Icon name="settings" size={25} color={settingcolor} /> */}
-        <Image
-          source={{uri: user.userImage}}
-          style={{width: 25, height: 25, borderRadius: 200}}
-        />
+        
+        {user.userImage?
+          <Image
+            source={{uri: user.userImage}}
+            style={{width: 25, height: 25, borderRadius: 200}}
+          />:
+        <Icon name="settings" size={25} color={settingcolor} />
+        } 
         <RText style={{marginTop: 5}} color={settingcolor} fontSize={10}>
           내 계정
         </RText>

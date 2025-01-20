@@ -42,6 +42,8 @@ import ReviewScreen from './src/screens/review/ReviewScreen';
 import CommunityScreen from './src/screens/community/CommunityScreen';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import SignupScreen from './src/screens/auth/Signup/SignupScreen';
+import FriendListScreen from 'src/screens/home/friend/FriendListScreen';
+import FriendAddScreen from 'src/screens/home/friend/FriendAddScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -61,6 +63,8 @@ const App = () => {
             <Stack.Screen name="Signin" component={SigninScreen} />
             <Stack.Screen name="Signup" component={SignupScreen} />
             <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Friend" component={FriendListScreen} />
+            <Stack.Screen name="FriendAdd" component={FriendAddScreen} />
             <Stack.Screen name="Notification" component={NotificationScreen} />
             <Stack.Screen name="PlanList" component={PlanListScreen} />
             <Stack.Screen name="Review" component={ReviewScreen} />

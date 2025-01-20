@@ -18,6 +18,11 @@ const commonStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  backBase:{
+    flex:1,
+    backgroundColor:fcolor.white
+  }
+  
 });
 
 export default commonStyles;
