@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, {useEffect} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 // import database from '@react-native-firebase/database';

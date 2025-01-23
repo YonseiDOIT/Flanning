@@ -10,7 +10,7 @@ const SignupStack = ({navigation}) => {
 
   return (
     <View style={{flex: 1}}>
-      <View style={signupStep > 3 ? styles.hidden : null}>
+      <View style={signupStep > 4 ? styles.hidden : null}>
         {/* 고정된 헤더 */}
         <BackHeader navigation={navigation} isSignup={true} />
         {/* 진행 상태 */}

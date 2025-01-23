@@ -46,73 +46,75 @@ const SigninScreen = ({navigation}) => {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={globalStyles.container}>
+      <View style={[globalStyles.container, {}]}>
         <BackHeader navigation={navigation} />
-        <View style={{marginVertical: 36}}>
-          <BText fontSize={25} style={{marginBottom: 6}}>
-            이메일 로그인
-          </BText>
-          <MText fontSize={13} color={fcolor.gray3}>
-            플래닝과 함께 여행을 시작해요
-          </MText>
-        </View>
-        <View style={{marginBottom: 16}}>
-          <View>
-            <MText fontSize={13} style={styles.boxname}>
-              이메일
+        <View style={{paddingHorizontal: 30}}>
+          <View style={{marginVertical: 36}}>
+            <BText fontSize={25} style={{marginBottom: 6}}>
+              이메일 로그인
+            </BText>
+            <MText fontSize={13} color={fcolor.gray3}>
+              플래닝과 함께 여행을 시작해요
             </MText>
-            <TextInput
-              style={styles.inputbox}
-              onChangeText={text =>
-                setForm({...form, email: text.toLowerCase()})
-              }
-              placeholder={'example@flanning.com'}
-              placeholderTextColor={fcolor.gray4}
-            />
           </View>
-          <View>
-            <MText fontSize={13} style={styles.boxname}>
-              비밀번호
-            </MText>
-            <TextInput
-              style={styles.inputbox}
-              onChangeText={text => setForm({...form, password: text})}
-              secureTextEntry={true}
-              placeholder={'영문 대·소문자/숫자 조합, 8자 이상'}
-              placeholderTextColor={fcolor.gray4}
-            />
-          </View>
-          {fail && (
-            <View style={styles.fail}>
-              <MText fontSize={13} color={fcolor.orange}>
-                아이디 또는 비밀번호가 올바르지 않습니다.
+          <View style={{marginBottom: 16}}>
+            <View>
+              <MText fontSize={13} style={styles.boxname}>
+                이메일
               </MText>
+              <TextInput
+                style={styles.inputbox}
+                onChangeText={text =>
+                  setForm({...form, email: text.toLowerCase()})
+                }
+                placeholder={'example@flanning.com'}
+                placeholderTextColor={fcolor.gray4}
+              />
             </View>
-          )}
+            <View>
+              <MText fontSize={13} style={styles.boxname}>
+                비밀번호
+              </MText>
+              <TextInput
+                style={styles.inputbox}
+                onChangeText={text => setForm({...form, password: text})}
+                secureTextEntry={true}
+                placeholder={'영문 대·소문자/숫자 조합, 8자 이상'}
+                placeholderTextColor={fcolor.gray4}
+              />
+            </View>
+            {fail && (
+              <View style={styles.fail}>
+                <MText fontSize={13} color={fcolor.orange}>
+                  아이디 또는 비밀번호가 올바르지 않습니다.
+                </MText>
+              </View>
+            )}
+          </View>
+          <TouchableOpacity
+            style={[
+              globalStyles.buttonBase,
+              validationNext()
+                ? {backgroundColor: fcolor.blue}
+                : {backgroundColor: fcolor.gray4},
+            ]}
+            disabled={!validationNext()}
+            onPress={() => SignIn()}>
+            <MText fontSize={13} color={fcolor.white}>
+              로그인
+            </MText>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: 16,
+            }}>
+            <MText fontSize={13} color={fcolor.gray4}>
+              이메일/비밀번호 찾기
+            </MText>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={[
-            globalStyles.buttonBase,
-            validationNext()
-              ? {backgroundColor: fcolor.blue}
-              : {backgroundColor: fcolor.gray4},
-          ]}
-          disabled={!validationNext()}
-          onPress={() => SignIn()}>
-          <MText fontSize={13} color={fcolor.white}>
-            로그인
-          </MText>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: 16,
-          }}>
-          <MText fontSize={13} color={fcolor.gray4}>
-            이메일/비밀번호 찾기
-          </MText>
-        </TouchableOpacity>
       </View>
     </TouchableWithoutFeedback>
   );

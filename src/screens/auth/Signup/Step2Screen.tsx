@@ -118,7 +118,7 @@ const Step2Screen = () => {
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1}}
+      style={{flex: 1, paddingHorizontal: 30}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <Animated.View style={{flex: 1, opacity: fadeAnim}}>

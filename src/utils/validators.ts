@@ -47,3 +47,19 @@ export const validateNickname = (nickname: string): boolean => {
 export const validateIntroduction = (introduction: string): boolean => {
   return introduction.length <= 30;
 };
+
+/**
+ * 사용자 코드 형식 검증
+ * @param length - 사용자 고유 코드 개수
+ * @returns {boolean} - 랜덤적인 고유 코드 반환
+ * 조건:
+ * - 대문자 및 숫자 5가지 코드
+ */
+export const generateUniqueCode = (length = 5) => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};

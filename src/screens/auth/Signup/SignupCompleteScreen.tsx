@@ -1,52 +1,101 @@
-import {View, Text, StyleSheet} from 'react-native';
+// @ts-nocheck
+import {View, Text, StyleSheet, Image, Share} from 'react-native';
 import React, {useEffect} from 'react';
 import {useSignup} from './SignupProvider';
 import BackHeader from '../../../components/common/BackHeader';
 import AuthProgress from '../components/AuthProgress';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 import globalStyles from 'src/assets/styles/globalStyles';
 import fcolor from 'src/assets/colors/fcolors';
 import MText from 'src/components/common/MText';
 import BText from 'src/components/common/BText';
 import {auth} from 'src/utils/firebase';
+import NeonGr from 'src/components/neongr';
 
 // 회원가입 완료 시 보여줄 분류 페이지
 const SignupCompleteScreen = ({navigation}) => {
-  const {signupStep, handleStepNext, signupData} = useSignup();
+  const {signupData, userTravelType} = useSignup();
 
-  const validationNext = () => {
-    return true;
+  const handleShare = async () => {
+    try {
+      const result = await Share.share({
+        title: '나의 Flanning 여행 스타일',
+        message: `${signupData.step3.nickname}님의 여행 스타일은 "${userTravelType.type}"입니다 🌟 ${userTravelType.title}! 친구에게 공유하여 여행 스타일을 알아보세요!`,
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          console.log('Shared with activity type:', result.activityType);
+        }
+      } else if (result.action === Share.dismissedAction) {
+        return;
+      }
+    } catch (error) {
+      console.error('Error sharing:', error.message);
+    }
   };
 
   return (
-    <View style={{flex: 1}}>
-      {/* 회원가입 헤더 */}
-
-      <View style={[globalStyles.centered, {marginVertical: 100}]}>
-        <BText>이용자 별 여행 분류</BText>
+    <ScrollView style={{flex: 1, position: 'relative', top: -40}}>
+      <View style={{position: 'absolute', right: 30, top: 0, zIndex: 10}}>
+        <TouchableOpacity onPress={handleShare}>
+          <MaterialIcon name="share" size={30} color={fcolor.gray4} />
+        </TouchableOpacity>
+      </View>
+      <View style={{gap: 6, paddingHorizontal: 30}}>
+        <BText fontSize={28}>{signupData.step3.nickname}님의</BText>
+        <BText fontSize={28}>
+          <BText color={fcolor.blue} fontSize={28}>
+            여행스타일
+          </BText>
+          은
+        </BText>
       </View>
 
-      <View style={{flex: 1, justifyContent: 'flex-end', marginBottom: 100}}>
+      <View
+        style={{
+          alignItems: 'center',
+          marginVertical: 30,
+          gap: 30,
+          paddingHorizontal: 30,
+        }}>
+        <NeonGr style={{paddingHorizontal: 10}}>
+          {/* TODO: 머신러닝 모델 연동 후 결과 출력 */}
+          <BText fontSize={22}>{userTravelType.type}</BText>
+        </NeonGr>
+        <Image
+          source={userTravelType.img}
+          style={{width: 240, height: 240, borderRadius: 10}}
+        />
+        <BText fontSize={18}>{userTravelType.title}</BText>
+        {userTravelType.description}
+      </View>
+
+      <View
+        style={{
+          paddingHorizontal: 30,
+          // position: 'absolute',
+          width: '100%',
+          // bottom: -100,
+        }}>
         <TouchableOpacity
           style={[
             globalStyles.buttonBase,
             globalStyles.centered,
-            validationNext()
-              ? {backgroundColor: fcolor.blue}
-              : {backgroundColor: fcolor.gray4},
+            {backgroundColor: fcolor.blue},
           ]}
-          disabled={!validationNext()}
           onPress={() => {
             navigation.reset({
               index: 0,
               routes: [{name: 'Intro'}],
             });
           }}>
-          <MText color={fcolor.white}>플래닝 시작하기</MText>
+          <MText color={fcolor.white}>플래닝과 여행 떠나기</MText>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

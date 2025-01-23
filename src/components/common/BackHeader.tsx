@@ -29,6 +29,7 @@ function BackHeader({navigation, isSignup = false}) {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-start',
+        paddingHorizontal: 30,
       }}>
       <TouchableOpacity
         style={{

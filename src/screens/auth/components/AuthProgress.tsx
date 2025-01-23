@@ -34,6 +34,7 @@ const AuthProgress = ({currentStep}) => {
         alignItems: 'center',
         marginTop: 10,
         marginBottom: 20,
+        paddingHorizontal: 30,
       }}>
       {backgroundColors.map((bgColor, idx) => (
         <Animated.View

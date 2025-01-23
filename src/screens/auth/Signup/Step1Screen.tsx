@@ -94,7 +94,7 @@ const Step1Screen = () => {
   };
 
   return (
-    <Animated.View style={{flex: 1, opacity: fadeAnim}}>
+    <Animated.View style={{flex: 1, opacity: fadeAnim, paddingHorizontal: 30}}>
       {/* 타이틀 및 설명 */}
       <View style={{marginTop: 0, gap: 9}}>
         <BText>

@@ -14,33 +14,17 @@ import {
   Dimensions,
   FlatList,
 } from 'react-native';
-// import RText from '../src/components/common/RText';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import fcolor from 'src/assets/colors/fcolors';
 import globalStyles from 'src/assets/styles/globalStyles';
-//네이게이터(이동)
-// import {useNavigation} from '@react-navigation/native';
-// import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-// import BText from 'src/components/common/BText';
-// import MText from 'src/components/common/MText';
-// import {signIn, signUp} from '../src/lib/auth';
-// import * as KakaoLogin from '@react-native-seoul/kakao-login';
-// import auth from '@react-native-firebase/auth';
-// import {createUser, getUserid} from '../src/lib/users';
-// import {useUser} from '../src/components/common/UserContext';
-// import {usePlan} from '../src/components/common/PlanContext';
 import FlanningV1Logo from 'src/assets/images/logo/flanning-logo-white-v1.svg';
-// import Intro1 from 'src/assets/images/intro/Airplane.svg';
-// import Intro2 from 'src/assets/images/intro/Calendar.svg';
 import Video from 'react-native-video';
-import {storage} from 'src/utils/firebase';
+// import {storage} from 'src/utils/firebase';
 import BText from 'src/components/common/BText';
 import NeonGr from 'src/components/neongr';
 import MText from 'src/components/common/MText';
 import AuthProgress from '../auth/components/AuthProgress';
 import {ScrollView} from 'react-native-gesture-handler';
-// import {useNavigation} from '@react-navigation/native';
-
-// const firebaseAuth = auth();
 
 const {width} = Dimensions.get('window');
 
@@ -102,7 +86,7 @@ function IntroScreen({navigation}) {
   const [locationText, setLocationText] = useState('');
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const prevLocationRef = useRef('');
-  const [modalVisible, setModalVisible] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const [introStep, setIntroStep] = useState(0);
 
   const flatListRef = useRef(null);
@@ -184,8 +168,25 @@ function IntroScreen({navigation}) {
   //   });
   // };
 
+  const checkIntroModal = async () => {
+    try {
+      // AsyncStorage.removeItem('introModalShown');
+      const shown = await AsyncStorage.getItem('introModalShown');
+      if (shown === null) {
+        setModalVisible(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
-    const locations = ['전주', '경주', '가평', '강릉', '원주'];
+    // AsyncStorage.removeItem('introModalShown');
+    checkIntroModal();
+  }, []);
+
+  useEffect(() => {
+    const locations = ['전주', '경주', '가평', '강릉', '원주', '평창', '춘천'];
 
     const startAnimation = () => {
       let randomLocation;
@@ -230,7 +231,7 @@ function IntroScreen({navigation}) {
     setIntroStep(step);
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (introStep < introList.length - 1) {
       // 다음 슬라이드로 이동
       setIntroStep(introStep + 1);
@@ -241,6 +242,7 @@ function IntroScreen({navigation}) {
     } else {
       // 마지막 슬라이드일 경우 모달 닫기
       setModalVisible(false);
+      await AsyncStorage.setItem('introModalShown', 'true');
     }
   };
 
@@ -362,7 +364,7 @@ function IntroScreen({navigation}) {
                   <MText color={fcolor.white}>
                     {introStep < introList.length - 1
                       ? '다음으로'
-                      : '플래닝 시작하기'}
+                      : '플래닝 시작'}
                   </MText>
                 </TouchableOpacity>
               </View>
@@ -447,7 +449,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     paddingHorizontal: 30,
-    paddingTop: 30,
+    paddingTop: 50,
   },
   modalContent: {
     alignItems: 'flex-start',

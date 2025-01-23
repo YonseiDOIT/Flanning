@@ -4,8 +4,9 @@ import Step1Screen from '../Signup/Step1Screen';
 import Step2Screen from '../Signup/Step2Screen';
 import Step3Screen from '../Signup/Step3Screen';
 import Step4Screen from '../Signup/Step4Screen';
-import Step5Screen from '../Signup/Step5Screen';
 import SignupCompleteScreen from '../Signup/SignupCompleteScreen';
+import LoadingScreen from '../Signup/LoadingScreen';
+import Step5Screen from '../Signup/Step5Screen';
 
 const SignupContent = ({navigation}) => {
   const {signupStep} = useSignup();
@@ -22,6 +23,8 @@ const SignupContent = ({navigation}) => {
     case 4:
       return <Step5Screen />;
     case 5:
+      return <LoadingScreen />;
+    case 6:
       return <SignupCompleteScreen navigation={navigation} />;
     default:
       return <Step1Screen />;
