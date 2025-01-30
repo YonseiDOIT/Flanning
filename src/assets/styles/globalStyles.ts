@@ -18,6 +18,20 @@ const commonStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  inputBase: {
+    borderRadius: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: fcolor.gray1,
+    fontSize: 14,
+  },
+  shadowBase: {
+    shadowColor: fcolor.black,
+    shadowOffset: {width: 0, height: 0},
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 5,
+  },
 });
 
 export default commonStyles;

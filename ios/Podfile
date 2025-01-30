@@ -21,6 +21,8 @@ target 'flanningapp' do
   use_frameworks! :linkage => :static
 
   pod 'react-native-config', :path => '../node_modules/react-native-config'
+  pod 'react-native-maps', :path => '../node_modules/react-native-maps'
+  pod 'react-native-get-random-values', :path => '../node_modules/react-native-get-random-values'
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'

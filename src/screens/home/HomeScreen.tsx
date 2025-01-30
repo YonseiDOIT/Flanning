@@ -25,7 +25,7 @@ import {auth} from 'src/utils/firebase';
 
 function HomeScreen({navigation}) {
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
+    <View style={{flex: 1}}>
       <View style={styles.container}>
         <View style={styles.imagebanner}>
           <View
@@ -110,8 +110,8 @@ function HomeScreen({navigation}) {
         </View>
       </View>
 
-      <BottomBar homecolor={fcolor.blue} />
-    </GestureHandlerRootView>
+      <BottomBar activeRoute="Home" />
+    </View>
   );
 }
 

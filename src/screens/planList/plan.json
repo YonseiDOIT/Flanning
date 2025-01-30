@@ -1,0 +1,293 @@
+[
+  {
+    "title": "전주 여행",
+    "area": "전라북도 전주시",
+    "creator": "유저코드1",
+    "createdAt": "2025-01-23 18:30:12",
+    "dayList": ["2025-01-25", "2025-01-26", "2025-01-27"],
+    "planList": {
+      "2025-01-25": [
+        {
+          "locationTitle": "전주 동물원",
+          "location": "전북 전주시 덕진구 소리로 68 전주동물원",
+          "locationIcon": "",
+          "locationType": "동물원",
+          "state": 0,
+          "locationMap": {
+            "latitude": 35.85518999835854,
+            "longitude": 127.14440108738427
+          },
+          "time": "14:00",
+          "distanceToNext": "1.6km",
+          "memo": [
+            {
+              "icon": "",
+              "content": "동물원 티켓 현장에서 발급받아야함."
+            }
+          ],
+          "referenceLink": [
+            {
+              "name": "동물원 위치",
+              "link": "https://map.naver.com/p/entry/place/11886776?c=15.00,0,0,0,dh"
+            }
+          ],
+          "movePath": [
+            {
+              "icon": "",
+              "description": "30번 or 31번 (제주대학교 정류장) 버스 배차 안맞으면 걸어가기 (도보 15분 예상)"
+            }
+          ]
+        },
+        {
+          "locationTitle": "전주 시그니처 호텔",
+          "location": "전북 전주시 덕진구 백제대로 838 전주시그니처호텔",
+          "locationIcon": "",
+          "locationType": "숙소",
+          "state": 1,
+          "locationMap": {
+            "latitude": 35.84861378225392,
+            "longitude": 127.15987029198845
+          },
+          "time": "17:00",
+          "distanceToNext": "4.6km",
+          "memo": [
+            {
+              "icon": "",
+              "content": "얼리 체크인 요청하고 가기. 만약 안 된다고 하면 프론트에 짐 맡기고 움직이기"
+            }
+          ],
+          "referenceLink": [
+            {
+              "name": "숙소 위치",
+              "link": "https://map.naver.com/p/search/%EC%A0%84%EC%A3%BC%20%EC%8B%9C%EA%B7%B8%EB%8B%88%EC%B2%98%20%ED%98%B8%ED%85%94%20%26%20%EB%A0%88%EC%A7%80%EB%8D%98%EC%8A%A4/place/1621992936?c=15.00,0,0,0,dh&placePath=%3Fentry%253Dbmp"
+            },
+            {
+              "name": "숙소 홈페이지",
+              "link": "http://www.jeonjusignature.com/"
+            }
+          ],
+          "movePath": [
+            {
+              "icon": "",
+              "description": "30번 or 31번 (제주대학교 정류장) 버스 배차 안맞으면 걸어가기 (도보 15분 예상)"
+            }
+          ]
+        },
+        {
+          "locationTitle": "온초담 전주본점",
+          "location": "전북 전주시 덕진구 가리내6길 20-12 1층",
+          "locationIcon": "",
+          "locationType": "음식점",
+          "state": 1,
+          "locationMap": {
+            "latitude": 35.845677978608116,
+            "longitude": 127.10959823906339
+          },
+          "time": "18:30",
+          "distanceToNext": "",
+          "memo": [],
+          "referenceLink": [],
+          "movePath": []
+        }
+      ],
+      "2025-01-26": [
+        {
+          "locationTitle": "전주 한옥마을",
+          "location": "전북 전주시 완산구 기린대로 99",
+          "locationIcon": "",
+          "locationType": "관광지",
+          "state": 0,
+          "locationMap": {
+            "latitude": 35.81825402024853,
+            "longitude": 127.15364586733287
+          },
+          "time": "10:00",
+          "distanceToNext": "58m",
+          "memo": [],
+          "referenceLink": [],
+          "movePath": []
+        },
+        {
+          "locationTitle": "기와",
+          "location": "전북 전주시 완산구 어진길 15",
+          "locationIcon": "",
+          "locationType": "음식점",
+          "state": 0,
+          "locationMap": {
+            "latitude": 35.817771525240325,
+            "longitude": 127.15389667836826
+          },
+          "time": "12:30",
+          "distanceToNext": "2m",
+          "memo": [],
+          "referenceLink": [],
+          "movePath": []
+        },
+        {
+          "locationTitle": "전주한옥마을전망대카페",
+          "location": "전북 전주시 완산구 어진길 15",
+          "locationIcon": "",
+          "locationType": "카페",
+          "state": 0,
+          "locationMap": {
+            "latitude": 35.8177692402179,
+            "longitude": 127.15392157138973
+          },
+          "time": "13:30",
+          "distanceToNext": "6.1km",
+          "memo": [],
+          "referenceLink": [],
+          "movePath": []
+        },
+        {
+          "locationTitle": "국립전주박물관",
+          "location": "전북 전주시 완산구 쑥고개로 249 국립전주박물관",
+          "locationIcon": "",
+          "locationType": "박물관",
+          "state": 0,
+          "locationMap": {
+            "latitude": 35.801273657909164,
+            "longitude": 127.08965932947697
+          },
+          "time": "15:00",
+          "distanceToNext": "8.4km",
+          "memo": [],
+          "referenceLink": [],
+          "movePath": []
+        },
+        {
+          "locationTitle": "전주한옥레일바이크",
+          "location": "전북 전주시 덕진구 동부대로 420",
+          "locationIcon": "",
+          "locationType": "관광지",
+          "state": 0,
+          "locationMap": {
+            "latitude": 35.82967149901289,
+            "longitude": 127.1760761361051
+          },
+          "time": "16:00",
+          "distanceToNext": "6.1km",
+          "memo": [],
+          "referenceLink": [],
+          "movePath": []
+        },
+        {
+          "locationTitle": "남도집",
+          "location": "전북 전주시 완산구 거마산로 11 남도집",
+          "locationIcon": "",
+          "locationType": "음식점",
+          "state": 0,
+          "locationMap": {
+            "latitude": 35.79718684318451,
+            "longitude": 127.12240302724825
+          },
+          "time": "18:00",
+          "distanceToNext": "5.6km",
+          "memo": [],
+          "referenceLink": [],
+          "movePath": []
+        },
+        {
+          "locationTitle": "전주덕진공원",
+          "location": "전북 전주시 덕진구 권삼득로 390-1 전주덕진공원",
+          "locationIcon": "",
+          "locationType": "관광지",
+          "state": 0,
+          "locationMap": {
+            "latitude": 35.8474875517327,
+            "longitude": 127.12102461543232
+          },
+          "time": "20:00",
+          "distanceToNext": "3.5km",
+          "memo": [],
+          "referenceLink": [],
+          "movePath": []
+        },
+        {
+          "locationTitle": "전주 시그니처 호텔",
+          "location": "전북 전주시 덕진구 백제대로 838 전주시그니처호텔",
+          "locationIcon": "",
+          "locationType": "숙소",
+          "state": 1,
+          "locationMap": {
+            "latitude": 35.84861378225392,
+            "longitude": 127.15987029198845
+          },
+          "time": "22:00",
+          "distanceToNext": "",
+          "memo": [
+            {
+              "icon": "",
+              "content": ""
+            }
+          ],
+          "referenceLink": [
+            {
+              "name": "숙소 위치",
+              "link": "https://map.naver.com/p/search/%EC%A0%84%EC%A3%BC%20%EC%8B%9C%EA%B7%B8%EB%8B%88%EC%B2%98%20%ED%98%B8%ED%85%94%20%26%20%EB%A0%88%EC%A7%80%EB%8D%98%EC%8A%A4/place/1621992936?c=15.00,0,0,0,dh&placePath=%3Fentry%253Dbmp"
+            },
+            {
+              "name": "숙소 홈페이지",
+              "link": "http://www.jeonjusignature.com/"
+            }
+          ],
+          "movePath": [
+            {
+              "icon": "",
+              "description": "30번 or 31번 (제주대학교 정류장) 버스 배차 안맞으면 걸어가기 (도보 15분 예상)"
+            }
+          ]
+        }
+      ],
+      "2025-01-27": [
+        {
+          "locationTitle": "라한호텔 전주 하녹당",
+          "location": "전북 전주시 완산구 기린대로 85 라한호텔 전주 2층",
+          "locationIcon": "",
+          "locationType": "카페",
+          "state": 0,
+          "locationMap": {
+            "latitude": 35.817041311388024,
+            "longitude": 127.15404741871552
+          },
+          "time": "14:00",
+          "distanceToNext": "175km",
+          "memo": [],
+          "referenceLink": [],
+          "movePath": []
+        },
+        {
+          "locationTitle": "연세대학교 미래캠퍼스",
+          "location": "강원 원주시 연세대길 1 연세대학교",
+          "locationIcon": "",
+          "locationType": "기타",
+          "state": 0,
+          "locationMap": {
+            "latitude": 37.28195890374404,
+            "longitude": 127.90110378402365
+          },
+          "time": "24:00",
+          "distanceToNext": "",
+          "memo": [],
+          "referenceLink": [],
+          "movePath": []
+        }
+      ]
+    },
+    "userList": ["유저코드1", "유저코드2"]
+  },
+  {
+    "title": "강릉 여행",
+    "area": "강원특별자치도 강릉시",
+    "creator": "유저코드1",
+    "createdAt": "2025-01-23 18:30:12",
+    "dayList": ["2025-02-11", "2025-02-12", "2025-02-13", "2025-02-14"],
+    "planList": {
+      "2025-02-11": [],
+      "2025-02-12": [],
+      "2025-02-13": [],
+      "2025-02-14": []
+    },
+    "userList": ["유저코드1", "유저코드2"]
+  }
+]

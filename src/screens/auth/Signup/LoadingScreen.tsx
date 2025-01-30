@@ -198,7 +198,7 @@ const LoadingScreen = () => {
           tripNewPerson: signupData.step4.tripNewPerson,
         },
         // TODO: 유저 유형 저장
-        // userTripType: userTravelType.type,
+        // travelType: userTravelType.type,
       };
       await firestore().collection('users').doc(uniqueCode).set(fetchData);
       return true;
