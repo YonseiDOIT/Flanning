@@ -54,6 +54,7 @@ react {
     //
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
+    
 }
 
 /**
@@ -127,10 +128,13 @@ dependencies {
     implementation 'androidx.core:core-splashscreen:1.0.0-beta01'
     // implementation platform('com.google.firebase:firebase-bom:32.2.2')
     implementation project(':react-native-linear-gradient')
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+
 
     // implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
-    
+
+        
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
@@ -141,3 +145,5 @@ dependencies {
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
