@@ -65,3 +65,8 @@ yarn-error.log
 # testing
 /coverage
 /src/assets/videos/*
+
+# .gitignore
+.env
+ios/GoogleService-Info.plist
+android/app/google-services.json

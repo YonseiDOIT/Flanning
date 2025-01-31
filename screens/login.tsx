@@ -94,53 +94,53 @@
 //   };
 
 //   return (
-//     <View style={styles.container}>
-//       {/* 앱 문장 */}
-//       <View style={styles.infoT}>
-//         <BText>{"여행의 시작,\n"}<BText color={fcolor.blue}>플래닝</BText>과 함께해요!</BText>
+// <View style={styles.container}>
+//   {/* 앱 문장 */}
+//   <View style={styles.infoT}>
+//     <BText>{"여행의 시작,\n"}<BText color={fcolor.blue}>플래닝</BText>과 함께해요!</BText>
 
-//       </View>
-//       {/* 아이디랑 비번 입력창... safearea 써야된다는 거 같기도..? */}
-//       <View style={styles.login}>
-//         <TextInput style={styles.loginbox}
-//         onChangeText={(text)=>setForm({...form,email:text})}
-//           placeholder={"아이디"}
-//         />
-//         <TextInput style={styles.loginbox}
-//         onChangeText={(text)=>setForm({...form,password:text})}
-//         secureTextEntry={true}
-//           placeholder={"비밀번호"}
-//         />
-//         <View style={styles.rowbutton}>
-//           <TouchableOpacity style={styles.smallbutton}
-//           onPress={()=>navigate('test')}>
-//             <MText fontSize={13} color={fcolor.gray4}>비밀번호 찾기</MText>
-//           </TouchableOpacity>
-//           <TouchableOpacity
-//             style={styles.smallbutton}
-//             onPress={() => navigate('signup')}>
-//             <MText fontSize={13} color={fcolor.gray4}>회원가입</MText>
-//           </TouchableOpacity>
-//         </View>
-//         <View style={{marginTop:31, height:2, backgroundColor:fcolor.blue}}/>
-//         <View>
-//           <TouchableOpacity style={styles.kakaobutton}
-//           onPress={()=>login()}>
-//             {/* 이미지 버튼으로... */}
-//             <Image style={{width:"100%",height:45}} source={require('../src/assets/images/kakao_login_large_wide.png')} />
-//           </TouchableOpacity>
-
-//         </View>
-
-//       </View>
-//       <View style={{flex:1,marginBottom:70}}>
-//         <TouchableOpacity style={styles.loginbutton}
-//           onPress={()=>signInSubmit()}>
-//             <MText fontSize={14} color={fcolor.white}>로그인</MText>
-//           </TouchableOpacity>
-//       </View>
+//   </View>
+//   {/* 아이디랑 비번 입력창... safearea 써야된다는 거 같기도..? */}
+//   <View style={styles.login}>
+//     <TextInput style={styles.loginbox}
+//     onChangeText={(text)=>setForm({...form,email:text})}
+//       placeholder={"아이디"}
+//     />
+//     <TextInput style={styles.loginbox}
+//     onChangeText={(text)=>setForm({...form,password:text})}
+//     secureTextEntry={true}
+//       placeholder={"비밀번호"}
+//     />
+//     <View style={styles.rowbutton}>
+//       <TouchableOpacity style={styles.smallbutton}
+//       onPress={()=>navigate('test')}>
+//         <MText fontSize={13} color={fcolor.gray4}>비밀번호 찾기</MText>
+//       </TouchableOpacity>
+//       <TouchableOpacity
+//         style={styles.smallbutton}
+//         onPress={() => navigate('signup')}>
+//         <MText fontSize={13} color={fcolor.gray4}>회원가입</MText>
+//       </TouchableOpacity>
+//     </View>
+//     <View style={{marginTop:31, height:2, backgroundColor:fcolor.blue}}/>
+//     <View>
+//       <TouchableOpacity style={styles.kakaobutton}
+//       onPress={()=>login()}>
+//         {/* 이미지 버튼으로... */}
+//         <Image style={{width:"100%",height:45}} source={require('../src/assets/images/kakao_login_large_wide.png')} />
+//       </TouchableOpacity>
 
 //     </View>
+
+//   </View>
+//   <View style={{flex:1,marginBottom:70}}>
+//     <TouchableOpacity style={styles.loginbutton}
+//       onPress={()=>signInSubmit()}>
+//         <MText fontSize={14} color={fcolor.white}>로그인</MText>
+//       </TouchableOpacity>
+//   </View>
+
+// </View>
 //   );
 // }
 

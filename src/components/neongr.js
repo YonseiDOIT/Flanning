@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, StyleSheet} from 'react-native';
+import {Text, StyleSheet, Platform} from 'react-native';
 import fcolor from '../assets/colors/fcolors';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -8,13 +8,18 @@ const NeonGr = ({
   style = 'black',
   colors = ['#ffffff00', fcolor.green],
 }) => {
+  const locations = Platform.select({
+    ios: [0.5, 0.5],
+    android: [0.5, 0.0],
+  });
+
   return (
     <LinearGradient
       style={style}
       start={{x: 0, y: 0}}
       end={{x: 0, y: 1}}
       colors={colors}
-      locations={[0.7, 0.3]}>
+      locations={locations}>
       {children}
     </LinearGradient>
   );

@@ -10,37 +10,86 @@ import {
   Animated,
   TouchableOpacity,
   View,
+  Modal,
+  Dimensions,
+  FlatList,
 } from 'react-native';
-// import RText from '../src/components/common/RText';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import fcolor from 'src/assets/colors/fcolors';
-//네이게이터(이동)
-// import {useNavigation} from '@react-navigation/native';
-// import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-// import BText from 'src/components/common/BText';
-// import MText from 'src/components/common/MText';
-// import {signIn, signUp} from '../src/lib/auth';
-// import * as KakaoLogin from '@react-native-seoul/kakao-login';
-// import auth from '@react-native-firebase/auth';
-// import {createUser, getUserid} from '../src/lib/users';
-// import {useUser} from '../src/components/common/UserContext';
-// import {usePlan} from '../src/components/common/PlanContext';
-import FlanningLogo from 'src/assets/images/logo/flanning-logo-white-v1.svg';
+import globalStyles from 'src/assets/styles/globalStyles';
+import FlanningV1Logo from 'src/assets/images/logo/flanning-logo-white-v1.svg';
 import Video from 'react-native-video';
-// import {useNavigation} from '@react-navigation/native';
+// import {storage} from 'src/utils/firebase';
+import BText from 'src/components/common/BText';
+import NeonGr from 'src/components/neongr';
+import MText from 'src/components/common/MText';
+import AuthProgress from '../auth/components/AuthProgress';
+import {ScrollView} from 'react-native-gesture-handler';
 
-// const firebaseAuth = auth();
+const {width} = Dimensions.get('window');
+
+const introList = [
+  {
+    imgUrl: require('src/assets/images/intro/Calendar.png'),
+    introDesc: (
+      <BText fontSize={18}>
+        <BText fontSize={18} color={fcolor.orange}>
+          일정
+        </BText>
+        을{' '}
+        <BText fontSize={18} color={fcolor.orange}>
+          함께
+        </BText>{' '}
+        세우고
+      </BText>
+    ),
+  },
+  {
+    imgUrl: require('src/assets/images/intro/Map.png'),
+    introDesc: (
+      <BText fontSize={18}>
+        <BText fontSize={18} color={fcolor.orange}>
+          동선
+        </BText>
+        을{' '}
+        <BText fontSize={18} color={fcolor.orange}>
+          확인
+        </BText>{' '}
+        하고
+      </BText>
+    ),
+  },
+  {
+    imgUrl: require('src/assets/images/intro/Airplane.png'),
+    introDesc: (
+      <BText fontSize={18} color={fcolor.orange}>
+        떠나고
+      </BText>
+    ),
+  },
+  {
+    imgUrl: require('src/assets/images/intro/Camera.png'),
+    introDesc: (
+      <BText fontSize={18}>
+        여행을{' '}
+        <BText fontSize={18} color={fcolor.orange}>
+          기록
+        </BText>
+        해요
+      </BText>
+    ),
+  },
+];
 
 // 앱 실행시 보여지는 인트로 페이지
 function IntroScreen({navigation}) {
-  // const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
-  // const [form, setForm] = useState({
-  //   email: '',
-  //   password: '',
-  //   confirmPassword: '',
-  // });
-  const [locationText, setLocationText] = useState('서울');
+  const [locationText, setLocationText] = useState('');
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const prevLocationRef = useRef('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [introStep, setIntroStep] = useState(0);
+
+  const flatListRef = useRef(null);
 
   // const svgMarkup = require('src/assets/images/logo/flanning-logo-white-v1.svg');
 
@@ -119,9 +168,27 @@ function IntroScreen({navigation}) {
   //   });
   // };
 
+  const checkIntroModal = async () => {
+    try {
+      // AsyncStorage.removeItem('introModalShown');
+      const shown = await AsyncStorage.getItem('introModalShown');
+      if (shown === null) {
+        setModalVisible(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
-    const locations = ['전주', '경주', '가평', '강릉', '원주'];
-    const intervalId = setInterval(() => {
+    // AsyncStorage.removeItem('introModalShown');
+    checkIntroModal();
+  }, []);
+
+  useEffect(() => {
+    const locations = ['전주', '경주', '가평', '강릉', '원주', '평창', '춘천'];
+
+    const startAnimation = () => {
       let randomLocation;
       do {
         randomLocation =
@@ -136,20 +203,48 @@ function IntroScreen({navigation}) {
         toValue: 1,
         duration: 1000,
         useNativeDriver: true,
-      }).start();
+      }).start(() => {
+        setTimeout(() => {
+          Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 1000,
+            useNativeDriver: true,
+          }).start();
+        }, 4000);
+      });
+    };
 
-      // Fade-out 애니메이션
-      setTimeout(() => {
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 1000,
-          useNativeDriver: true,
-        }).start();
-      }, 5000);
-    }, 6000);
+    // 처음 1초 지연 후 시작
+    const initialTimeout = setTimeout(() => {
+      startAnimation();
+      // 이후 주기적으로 실행
+      const intervalId = setInterval(startAnimation, 6000); // 6초마다 업데이트
+      return () => clearInterval(intervalId);
+    }, 1000);
 
-    return () => clearInterval(intervalId);
+    return () => clearTimeout(initialTimeout);
   }, [fadeAnim]);
+
+  const handleScroll = event => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const step = Math.round(offsetX / width);
+    setIntroStep(step);
+  };
+
+  const handleNextStep = async () => {
+    if (introStep < introList.length - 1) {
+      // 다음 슬라이드로 이동
+      setIntroStep(introStep + 1);
+      flatListRef.current?.scrollToIndex({
+        index: introStep + 1,
+        animated: true,
+      });
+    } else {
+      // 마지막 슬라이드일 경우 모달 닫기
+      setModalVisible(false);
+      await AsyncStorage.setItem('introModalShown', 'true');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -183,11 +278,7 @@ function IntroScreen({navigation}) {
           </Animated.Text>
 
           {/* </Text> */}
-          <FlanningLogo
-            width={110}
-            height={50}
-            // style={{flex: 1, width: '100%', height: '100%'}}
-          />
+          <FlanningV1Logo width={110} height={50} />
         </View>
         <TouchableOpacity
           style={styles.kakaobutton}
@@ -200,8 +291,7 @@ function IntroScreen({navigation}) {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.loginbutton}
-          // onPress={() => signInSubmit()}
-        >
+          onPress={() => navigation.navigate('Signin')}>
           <Image
             style={{width: '100%', height: 30}}
             source={require('src/assets/images/email-login-btn.png')}
@@ -215,6 +305,73 @@ function IntroScreen({navigation}) {
           </Text>
         </TouchableOpacity>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.modalContainer}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={styles.modalContent}>
+              <BText>
+                <BText color={fcolor.blue}>플래닝</BText>과 계획을 세우고
+              </BText>
+              <NeonGr>
+                <BText>여행을 떠나볼까요?</BText>
+              </NeonGr>
+              <View
+                style={{
+                  width: '100%',
+                  paddingTop: 40,
+                  paddingBottom: 20,
+                  alignItems: 'center',
+                  gap: 30,
+                }}>
+                <View
+                  style={{
+                    width: '100%',
+                    backgroundColor: fcolor.gray1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingVertical: 30,
+                    borderRadius: 10,
+                  }}>
+                  <FlatList
+                    ref={flatListRef}
+                    data={introList}
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    onScroll={handleScroll}
+                    keyExtractor={(item, index) => `intro-${index}`}
+                    renderItem={({item}) => (
+                      <View style={styles.slideContainer}>
+                        <Image style={styles.slideImage} source={item.imgUrl} />
+                        {item.introDesc}
+                      </View>
+                    )}
+                  />
+                </View>
+                <AuthProgress currentStep={introStep} />
+              </View>
+              <View style={{width: '100%'}}>
+                <TouchableOpacity
+                  style={[
+                    globalStyles.buttonBase,
+                    {backgroundColor: fcolor.blue},
+                  ]}
+                  onPress={handleNextStep}>
+                  <MText color={fcolor.white}>
+                    {introStep < introList.length - 1
+                      ? '다음으로'
+                      : '플래닝 시작'}
+                  </MText>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -251,12 +408,6 @@ const styles = StyleSheet.create({
     gap: 14,
     marginBottom: Platform.OS === 'ios' ? 100 : 60,
   },
-  infoT: {
-    marginTop: 100,
-  },
-  login: {
-    marginTop: 30,
-  },
   loginbox: {
     marginTop: 16,
     height: 45,
@@ -264,21 +415,6 @@ const styles = StyleSheet.create({
     borderColor: fcolor.gray1,
     borderRadius: 10,
     paddingLeft: 20,
-    backgroundColor: fcolor.gray1,
-  },
-  rowbutton: {
-    flexDirection: 'row',
-    marginTop: 16,
-  },
-  smallbutton: {
-    marginRight: 10,
-    height: 45,
-    width: 165,
-    borderWidth: 1,
-    borderColor: fcolor.gray1,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: fcolor.gray1,
   },
   kakaobutton: {
@@ -303,6 +439,32 @@ const styles = StyleSheet.create({
     borderColor: '#C7C7C7',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    width: '100%',
+    height: '85%',
+    position: 'absolute',
+    bottom: 0,
+    paddingHorizontal: 30,
+    paddingTop: 50,
+  },
+  modalContent: {
+    alignItems: 'flex-start',
+    paddingBottom: 100,
+  },
+  slideContainer: {
+    width: width - 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  slideImage: {
+    width: 200,
+    height: 200,
+    marginBottom: 20,
   },
 });
 

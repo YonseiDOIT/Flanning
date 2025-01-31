@@ -1,4 +1,5 @@
-import React from 'react';
+// @ts-nocheck
+import React, {useEffect} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 // import database from '@react-native-firebase/database';
 import {
@@ -20,10 +21,11 @@ import RText from 'src/components/common/RText';
 import MText from 'src/components/common/MText';
 // import NeonGr from '../src/components/neongr';
 import BottomBar from 'src/components/common/BottomBar';
+import {auth} from 'src/utils/firebase';
 
 function HomeScreen({navigation}) {
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
+    <View style={{flex: 1}}>
       <View style={styles.container}>
         <View style={styles.imagebanner}>
           <View
@@ -108,8 +110,8 @@ function HomeScreen({navigation}) {
         </View>
       </View>
 
-      <BottomBar homecolor={fcolor.blue} />
-    </GestureHandlerRootView>
+      <BottomBar activeRoute="Home" />
+    </View>
   );
 }
 

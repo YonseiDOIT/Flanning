@@ -7,77 +7,63 @@ import {
   Platform,
   Animated,
   Easing,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import fcolors from '../../assets/colors/fcolors';
+import fcolor from 'src/assets/colors/fcolors';
 import RText from './RText';
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {useNavigation, useNavigationState} from '@react-navigation/native';
 
-const BottomBar = ({
-  homecolor = fcolors.gray3,
-  checkcolor = fcolors.gray3,
-  reviewcolor = fcolors.gray3,
-  settingcolor = fcolors.gray3,
-}) => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParam>>();
-  const [visible, setVisible] = useState(true);
+const BottomBar = () => {
+  const navigation = useNavigation();
+  const routeName = useNavigationState(
+    state => state.routes[state.index]?.name,
+  );
 
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      () => {
-        setVisible(false);
-      },
-    );
-
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setVisible(true);
-      },
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
-
-  if (!visible) {
-    return null;
-  }
+  const getIconColor = screen =>
+    routeName === screen ? fcolor.blue : fcolor.gray4;
 
   return (
     <View style={styles.bottombar}>
       <TouchableOpacity
         style={styles.icon}
-        onPress={() => navigation.navigate('main1')}>
-        <Icon name="home-filled" size={25} color={homecolor} />
-        <RText style={{marginTop: 5}} color={homecolor} fontSize={10}>
+        onPress={() => navigation.navigate('Home')}>
+        <Icon name="home-filled" size={25} color={getIconColor('Home')} />
+        <RText
+          style={{marginTop: 5}}
+          color={getIconColor('Home')}
+          fontSize={10}>
           홈
         </RText>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.icon}
-        onPress={() => navigation.navigate('planlist')}>
-        <Icon name="checklist" size={25} color={checkcolor} />
-        <RText style={{marginTop: 5}} color={checkcolor} fontSize={10}>
+        onPress={() => navigation.navigate('Plan')}>
+        <Icon name="checklist" size={25} color={getIconColor('PlanList')} />
+        <RText
+          style={{marginTop: 5}}
+          color={getIconColor('PlanList')}
+          fontSize={10}>
           여행 목록
         </RText>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.icon}
-        onPress={() => navigation.navigate('reviewlist')}>
-        <Icon name="edit" size={25} color={reviewcolor} />
-        <RText style={{marginTop: 5}} color={reviewcolor} fontSize={10}>
+        onPress={() => navigation.navigate('Review')}>
+        <Icon name="edit" size={25} color={getIconColor('Review')} />
+        <RText
+          style={{marginTop: 5}}
+          color={getIconColor('Review')}
+          fontSize={10}>
           리뷰
         </RText>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.icon}>
-        <Icon name="settings" size={25} color={settingcolor} />
-        <RText style={{marginTop: 5}} color={settingcolor} fontSize={10}>
-          설정
+      <TouchableOpacity
+        style={styles.icon}
+        onPress={() => navigation.navigate('Profile')}>
+        <Icon name="person" size={25} color={fcolor.gray4} />
+        <RText style={{marginTop: 5}} color={fcolor.gray4} fontSize={10}>
+          내 계정
         </RText>
       </TouchableOpacity>
     </View>
@@ -87,8 +73,9 @@ const BottomBar = ({
 const styles = StyleSheet.create({
   bottombar: {
     width: '100%',
-    height: Platform.OS === 'ios' ? 100 : 60,
-    backgroundColor: fcolors.gray1,
+    height: Platform.OS === 'ios' ? 100 : 80,
+    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    backgroundColor: fcolor.gray1,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
@@ -96,7 +83,17 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     position: 'absolute',
     bottom: 0,
-    elevation: 15,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 15,
+      },
+    }),
   },
   icon: {
     flexDirection: 'column',
@@ -107,7 +104,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: 'Pretendard-Regular',
     padding: 5,
-    color: fcolors.gray4,
+    color: fcolor.gray4,
   },
 });
 
