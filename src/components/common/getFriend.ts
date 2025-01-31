@@ -18,7 +18,7 @@ export const addFriend = async (friendcode, usercode) => {
     userCollection1.update("friend", FieldValue.arrayUnion(usercode));
 
     // 새 친구를 추가하고 상태를 업데이트
-    Alert.alert(db.nickname, '친구신청을 완료했습니다.');
+    Alert.alert(db.nickname, '친구 요청을 보냈어요!\n수락할 때까지 조금만 기다려주세요 😊');
   } else {
     console.log("없음");
     Alert.alert('', '해당 친구코드는 없는 코드입니다.');
@@ -49,6 +49,10 @@ export const deleteFriend = (frdcode,usercode) => {
   const userCollection =firestore().collection("users").doc(usercode);
   userCollection.update({
     friend: FieldValue.arrayRemove(frdcode)
+  });
+  const userCollection1 =firestore().collection("users").doc(frdcode);
+  userCollection1.update({
+    friend: FieldValue.arrayRemove(usercode)
   });
   
 };

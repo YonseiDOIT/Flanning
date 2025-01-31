@@ -1,9 +1,11 @@
 import { firestore } from "src/utils/firebase";
+import { getDay } from "./dataManagement";
 
 //날짜별 여행 계획
 export const getPlanDetail = async (day, mainPlan) => {
   const planList_data = await firestore().collection('plan').doc(mainPlan).collection('planList').get();
   let planList = [];
+  
   planList_data.forEach(doc => {
     planList.push({ id: doc.id, ...doc.data() });
   });
@@ -15,22 +17,24 @@ export const getPlanDetail = async (day, mainPlan) => {
 
 
 //일정가져오기
-export const getPlan= async (usercode)=>{
+export const getPlan= async (mainPlan)=>{
+  const planCollection = await firestore().collection("plan").doc(mainPlan).get();
+  const planData= planCollection.data()
+  const dayNumber= getDay(planData.dayList)
+  const planData1= await getPlanDetail(dayNumber-1,mainPlan)
+  
+  
+  return {dayNumber,planData, planData1}
+}
+
+export const havePlan= async (usercode)=>{
   const userCollection = await firestore().collection("users").doc(usercode).get();
   const userData= userCollection.data()
-  const nickname= userData?.nickname
-  let planData=''
-  let planData1=''
-  
-  if (userData?.mainPlan){
-    const planCollection = await firestore().collection("plan").doc(userData.mainPlan).get();
-    planData= planCollection.data()
-    planData1= await getPlanDetail(0,userData.mainPlan)
 
-    return {have:true, planData, planData1}
+  if (userData?.mainPlan){
+    return {have:true,mainPlan:userData.mainPlan}
+  }else{
+    return {have:false,mainPlan:''}
   }
-  
-  return {have:false, planData, planData1}
-  
-  
+
 }

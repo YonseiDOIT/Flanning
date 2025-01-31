@@ -16,6 +16,8 @@ import { useUser } from 'src/context';
 import { addFriend} from 'src/components/common/getFriend';
 import { getUserdata } from 'src/components/common/getUserdata';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { firestore } from 'src/utils/firebase';
+import { addNotification } from 'src/components/common/addNotification';
 
 
 // 일정 상세 페이지
@@ -51,6 +53,29 @@ const FriendAddScreen = ({navigation}) => {
     }
   }
 
+  //친구신청
+  const requestFrd = async (friendCode)=>{
+    const usersCollection = await firestore().collection('users').doc(friendCode).get();
+    const db = usersCollection.data();
+
+    const dateNow = new Date();
+    const numYear= dateNow.getFullYear()
+    let year= numYear.toString()
+    year= year.slice(2)
+
+    const date=year+"년 "+dateNow.getMonth()+"월 "+dateNow.getDay()+"일"
+    
+    addNotification(friendCode,"친구",
+      "친구신청",
+      user.nickname+"님이 친구신청을 했어요",
+      date,
+      1
+    )
+    
+    //친구요청 알럿
+    Alert.alert(db.nickname, '친구 요청을 보냈어요!\n수락할 때까지 조금만 기다려주세요 😊');
+  }
+
   return (
     <View style={globalStyles.container}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 40,paddingBottom:24, alignItems:'center' }}>
@@ -73,10 +98,6 @@ const FriendAddScreen = ({navigation}) => {
                     style={styles.imagePreview}
                     resizeMode="cover"
                 />
-
-                <View style={[globalStyles.centered, styles.ImageEdit]}>
-                  <FontAS5Icon name="pen" size={14} color={fcolor.white} />
-                </View>
               </View>
             </TouchableOpacity>
             <View style={[styles.box,{backgroundColor:'#EEF6FF',justifyContent:'space-between'}]}>
@@ -99,7 +120,7 @@ const FriendAddScreen = ({navigation}) => {
             <TouchableOpacity 
               style={[styles.clickbutton,globalStyles.centered,
                 friendCode ? {backgroundColor:fcolor.blue} : null]}
-              onPress={friendCode ? () =>  addFriend(friendCode,usercode): null}>
+              onPress={friendCode ? () =>  requestFrd(friendCode): null}>
               <MText fontSize={13} color={fcolor.white}>친구 신청하기</MText>
             </TouchableOpacity>
              

@@ -42,7 +42,7 @@ const FriendListScreen = ({navigation}) => {
               <View>
                 <View style={{flexDirection:'row'}}>
                   <BText fontSize={15} style={{marginBottom:10}}>{item.nickname}</BText>
-                  <MText fontSize={13} color={fcolor.gray3} style={{marginLeft:8}}>{item.myType}</MText>
+                  <MText fontSize={13} color={fcolor.gray3} style={{marginLeft:8}}>{item.travelType}</MText>
                 </View>
                 <RText fontSize={13} color={fcolor.gray3}>{item.introduction}</RText>
               </View>

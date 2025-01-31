@@ -124,6 +124,8 @@ dependencies {
     implementation 'androidx.core:core-splashscreen:1.0.0-beta01'
     // implementation platform('com.google.firebase:firebase-bom:32.2.2')
     implementation project(':react-native-linear-gradient')
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+
 
     // implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")

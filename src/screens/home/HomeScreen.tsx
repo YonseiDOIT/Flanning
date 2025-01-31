@@ -28,10 +28,12 @@ import { useUser } from 'src/context/UserContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { firestore } from 'src/utils/firebase';
 import NeonGr from 'src/components/neongr';
-import { getPlan } from 'src/components/common/getPlan';
+import { getPlan, havePlan } from 'src/components/common/getPlan';
 import globalStyles from 'src/assets/styles/globalStyles';
 import TypeBox from 'src/components/common/TypeBox';
 import { getUserdata } from 'src/components/common/getUserdata';
+import { daySlice, getDay, getTime } from 'src/components/common/dataManagement';
+import ReservationBox from 'src/components/common/reservationBox';
 
 function HomeScreen({ navigation }) {
 
@@ -42,8 +44,15 @@ function HomeScreen({ navigation }) {
 
   //일정이 있음
   const [have, setHave] = useState(false);
+
   //일정 제목 데이터
-  const [plan, setPlan] = useState('')
+  const [plan, setPlan] = useState({
+    title:'',
+    dayNumber:0,
+    date:'',
+    dayOfWeek:'',
+    place:'',
+  })
   //일정 리스트 데이터
   const [planList, setPlanList] = useState([]);
 
@@ -88,19 +97,29 @@ function HomeScreen({ navigation }) {
     }
 
   ]
+
+
   const getPlanlist = async () => {
     try {
+      
       const userdata = await getUserdata(usercode);
-      const { have, planData, planData1 } = await getPlan(usercode);
+      const {have,mainPlan}= await havePlan(usercode); 
+      setUser(userdata);
       setHave(have);
 
+
       if (have) {
-        setPlan(planData);
-        setPlanList(planData1);
+        const { dayNumber, planData, planData1 } = await getPlan(mainPlan);
+        console.log(dayNumber)
+        const {date,dayOfWeek}= daySlice(planData.dayList[dayNumber-1])
+
+        setPlan({title:planData.title,dayNumber:dayNumber,date:date,
+          dayOfWeek:dayOfWeek,place:planData.place});
+        
+        const planFour= planData1.slice(0, 4);
+        setPlanList(planFour);
       }
-      else{
-        setUser(userdata);
-      }
+
     } catch (error) {
       console.log(error.message);
     }
@@ -115,7 +134,8 @@ function HomeScreen({ navigation }) {
 
   //여행 일정
   const renderItem = useCallback(({ item, index }) => {
-    const notEnd = planList[index + 1]
+    getTime(item.time)
+
     return (
       <View style={{ marginBottom: 8 }}>
         <View style={styles.planecontent}>
@@ -125,12 +145,19 @@ function HomeScreen({ navigation }) {
             </View>
             <RText fontSize={8} color={fcolor.gray4}>{item.time}</RText>
           </View>
-          <BText fontSize={15} style={{ marginRight: 16 }}>{item.locationTitle}</BText>
-          <TypeBox name={item.locationType} />
+          <View style={{flex: 1,flexDirection:'row', justifyContent:'space-between'}}>
+            <View style={{flexDirection:'row'}}>
+              <BText fontSize={15} style={{ marginRight: 16 }}>{item.locationTitle}</BText>
+              <TypeBox name={item.locationType}/>
+            </View>
+            <View style={{marginRight:10}}>
+              <ReservationBox state={item.state}/>
+            </View>
+          </View>
         </View>
         <View style={styles.planecontent}>
           <View style={{ width: 22, height: 44, alignItems: 'center', marginRight: 20 }}>
-            {notEnd ?
+            {index < 3 ?
               <View style={{ width: 1, height: '100%', backgroundColor: fcolor.lblue1 }}></View>
               :
               <View></View>
@@ -203,7 +230,7 @@ function HomeScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <>
-            <View style={[styles.container]}>
+            <View style={[styles.container,{paddingBottom:10}]}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -221,11 +248,11 @@ function HomeScreen({ navigation }) {
 
               {/* 일정 */}
               {have ?
-                <View style={{ marginTop: 10 }}>
-                  <View style={{ flexDirection: 'row', paddingBottom: 4 }}>
-                    <BText fontSize={16} color={fcolor.gray4}>DAY 1</BText>
+                <View style={{ marginTop: 8 }}>
+                  <View style={{ flexDirection: 'row', paddingBottom: 8 }}>
+                    <BText fontSize={16} color={fcolor.gray4}>DAY {plan.dayNumber}</BText>
                     <RText fontSize={15} color={fcolor.gray4}
-                      style={{ marginLeft: 10 }}>{plan?.startDay}</RText>
+                      style={{ marginLeft: 10 }}>{plan.date}.{plan.dayOfWeek}</RText>
                   </View>
                   <FlatList
                     data={planList}
@@ -234,9 +261,9 @@ function HomeScreen({ navigation }) {
                   />
                 </View>
                 :
-                <View style={{ justifyContent: 'center', marginTop: 48 }}>
+                <View style={{ justifyContent: 'center', marginVertical: 30 }}>
                   <View style={{ alignItems: 'center' }}>
-                    <TouchableOpacity onPress={() => navigation.navigate('addplan')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('PlanMake')}>
                       <Image
                         source={require('src/assets/images/home/homeAddPlan.png')}
                         style={{ width: 128, height: 128, margin: 5 }}
@@ -257,7 +284,7 @@ function HomeScreen({ navigation }) {
                 {have ? plan?.place + "에서 가볼만한 곳" : user?.nickname + "님을 위한 추천여행지"}
               </BText>
               <MText fontSize={13} color={fcolor.gray4}>
-                {have ? "현재 여행중인 " + plan?.place + "에서 여기는 어때요?" : user?.myType + " 형 여행자들이 좋아하는 여행지예요."}
+                {have ? "현재 여행중인 " + plan?.place + "에서 여기는 어때요?" : user?.travelType + " 형 여행자들이 좋아하는 여행지예요."}
               </MText>
               <FlatList
                 data={have ? data1 : data}
