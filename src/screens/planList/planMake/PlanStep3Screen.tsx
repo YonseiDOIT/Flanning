@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Animated, StyleSheet, TouchableOpacity, View} from 'react-native';
 import fcolor from 'src/assets/colors/fcolors';
 import globalStyles from 'src/assets/styles/globalStyles';
 import BText from 'src/components/common/BText';
 import MText from 'src/components/common/MText';
-import { usePlanM } from './PlanMakeProvider';
+import {usePlanM} from './PlanMakeProvider';
 import Calendar from './components/Calendar';
-
 
 // 일정 상세 페이지
 const PlanStep3Screen = () => {
@@ -14,68 +13,74 @@ const PlanStep3Screen = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   let planMContext = usePlanM();
 
-  const [dayList,setDayList]= useState([]);
-  
+  const [dayList, setDayList] = useState([]);
+
   useEffect(() => {
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }).start();
-    }, [fadeAnim]);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
 
-    const handleChange = (value) => {
-      setPlanMData(prevData => ({
-        ...prevData,
-        step3: {
-          ...prevData.step3,
-          ['dayList']: value,
-        },
-      }));
-  
-      handleStepNext();
-      
-  
-    };
+  const handleChange = value => {
+    setPlanMData(prevData => ({
+      ...prevData,
+      step3: {
+        ...prevData.step3,
+        ['dayList']: value,
+      },
+    }));
 
-    
+    handleStepNext();
+  };
+
   return (
-    <Animated.View style={{flex: 1, opacity: fadeAnim,paddingHorizontal: 30, paddingBottom: 30}}>
+    <Animated.View
+      style={{
+        flex: 1,
+        opacity: fadeAnim,
+        paddingHorizontal: 30,
+        paddingBottom: 30,
+      }}>
       <View style={{marginTop: 0, gap: 9}}>
-      <View style={{flexDirection:'row'}}>
-        <BText>
-          여행 일자를 선택해주세요
-        </BText>
-        <MText color={fcolor.orange}>*</MText>
+        <View style={{flexDirection: 'row'}}>
+          <BText>여행 일자를 선택해주세요</BText>
+          <MText color={fcolor.orange}>*</MText>
         </View>
       </View>
 
       <View>
         <Calendar setDayList={setDayList} />
-
       </View>
-      <View style={{ flex: 1, justifyContent: 'flex-end', marginBottom: 34 }}>
-          <View style={{ flexDirection: 'row', gap: 21 }}>
-            <TouchableOpacity
-              style={[
-                globalStyles.buttonBase, { flex: 1, backgroundColor: fcolor.lblue3 }
-              ]}
-              onPress={()=> planMContext.setPlanMStep(planMContext.planMStep - 1)}>
-              <MText color={fcolor.lblue4}>이전</MText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                globalStyles.buttonBase, { flex: 1}, 
-                dayList.length > 0 ? {backgroundColor: fcolor.blue }:  {backgroundColor: fcolor.gray4 }
-              ]}
-              disabled={dayList.length <= 0}
-              onPress={()=>handleChange(dayList)}>
-              <MText color={fcolor.white}>다음</MText>
-            </TouchableOpacity>
-          </View>
+      <View style={{flex: 1, justifyContent: 'flex-end', marginBottom: 34}}>
+        <View style={{flexDirection: 'row', gap: 21}}>
+          <TouchableOpacity
+            style={[
+              globalStyles.buttonBase,
+              {flex: 1, backgroundColor: fcolor.lblue3},
+            ]}
+            onPress={() =>
+              planMContext.setPlanMStep(planMContext.planMStep - 1)
+            }>
+            <MText color={fcolor.lblue4}>이전</MText>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              globalStyles.buttonBase,
+              {flex: 1},
+              dayList.length > 0
+                ? {backgroundColor: fcolor.blue}
+                : {backgroundColor: fcolor.gray4},
+            ]}
+            disabled={dayList.length <= 0}
+            onPress={() => handleChange(dayList)}>
+            <MText color={fcolor.white}>다음</MText>
+          </TouchableOpacity>
         </View>
+      </View>
     </Animated.View>
-  )
+  );
 };
 
 const styles = StyleSheet.create({

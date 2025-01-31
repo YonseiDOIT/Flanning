@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlanMakeProvider } from './PlanMakeProvider';
+import {PlanMakeProvider} from './PlanMakeProvider';
 import PlanMakeStack from './PlanMakeStack';
 
 export type RootStackParam = {};
