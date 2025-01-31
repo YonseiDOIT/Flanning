@@ -14,8 +14,10 @@ const fcolors = {
   lblue2: '#F6FAFF',
   lblue3: '#EEF6FF',
   lblue4: '#8CB9FF',
+  lblue5: '#AECEFF',
   blue: '#005BEA',
   white: '#FFFFFF',
+  red: '#FC3F19',
 };
 
 export default fcolors;

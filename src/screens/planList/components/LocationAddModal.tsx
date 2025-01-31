@@ -18,7 +18,7 @@ import MText from 'src/components/common/MText';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import GooglePlacesSearch from './GooglePlacesSearch';
 
-const LocationAddModal = ({isVisible, onClose, navigation, dateList}) => {
+const LocationAddModal = ({isVisible, navigation, onClose, dateList}) => {
   const [isModalVisible, setIsModalVisible] = useState(isVisible);
   const backgroundOpacity = useRef(new Animated.Value(0)).current;
   const modalTranslateY = useRef(new Animated.Value(800)).current;
@@ -115,7 +115,19 @@ const LocationAddModal = ({isVisible, onClose, navigation, dateList}) => {
                 <MText color={fcolor.gray4}>
                   {isAddType === 'plan' ? '일정에 추가' : '지도에 저장'}
                 </MText>
-                <AntDesignIcon name="caretup" size={12} color={fcolor.gray3} />
+                {isAddTypeModal ? (
+                  <AntDesignIcon
+                    name="caretup"
+                    size={12}
+                    color={fcolor.gray3}
+                  />
+                ) : (
+                  <AntDesignIcon
+                    name="caretdown"
+                    size={12}
+                    color={fcolor.gray3}
+                  />
+                )}
               </TouchableOpacity>
               {isAddTypeModal && (
                 <View
@@ -204,14 +216,14 @@ const LocationAddModal = ({isVisible, onClose, navigation, dateList}) => {
               style={[
                 globalStyles.buttonBase,
                 globalStyles.centered,
-                {backgroundColor: fcolor.blue, flex: 1},
+                {backgroundColor: !place ? fcolor.gray2 : fcolor.blue, flex: 1},
               ]}
+              disabled={!place}
               onPress={() => {
                 onClose();
                 if (isAddType === 'plan') {
                   navigation.navigate('LocationAdd', {
                     place,
-                    navigation,
                     dateList,
                   });
                 } else {

@@ -62,7 +62,6 @@ const PlanDetailScreen = () => {
   });
 
   const dateKeys = Object.keys(planItem.planList);
-  console.log('planItem', dateKeys);
 
   return (
     <View style={styles.container}>

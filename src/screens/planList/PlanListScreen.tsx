@@ -204,9 +204,9 @@ const PlanListScreen = () => {
         )}
       </ScrollView>
       <PlusButton
-      // onPress={() => {
-      //   navigation.navigate('LocationAdd');
-      // }}
+        onPress={() => {
+          navigation.navigate('LocationAdd');
+        }}
       />
       <BottomBar />
     </View>

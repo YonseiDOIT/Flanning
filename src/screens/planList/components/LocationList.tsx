@@ -14,6 +14,7 @@ const LocationList = ({selectedDate, locationList, onScroll}) => {
   const currentLocationList = locationList[selectedDate] || [];
   const lastLocationIdx = currentLocationList.length;
   const [isToggleAllEnabled, setIsToggleAllEnabled] = useState(false);
+  const [expandedItems, setExpandedItems] = useState([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const mapRef = useRef(null);
 
@@ -36,6 +37,31 @@ const LocationList = ({selectedDate, locationList, onScroll}) => {
       );
     }
   }, [activeIdx, currentLocationList]);
+
+  // ✅ 전체 토글 변경 핸들러
+  const handleToggleAll = () => {
+    const newToggleState = !isToggleAllEnabled;
+    setIsToggleAllEnabled(newToggleState);
+
+    // 모든 LocationItem의 토글 상태 변경
+    const updatedExpandedItems = {};
+    currentLocationList.forEach((_, idx) => {
+      updatedExpandedItems[idx] = newToggleState;
+    });
+    setExpandedItems(updatedExpandedItems);
+  };
+
+  // ✅ 개별 토글 변경 시 전체 토글 상태 업데이트
+  const handleItemToggle = (idx, state) => {
+    const updatedExpandedItems = {...expandedItems, [idx]: state};
+    setExpandedItems(updatedExpandedItems);
+
+    // 전체 항목이 모두 열려있는지 확인 후 전체 토글 상태 변경
+    const allExpanded = Object.values(updatedExpandedItems).every(
+      v => v === true,
+    );
+    setIsToggleAllEnabled(allExpanded);
+  };
 
   return (
     <View style={styles.container}>
@@ -79,7 +105,7 @@ const LocationList = ({selectedDate, locationList, onScroll}) => {
         <MText color={fcolor.gray4}>전체 토글 활성화</MText>
         <SwitchToggle
           switchOn={isToggleAllEnabled}
-          onPress={() => setIsToggleAllEnabled(prev => !prev)}
+          onPress={handleToggleAll}
           circleColorOff={fcolor.white}
           backgroundColorOn={fcolor.lblue4}
           backgroundColorOff={fcolor.gray2}
@@ -99,10 +125,12 @@ const LocationList = ({selectedDate, locationList, onScroll}) => {
             <LocationItem
               key={`location-${idx}`}
               lastLocationIdx={lastLocationIdx}
+              isExpanded={expandedItems[idx]}
               location={location}
               idx={idx + 1}
               isActive={activeIdx === idx}
               onPress={() => setActiveIdx(idx)}
+              onToggle={handleItemToggle}
             />
           ))}
           <View style={styles.bottomSpacing} />

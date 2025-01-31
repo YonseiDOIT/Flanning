@@ -62,7 +62,9 @@ const LocationAddScreen = () => {
     selectedDate: dateList[0],
     selectedTime: null,
     selectedState: null,
-    referenceLink: [],
+    referenceLink: [{}],
+    memo: [{content: '', icon: ''}],
+    traffic: [{}],
   });
   const [isTimePickerVisible, setTimePickerVisible] = useState(false);
 
@@ -126,7 +128,12 @@ const LocationAddScreen = () => {
         <View style={{padding: 30, gap: 26}}>
           {/* 날짜 설정 */}
           <View style={{flexDirection: 'column', gap: 10}}>
-            <BText fontSize={20}>날짜 설정</BText>
+            <View style={{flexDirection: 'row', gap: 4}}>
+              <BText fontSize={20}>날짜 설정</BText>
+              <BText fontSize={16} color={fcolor.orange}>
+                *
+              </BText>
+            </View>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -276,62 +283,51 @@ const LocationAddScreen = () => {
 
           {/* 메모 추가 */}
           <View style={{flexDirection: 'column', gap: 10}}>
-            <BText fontSize={20}>메모 추가</BText>
             <View
-              style={{flexDirection: 'row', gap: 8, alignItems: 'flex-start'}}>
-              <TouchableOpacity
-                onPress={() => {
-                  console.log('메모 추가');
-                }}
-                // TODO: 메모 아이콘 추가 기능 구현 예정
-                // onPress={() =>
-                //   setAddPlace(prev => ({
-                //     ...prev,
-                //     referenceLink: [
-                //       ...prev.referenceLink,
-                //     ],
-                //   }))
-                // }
-                style={{
-                  flexDirection: 'row',
-                  gap: 4,
-                  width: 40,
-                  height: 40,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 8,
-                  backgroundColor: fcolor.gray1,
-                }}>
-                <DefaultIcon width={26} height={26} fill={fcolor.gray3} />
-              </TouchableOpacity>
-              <View
-                style={{
-                  flex: 1,
-                  paddingVertical: 8,
-                  paddingHorizontal: 10,
-                  backgroundColor: fcolor.gray1,
-                  borderRadius: 8,
-                  minHeight: 40,
-                }}>
-                <TextInput
-                  style={{
-                    paddingHorizontal: 0,
-                    paddingVertical: 0,
-                    fontSize: 14,
-                    backgroundColor: fcolor.gray1,
-                    textAlignVertical: 'center',
-                  }}
-                  multiline={true}
-                  placeholder="메모를 작성해주세요."
-                  placeholderTextColor={fcolor.gray3}
-                />
-              </View>
+              style={{
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: 4,
+              }}>
+              <BText fontSize={20}>메모 추가</BText>
+              <MText fontSize={14} color={fcolor.gray4}>
+                아이콘을 선택해야 메모가 저장됩니다.
+              </MText>
             </View>
+            {addPlace.memo.map((memo, idx) => (
+              <MemoItem
+                key={`memo-${idx}`}
+                memo={memo}
+                setAddPlace={setAddPlace}
+                addPlace={addPlace}
+                index={idx}
+              />
+            ))}
+            {/* {addPlace.memo.length === 0 ||
+              (addPlace.memo[addPlace.memo.length - 1].content &&
+                addPlace.memo[addPlace.memo.length - 1].icon && (
+                  <MemoItem
+                    memo={{content: '', icon: ''}}
+                    setAddPlace={setAddPlace}
+                    addPlace={addPlace}
+                    index={addPlace.memo.length}
+                  />
+                ))} */}
           </View>
 
           {/* 교통 정보 추가 */}
           <View style={{flexDirection: 'column', gap: 10}}>
-            <BText fontSize={20}>교통정보 추가</BText>
+            <View
+              style={{
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: 4,
+              }}>
+              <BText fontSize={20}>교통정보 추가</BText>
+              <MText fontSize={14} color={fcolor.gray4}>
+                아이콘을 선택해야 교통정보가 저장됩니다.
+              </MText>
+            </View>
             <View
               style={{flexDirection: 'row', gap: 8, alignItems: 'flex-start'}}>
               <TouchableOpacity
@@ -462,6 +458,97 @@ const LocationAddScreen = () => {
           />
         )}
       </ScrollView>
+    </View>
+  );
+};
+
+const MemoItem = ({memo, setAddPlace, addPlace, index}) => {
+  return (
+    <View style={{flexDirection: 'row', gap: 8, alignItems: 'flex-start'}}>
+      <TouchableOpacity
+        onPress={() => {
+          // setAddPlace(prev => ({
+          //   ...prev,
+          //   memo: prev.memo.filter(item => item.icon !== memo.icon),
+          // }));
+          const updatedMemo = [...addPlace.memo];
+          console.log('updatedMemo', updatedMemo);
+          console.log('index', index);
+
+          // 🔥 메모 아이콘이 없으면 'article'로 설정
+          // if (!updatedMemo[index]) {
+          //   updatedMemo[index] = {content: text, icon: ''};
+          // } else {
+          //   updatedMemo[index].icon = '';
+          // }
+
+          updatedMemo[index].icon = 'article';
+          setAddPlace(prev => ({...prev, memo: updatedMemo}));
+          console.log('메모 추가');
+        }}
+        // TODO: 메모 아이콘 추가 기능 구현 예정
+        // onPress={() =>
+        //   setAddPlace(prev => ({
+        //     ...prev,
+        //     referenceLink: [
+        //       ...prev.referenceLink,
+        //     ],
+        //   }))
+        // }
+        style={{
+          flexDirection: 'row',
+          gap: 4,
+          width: 40,
+          height: 40,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderRadius: 8,
+          backgroundColor: fcolor.gray1,
+        }}>
+        <DefaultIcon width={26} height={26} fill={fcolor.gray3} />
+      </TouchableOpacity>
+      <View
+        style={{
+          flex: 1,
+          paddingVertical: 8,
+          paddingHorizontal: 10,
+          backgroundColor: fcolor.gray1,
+          borderRadius: 8,
+          minHeight: 40,
+        }}>
+        <TextInput
+          style={{
+            paddingHorizontal: 0,
+            paddingVertical: 0,
+            fontSize: 14,
+            backgroundColor: 'transparent',
+            textAlignVertical: 'center',
+            color: fcolor.white,
+          }}
+          multiline={true}
+          placeholder="메모를 작성해주세요."
+          placeholderTextColor={fcolor.gray3}
+          value={memo[index]?.content}
+          onChangeText={text => {
+            const updatedMemo = [...addPlace.memo];
+
+            console.log('updatedMemo', updatedMemo);
+            console.log('index', index);
+
+            // if (!updatedMemo[index]) {
+            //   updatedMemo[index] = {content: text, icon: memo.icon || ''};
+            // } else {
+            //   updatedMemo[index].content = text;
+            // }
+
+            console.log(`updatedMemo${index}`, updatedMemo[index]);
+
+            updatedMemo[index].content = text;
+
+            setAddPlace(prev => ({...prev, memo: updatedMemo}));
+          }}
+        />
+      </View>
     </View>
   );
 };
