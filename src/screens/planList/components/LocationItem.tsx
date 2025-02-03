@@ -88,9 +88,11 @@ const LocationItem = ({
               {idx}
             </BText>
           </View>
-          <RText color={fcolor.gray4} fontSize={9}>
-            {location.time}
-          </RText>
+          {location.time ? (
+            <RText color={fcolor.gray4} fontSize={9} style={{}}>
+              {location.time}
+            </RText>
+          ) : null}
         </TouchableOpacity>
         <View
           style={{
@@ -105,22 +107,24 @@ const LocationItem = ({
                 <RText color={fcolor.lblue4}>{location.locationType}</RText>
               </View>
             </View>
-            <TouchableOpacity
-              style={[
-                styles.stateButton,
-                {
-                  backgroundColor:
-                    location.state === 0 ? fcolor.orange2 : fcolor.green2,
-                  borderColor:
-                    location.state === 0 ? fcolor.orange : fcolor.green3,
-                },
-              ]}>
-              <BText
-                fontSize={13}
-                color={location.state === 0 ? fcolor.orange : fcolor.green3}>
-                {location.state === 0 ? '예약 전' : '예약 완료'}
-              </BText>
-            </TouchableOpacity>
+            {location.state === 0 ? null : (
+              <TouchableOpacity
+                style={[
+                  styles.stateButton,
+                  {
+                    backgroundColor:
+                      location.state === 1 ? fcolor.orange2 : fcolor.green2,
+                    borderColor:
+                      location.state === 1 ? fcolor.orange : fcolor.green3,
+                  },
+                ]}>
+                <BText
+                  fontSize={13}
+                  color={location.state === 1 ? fcolor.orange : fcolor.green3}>
+                  {location.state === 1 ? '예약 전' : '예약 완료'}
+                </BText>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>
@@ -138,14 +142,14 @@ const LocationItem = ({
           ) : null}
         </View>
         <View style={{flexDirection: 'column', flex: 1, minHeight: 30}}>
-          {location.referenceLink.length > 0 && (
+          {location.referenceLink?.length > 0 && (
             <View style={{marginBottom: 8}}>
               <View
                 style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
                 {location.referenceLink.map((link, idx) => (
                   <TouchableOpacity
                     onPress={() => {
-                      Linking.openURL(link.link);
+                      Linking.openURL(link.url);
                     }}
                     key={`link-${idx}`}
                     style={{
@@ -159,7 +163,7 @@ const LocationItem = ({
                     }}>
                     <LinkIcon width={18} height={18} fill={fcolor.white} />
                     <MText fontSize={14} color={fcolor.white}>
-                      {link.name}
+                      {link.title}
                     </MText>
                   </TouchableOpacity>
                 ))}
@@ -178,7 +182,6 @@ const LocationItem = ({
                   key={`memo-${memoIdx}`}
                   style={{
                     flexDirection: 'row',
-                    // alignItems: 'center',
                     gap: 5,
                   }}>
                   {memoIcons[memo.icon]}

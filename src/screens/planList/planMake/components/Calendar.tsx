@@ -1,10 +1,12 @@
+// @ts-nocheck
 import React, {useCallback, useEffect, useState} from 'react';
-import {View, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, TouchableOpacity, StyleSheet, Platform} from 'react-native';
 import fcolor from 'src/assets/colors/fcolors';
 import BText from 'src/components/common/BText';
 import MText from 'src/components/common/MText';
 import Mt_Icon from 'react-native-vector-icons/MaterialIcons';
 import MonthPicker from 'react-native-month-year-picker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 const months = [
@@ -22,34 +24,45 @@ const months = [
   '12',
 ];
 
-function Calendar({setDayList}) {
+function Calendar({handleChange, planMData}) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedStart, setSelectedStart] = useState(null);
   const [selectedEnd, setSelectedEnd] = useState(null);
   const [selectedDates, setSelectedDates] = useState([]);
-  const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
+  const [date, setDate] = useState(new Date());
 
   const showPicker = useCallback(value => setShow(value), []);
 
   const onValueChange = useCallback(
     (event, newDate) => {
-      const selectedDate = newDate || date;
+      if (!newDate) {
+        showPicker(false); // ✅ MonthPicker 닫기만 수행 (취소된 경우)
+        return;
+      }
+
       showPicker(false);
-      setDate(selectedDate);
-      setCurrentMonth(newDate);
+      setDate(newDate);
+      setCurrentMonth(newDate); // ✅ MonthPicker에서 선택한 월로 이동
     },
-    [date, showPicker],
+    [showPicker],
   );
 
   const formatDate = date => date.toISOString().split('T')[0]; // "YYYY-MM-DD" 형식 변환
 
   const handleDayPress = (day, month, year) => {
-    console.log(selectedDates);
+    if (!day) {
+      return;
+    }
+
+    // 선택한 날짜로 new Date() 객체 생성
     const selectedDate = new Date(year, month - 1, day);
-    selectedDate.setHours(0, 0, 0, 0); // 시간 제거
+    selectedDate.setHours(12, 0, 0, 0); // 시간 제거
 
     const formattedDate = formatDate(selectedDate); // "YYYY-MM-DD" 형식
+
+    // 선택한 날짜 기준으로 캘린더 업데이트
+    setCurrentMonth(new Date(year, month - 1, 1)); // ✅ 선택한 날짜의 월로 이동
 
     if (!selectedStart || (selectedStart && selectedEnd)) {
       setSelectedStart(formattedDate);
@@ -59,13 +72,14 @@ function Calendar({setDayList}) {
       setSelectedEnd(formattedDate);
       let tempDates = [];
       let currentDate = new Date(selectedStart);
-      currentDate.setHours(0, 0, 0, 0);
+      currentDate.setHours(12, 0, 0, 0);
 
       while (currentDate <= selectedDate) {
         tempDates.push(formatDate(new Date(currentDate)));
         currentDate.setDate(currentDate.getDate() + 1);
       }
       setSelectedDates(tempDates);
+      handleChange(tempDates);
     }
   };
 
@@ -100,25 +114,27 @@ function Calendar({setDayList}) {
   };
 
   useEffect(() => {
-    setDayList(selectedDates); // 🔹 selectedDates가 변경될 때마다 setDayList 호출
-  }, [selectedDates, setDayList]);
+    if (planMData.step3.dayList.length > 0) {
+      setCurrentMonth(new Date(planMData.step3.dayList[0]));
+      setSelectedStart(planMData.step3.dayList[0]);
+      setSelectedEnd(
+        planMData.step3.dayList[planMData.step3.dayList.length - 1],
+      );
+      setSelectedDates(planMData.step3.dayList);
+    }
+  }, [planMData.step3.dayList]);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <BText color={fcolor.black} fontSize={16} style={styles.monthLabel}>
-          {currentMonth.getFullYear()}년 {months[currentMonth.getMonth()]}월
-        </BText>
-        <TouchableOpacity onPress={() => setShow(true)}>
+        <TouchableOpacity
+          onPress={() => setShow(true)}
+          style={{flexDirection: 'row', alignItems: 'center'}}>
+          <BText color={fcolor.black} fontSize={16} style={styles.monthLabel}>
+            {currentMonth.getFullYear()}년 {months[currentMonth.getMonth()]}월
+          </BText>
           <Mt_Icon name="keyboard-arrow-down" size={20} color={fcolor.blue} />
         </TouchableOpacity>
-        {show && (
-          <MonthPicker
-            onChange={onValueChange}
-            value={currentMonth}
-            locale="ko"
-          />
-        )}
       </View>
       <View style={styles.calendar}>
         <View style={{flexDirection: 'row'}}>
@@ -138,9 +154,9 @@ function Calendar({setDayList}) {
                 <TouchableOpacity
                   style={styles.cell}
                   key={colIndex}
-                  onPress={() =>
-                    handleDayPress(item.day, item.month, item.year)
-                  }>
+                  onPress={() => {
+                    handleDayPress(item.day, item.month, item.year);
+                  }}>
                   <View
                     style={
                       selectedDates.includes(
@@ -192,12 +208,21 @@ function Calendar({setDayList}) {
             </View>
           ))}
       </View>
+      {show && (
+        <MonthPicker
+          onChange={onValueChange}
+          value={currentMonth}
+          locale="ko"
+          style={{width: '100%', position: 'absolute', bottom: 0}}
+        />
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    position: 'relative',
     width: '100%',
   },
   header: {
@@ -205,10 +230,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 30,
     marginBottom: 10,
+    paddingHorizontal: 30,
   },
   calendar: {
     width: '100%',
-    height: 220,
+    marginTop: 10,
+    paddingHorizontal: 30,
   },
   monthLabel: {
     fontSize: 18,

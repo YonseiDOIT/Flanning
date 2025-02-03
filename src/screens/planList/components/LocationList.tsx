@@ -25,16 +25,32 @@ const LocationList = ({selectedDate, locationList, onScroll}) => {
   }, [selectedDate, currentLocationList]);
 
   useEffect(() => {
-    if (mapRef.current && currentLocationList[activeIdx]?.locationMap) {
-      mapRef.current.animateToRegion(
-        {
-          latitude: currentLocationList[activeIdx].locationMap.latitude,
-          longitude: currentLocationList[activeIdx].locationMap.longitude,
-          latitudeDelta: 0.02,
-          longitudeDelta: 0.02,
-        },
-        500,
-      );
+    if (mapRef.current) {
+      if (currentLocationList.length === 0) {
+        // ✅ 장소가 없으면 전체 지도 범위 설정
+        mapRef.current.animateToRegion(
+          {
+            latitude: 37.5665, // 서울 기준 (또는 중심 좌표)
+            longitude: 126.978,
+            latitudeDelta: 10, // 더 넓은 범위로 설정
+            longitudeDelta: 10,
+          },
+          500,
+        );
+      } else if (currentLocationList.length > 0 && activeIdx !== null) {
+        // ✅ 특정 장소가 있을 때는 해당 장소로 이동
+        const {latitude, longitude} =
+          currentLocationList[activeIdx].locationMap;
+        mapRef.current.animateToRegion(
+          {
+            latitude,
+            longitude,
+            latitudeDelta: 0.02,
+            longitudeDelta: 0.02,
+          },
+          500,
+        );
+      }
     }
   }, [activeIdx, currentLocationList]);
 

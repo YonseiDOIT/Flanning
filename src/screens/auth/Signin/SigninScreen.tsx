@@ -17,8 +17,7 @@ import {auth} from 'src/utils/firebase';
 import Config from 'react-native-config';
 // import auth from '@react-native-firebase/auth';
 import {validateEmail, validatePassword} from 'src/utils/validators';
-import { useUser } from 'src/context/UserContext';
-import { getUsercode } from 'src/components/common/getUserdata';
+import {useUser} from 'src/context/UserContext';
 
 // 이메일 비밀번호를 받는 로그인 화면
 const SigninScreen = ({navigation}) => {
@@ -31,19 +30,13 @@ const SigninScreen = ({navigation}) => {
   //오류 문구 보여주기
   const [fail, setfail] = useState(false);
 
-  //유저 코드 저장
-  const { usercode, setUsercode } = useUser();
-
   //로그인
   const SignIn = async () => {
     try {
       await auth().signInWithEmailAndPassword(form.email, form.password);
       setfail(false);
-      const code= await getUsercode(form.email)
-      setUsercode(code);
+      const code = await getUsercode(form.email);
       navigation.navigate('Home');
-      
-
     } catch (error) {
       setfail(true);
     }

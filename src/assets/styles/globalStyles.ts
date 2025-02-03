@@ -18,7 +18,6 @@ const commonStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-<<<<<<< HEAD
   inputBase: {
     borderRadius: 10,
     paddingHorizontal: 20,
@@ -33,13 +32,10 @@ const commonStyles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 5,
   },
-=======
-  backBase:{
-    flex:1,
-    backgroundColor:fcolor.white
-  }
-  
->>>>>>> 2d1daedf0e60025900be4eb767056e9bd96ab459
+  backBase: {
+    flex: 1,
+    backgroundColor: fcolor.white,
+  },
 });
 
 export default commonStyles;

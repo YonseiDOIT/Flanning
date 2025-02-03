@@ -13,7 +13,7 @@ const PlanStep3Screen = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   let planMContext = usePlanM();
 
-  const [dayList, setDayList] = useState([]);
+  // const [dayList, setDayList] = useState([]);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -31,8 +31,6 @@ const PlanStep3Screen = () => {
         ['dayList']: value,
       },
     }));
-
-    handleStepNext();
   };
 
   return (
@@ -40,20 +38,24 @@ const PlanStep3Screen = () => {
       style={{
         flex: 1,
         opacity: fadeAnim,
-        paddingHorizontal: 30,
-        paddingBottom: 30,
+        justifyContent: 'space-between',
       }}>
-      <View style={{marginTop: 0, gap: 9}}>
-        <View style={{flexDirection: 'row'}}>
-          <BText>여행 일자를 선택해주세요</BText>
-          <MText color={fcolor.orange}>*</MText>
+      <View>
+        <View style={{marginTop: 0, gap: 9, paddingHorizontal: 30}}>
+          <View style={{flexDirection: 'row', gap: 4}}>
+            <BText>여행 일자를 선택해주세요</BText>
+            <MText color={fcolor.orange}>*</MText>
+          </View>
         </View>
+
+        <Calendar handleChange={handleChange} planMData={planMData} />
       </View>
 
-      <View>
-        <Calendar setDayList={setDayList} />
-      </View>
-      <View style={{flex: 1, justifyContent: 'flex-end', marginBottom: 34}}>
+      <View
+        style={{
+          paddingHorizontal: 30,
+          marginBottom: 34,
+        }}>
         <View style={{flexDirection: 'row', gap: 21}}>
           <TouchableOpacity
             style={[
@@ -69,12 +71,12 @@ const PlanStep3Screen = () => {
             style={[
               globalStyles.buttonBase,
               {flex: 1},
-              dayList.length > 0
+              planMData.step3.dayList.length > 0
                 ? {backgroundColor: fcolor.blue}
                 : {backgroundColor: fcolor.gray4},
             ]}
-            disabled={dayList.length <= 0}
-            onPress={() => handleChange(dayList)}>
+            disabled={planMData.step3.dayList.length <= 0}
+            onPress={() => handleStepNext()}>
             <MText color={fcolor.white}>다음</MText>
           </TouchableOpacity>
         </View>

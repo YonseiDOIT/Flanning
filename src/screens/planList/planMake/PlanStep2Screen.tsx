@@ -8,14 +8,23 @@ import {usePlanM} from './PlanMakeProvider';
 import {TextInput} from 'react-native-gesture-handler';
 // import MapView from 'react-native-maps';
 import Mt_Icon from 'react-native-vector-icons/MaterialIcons';
+import MapView, {Polygon} from 'react-native-maps';
+import regionData from 'src/assets/json/regions.json';
+import RNPickerSelect from 'react-native-picker-select';
+
+const WonjuCoordinates = [
+  {latitude: 37.373, longitude: 127.92},
+  {latitude: 37.4, longitude: 127.95},
+  {latitude: 37.45, longitude: 127.93},
+  {latitude: 37.42, longitude: 127.88},
+  {latitude: 37.373, longitude: 127.92}, // 닫힘 (첫 좌표와 동일하게)
+];
 
 // 일정 상세 페이지
 const PlanStep2Screen = () => {
   const {planMData, handleStepNext, setPlanMData} = usePlanM();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   let planMContext = usePlanM();
-
-  const [place, setPlace] = useState('');
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -33,38 +42,53 @@ const PlanStep2Screen = () => {
         ['place']: value,
       },
     }));
-
-    handleStepNext();
   };
 
   return (
     <Animated.View style={{flex: 1, opacity: fadeAnim}}>
       <View style={{marginTop: 0, gap: 9, paddingHorizontal: 30}}>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{flexDirection: 'row', marginBottom: 10}}>
           <BText>여행 장소를 알려주세요</BText>
           <MText color={fcolor.orange}>*</MText>
         </View>
       </View>
-      <View
+      {/* TODO: 추후에 지역을 picker로 선택했을 때 coordinates에 따른 영역이 지도에 표시되도록 수정 */}
+      {/* <View
         style={{
           width: '100%',
-          height: 190,
-          backgroundColor: fcolor.gray3,
-          marginTop: 16,
-        }}
-      />
+          height: 240,
+        }}>
+        <MapView
+          style={{
+            flex: 1,
+          }}
+          initialRegion={{
+            latitude: 37.7749,
+            longitude: -122.4194,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}>
+          <Polygon
+            coordinates={WonjuCoordinates}
+            strokeWidth={2}
+            strokeColor={fcolor.blue}
+            fillColor="rgba(0, 0, 255, 0.3)"
+          />
+        </MapView>
+      </View> */}
 
       <View style={{flex: 1, paddingHorizontal: 30, paddingBottom: 30}}>
         <View style={styles.box}>
           <TextInput
             style={{fontSize: 13}}
-            onChangeText={text => setPlace(text)}
+            onChangeText={text => handleChange(text)}
             placeholder={'지역을 검색해보세요'}
             placeholderTextColor={fcolor.gray3}
+            value={planMData.step2.place}
           />
-          <TouchableOpacity>
+          {/* <TouchableOpacity>
             <Mt_Icon name="search" size={24} color={fcolor.blue} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <View style={{flex: 1, justifyContent: 'flex-end', marginBottom: 34}}>
@@ -83,12 +107,12 @@ const PlanStep2Screen = () => {
               style={[
                 globalStyles.buttonBase,
                 {flex: 1},
-                place
+                planMData.step2.place
                   ? {backgroundColor: fcolor.blue}
                   : {backgroundColor: fcolor.gray4},
               ]}
-              disabled={!place}
-              onPress={() => handleChange(place)}>
+              disabled={!planMData.step2.place}
+              onPress={() => handleStepNext()}>
               <MText color={fcolor.white}>다음</MText>
             </TouchableOpacity>
           </View>
@@ -106,8 +130,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     paddingHorizontal: 20,
+    marginTop: 20,
     flexDirection: 'row',
-    marginTop: 47,
     justifyContent: 'space-between',
   },
 });

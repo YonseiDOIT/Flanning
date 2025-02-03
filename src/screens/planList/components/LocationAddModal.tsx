@@ -18,7 +18,13 @@ import MText from 'src/components/common/MText';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import GooglePlacesSearch from './GooglePlacesSearch';
 
-const LocationAddModal = ({isVisible, navigation, onClose, dateList}) => {
+const LocationAddModal = ({
+  isVisible,
+  navigation,
+  onClose,
+  dateList,
+  planItem,
+}) => {
   const [isModalVisible, setIsModalVisible] = useState(isVisible);
   const backgroundOpacity = useRef(new Animated.Value(0)).current;
   const modalTranslateY = useRef(new Animated.Value(800)).current;
@@ -83,7 +89,13 @@ const LocationAddModal = ({isVisible, navigation, onClose, dateList}) => {
             }),
           },
         ]}>
-        <TouchableOpacity style={styles.overlayTouchable} onPress={onClose} />
+        <TouchableOpacity
+          style={styles.overlayTouchable}
+          onPress={() => {
+            console.log('배경 터치');
+            onClose();
+          }}
+        />
       </Animated.View>
 
       {/* 모달 컨테이너 애니메이션 */}
@@ -225,6 +237,7 @@ const LocationAddModal = ({isVisible, navigation, onClose, dateList}) => {
                   navigation.navigate('LocationAdd', {
                     place,
                     dateList,
+                    planItem,
                   });
                 } else {
                   console.log('place', place);

@@ -15,6 +15,7 @@ import EntypoIcon from 'react-native-vector-icons/Entypo';
 import notplan from './notplan.json';
 import notlocation from './notlocation.json';
 import PlusButton from 'src/components/common/PlusButton';
+import {usePlan} from 'src/context';
 
 const filterList = [
   {
@@ -33,24 +34,19 @@ const filterList = [
 const PlanListScreen = () => {
   const navigation = useNavigation();
   const [filter, setFilter] = useState(0);
-  const [planList, setPlanList] = useState([]);
+  const [planData, setPlanData] = useState([]);
+  const {planListData} = usePlan();
 
   useEffect(() => {
-    let sortedPlans = [...plan];
-    // if (filter === 0) {
-    //   // 출발일 순
-    //   sortedPlans.sort(
-    //     (a, b) =>
-    //       new Date(a.date.start).getTime() - new Date(b.date.start).getTime(),
-    //   );
-    // } else if (filter === 1) {
-    //   // 최신 등록 순
-    //   sortedPlans.sort(
-    //     (a, b) =>
-    //       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    //   );
-    // }
-    setPlanList(plan);
+    let sortedPlans = [...planListData];
+    if (filter === 0) {
+      // 출발일 순
+      sortedPlans.sort((a, b) => a.dayList[0] - b.dayList[0]);
+    } else if (filter === 1) {
+      // 최신 등록 순
+      sortedPlans.sort((a, b) => b.createdAt - a.createdAt);
+    }
+    setPlanData(sortedPlans);
   }, [filter]);
 
   return (
@@ -110,8 +106,8 @@ const PlanListScreen = () => {
           flexGrow: 1,
           marginBottom: 100,
         }}>
-        {planList.length > 0 ? (
-          planList.map((planItem, idx) => {
+        {planData.length > 0 ? (
+          planData.map((planItem, idx) => {
             const lastDateIdx = planItem.dayList.length - 1;
             return (
               <TouchableOpacity
@@ -165,7 +161,7 @@ const PlanListScreen = () => {
                         color={fcolor.gray4}
                       />
                       <MText color={fcolor.gray4} fontSize={12}>
-                        {planItem.dayList[0]}~ {planItem.dayList[lastDateIdx]}
+                        {planItem.dayList[0]} ~ {planItem.dayList[lastDateIdx]}
                       </MText>
                     </View>
                   </View>
@@ -205,7 +201,7 @@ const PlanListScreen = () => {
       </ScrollView>
       <PlusButton
         onPress={() => {
-          navigation.navigate('LocationAdd');
+          navigation.navigate('PlanMake');
         }}
       />
       <BottomBar />

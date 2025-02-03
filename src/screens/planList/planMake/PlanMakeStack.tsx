@@ -12,10 +12,9 @@ const PlanMakeStack = ({navigation}) => {
 
   return (
     <View style={{flex: 1}}>
-      <View
-        style={[planMStep > 3 ? styles.hidden : null, {paddingHorizontal: 30}]}>
+      <View style={[planMStep > 3 ? styles.hidden : null]}>
         {/* 고정된 헤더 */}
-        <BackHeader navigation={navigation} isSignup={true} />
+        <BackHeader navigation={navigation} isAddPlan={true} />
         {/* 진행 상태 */}
         <AuthProgress currentStep={planMStep} />
       </View>

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import {useNavigation, useRoute} from '@react-navigation/native';
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import {Platform, TouchableOpacity, View, StyleSheet} from 'react-native';
 import fcolor from 'src/assets/colors/fcolors';
 import FontASIcon from 'react-native-vector-icons/FontAwesome';
@@ -12,16 +12,17 @@ import PlanDay from './components/PlanDay';
 import LocationList from './components/LocationList';
 import PlusButton from 'src/components/common/PlusButton';
 import LocationAddModal from './components/LocationAddModal';
+import {usePlan} from 'src/context';
 
 // 일정 상세 페이지
 const PlanDetailScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const {planItem} = route.params;
-  const [selectedDate, setSelectedDate] = useState(
-    Object.keys(planItem.planList)[0] || null,
-  );
+  const {fetchPlanDetailData, planDetailData} = usePlan();
+  const [selectedDate, setSelectedDate] = useState(planItem.dayList[0]);
   const [isLocationModalVisible, setIsLocationModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -61,7 +62,31 @@ const PlanDetailScreen = () => {
     extrapolate: 'clamp',
   });
 
-  const dateKeys = Object.keys(planItem.planList);
+  useEffect(() => {
+    const loadPlanDetail = async () => {
+      if (!planDetailData[planItem.id]) {
+        await fetchPlanDetailData(planItem.id);
+      }
+    };
+
+    loadPlanDetail();
+  }, [planItem.id, planDetailData]); // ✅ planItem.id 만 의존성으로 설정 (첫 실행)
+
+  useEffect(() => {
+    if (planDetailData[planItem.id]) {
+      setLoading(false);
+    }
+  }, [planDetailData]); // ✅ planDetailData가 변경될 때 실행됨
+
+  if (loading || !planDetailData[planItem.id]) {
+    return (
+      <View style={styles.loadingContainer}>
+        <MText fontSize={16} color={fcolor.gray4}>
+          로딩 중...
+        </MText>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -86,7 +111,7 @@ const PlanDetailScreen = () => {
                 style={[styles.dayInfoContainer, {opacity: dayInfoOpacity}]}>
                 <NeonBl>
                   <MText fontSize={14}>{`DAY ${
-                    dateKeys.indexOf(selectedDate) + 1
+                    planItem.dayList.indexOf(selectedDate) + 1
                   }`}</MText>
                 </NeonBl>
                 <MText fontSize={14} color={fcolor.gray4}>
@@ -103,7 +128,7 @@ const PlanDetailScreen = () => {
           <PlanDay
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
-            locationList={planItem.planList}
+            dateList={planItem.dayList}
             planDayOpacity={planDayOpacity}
             planDayHeight={planDayHeight}
             planDayMarginBottom={planDayMarginBottom}
@@ -114,7 +139,7 @@ const PlanDetailScreen = () => {
       {/* 장소 목록 */}
       <LocationList
         selectedDate={selectedDate}
-        locationList={planItem.planList}
+        locationList={planDetailData[planItem.id]}
         onScroll={Animated.event(
           [{nativeEvent: {contentOffset: {y: scrollY}}}],
           {useNativeDriver: false},
@@ -127,7 +152,8 @@ const PlanDetailScreen = () => {
       {/* 장소 추가 모달 */}
       <LocationAddModal
         isVisible={isLocationModalVisible}
-        dateList={dateKeys}
+        dateList={planItem.dayList}
+        planItem={planItem}
         onClose={() => setIsLocationModalVisible(false)}
         navigation={navigation}
       />
@@ -150,6 +176,11 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     marginHorizontal: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTop: {
     justifyContent: 'space-between',

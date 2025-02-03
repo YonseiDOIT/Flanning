@@ -3,6 +3,7 @@ import React, {createContext, useState, useContext, useEffect} from 'react';
 import {useAuth} from './AuthProvider';
 import {firestore} from 'src/utils/firebase';
 import {useNavigation} from '@react-navigation/native';
+import {getUsercode} from 'src/components/common/getUserdata';
 
 // UserContext 생성
 const UserContext = createContext();
@@ -11,25 +12,25 @@ const UserContext = createContext();
 export const UserProvider = ({children}) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const currentUser = useAuth();
-
+  const {authData} = useAuth();
+  const navigation = useNavigation();
   useEffect(() => {
-    if (currentUser) {
+    if (authData) {
       const fetchUserData = async () => {
         try {
+          const usercode = await getUsercode(authData.email);
           const userQuery = await firestore()
             .collection('users')
-            .doc(currentUser.uid)
+            .doc(usercode)
             .get();
-
           if (userQuery.exists) {
             setUserData(userQuery.data());
           }
         } catch (error) {
           // 🔹 Firestore 서비스가 다운되었거나 사용 불가능한 경우 로그인 페이지 이동
-          // if (error.code === 'firestore/unavailable') {
-          //   navigation.navigate('signin');
-          // }
+          if (error.code === 'firestore/unavailable') {
+            navigation.navigate('signin');
+          }
         } finally {
           setLoading(false);
         }
@@ -37,10 +38,11 @@ export const UserProvider = ({children}) => {
 
       fetchUserData();
     } else {
+      console.log('authData is null');
       setUserData(null);
       setLoading(false);
     }
-  }, [currentUser]);
+  }, [authData]);
 
   if (loading) {
     return null; // 로딩 중

@@ -30,10 +30,12 @@ import TypeBox from 'src/components/common/TypeBox';
 import {getUserdata} from 'src/components/common/getUserdata';
 import {daySlice, getDay, getTime} from 'src/components/common/dataManagement';
 import ReservationBox from 'src/components/common/reservationBox';
+import {usePlan} from 'src/context';
 
 function HomeScreen({navigation}: {navigation: any}) {
   //저장된 유저명
-  const {usercode} = useUser();
+  const {userData} = useUser();
+  const {planListData} = usePlan();
   //닉네임
   const [user, setUser] = useState('');
 
@@ -57,39 +59,49 @@ function HomeScreen({navigation}: {navigation: any}) {
   //임시 추천여행지 데이터
   const data = [
     {
-      image: require('src/assets/images/home/recommandImage.jpg'),
+      image: require('src/assets/images/home/recommandImage1.jpg'),
       location: '양양 서피비치',
-      locationInfo: '국내에서 만나는 이국적인 바다감성',
+      locationInfo: '국내에서 만나는 이국적인 바다 감성',
     },
     {
-      image: require('src/assets/images/home/recommandImage.jpg'),
-      location: '양양 서피비치',
-      locationInfo: '국내에서 만나는 이국적인 바다감성',
+      image: require('src/assets/images/home/recommandImage2.jpg'),
+      location: '제주 협재 해수욕장',
+      locationInfo: '에메랄드빛 바다가 펼쳐지는 제주도 대표 해변',
     },
     {
-      image: require('src/assets/images/home/recommandImage.jpg'),
-      location: '양양 서피비치',
-      locationInfo: '국내에서 만나는 이국적인 바다감성',
+      image: require('src/assets/images/home/recommandImage3.jpg'),
+      location: '강릉 주문진',
+      locationInfo: '푸른 바다와 함께하는 힐링 여행지',
+    },
+    {
+      image: require('src/assets/images/home/recommandImage4.jpg'),
+      location: '부산 해운대',
+      locationInfo: '도시와 바다가 만나는 국내 대표 해수욕장',
+    },
+    {
+      image: require('src/assets/images/home/recommandImage5.jpg'),
+      location: '여수 오동도',
+      locationInfo: '아름다운 동백꽃과 푸른 바다가 어우러진 섬',
     },
   ];
   //임시 가볼만한 곳 데이터
-  const data1 = [
-    {
-      image: require('src/assets/images/home/recommandImage1.jpg'),
-      location: '올레길',
-      locationInfo: '자연을 만끽하며 걷는 트레킹 코스',
-    },
-    {
-      image: require('src/assets/images/home/recommandImage1.jpg'),
-      location: '올레길',
-      locationInfo: '자연을 만끽하며 걷는 트레킹 코스',
-    },
-    {
-      image: require('src/assets/images/home/recommandImage1.jpg'),
-      location: '올레길',
-      locationInfo: '자연을 만끽하며 걷는 트레킹 코스',
-    },
-  ];
+  // const data1 = [
+  //   {
+  //     image: require('src/assets/images/home/recommandImage1.jpg'),
+  //     location: '올레길',
+  //     locationInfo: '자연을 만끽하며 걷는 트레킹 코스',
+  //   },
+  //   {
+  //     image: require('src/assets/images/home/recommandImage1.jpg'),
+  //     location: '올레길',
+  //     locationInfo: '자연을 만끽하며 걷는 트레킹 코스',
+  //   },
+  //   {
+  //     image: require('src/assets/images/home/recommandImage1.jpg'),
+  //     location: '올레길',
+  //     locationInfo: '자연을 만끽하며 걷는 트레킹 코스',
+  //   },
+  // ];
 
   const getPlanlist = async () => {
     try {
@@ -119,96 +131,32 @@ function HomeScreen({navigation}: {navigation: any}) {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      getPlanlist();
-    }, [usercode]),
-  );
+  // useEffect(() => {
+  //   console.log(
+  //     '✅ PlanContext planData:\n',
+  //     JSON.stringify(planListData, null, 2),
+  //   );
+  // }, [planListData]);
 
-  //여행 일정
-  const renderItem = useCallback(({item, index}) => {
-    getTime(item.time);
-
-    return (
-      <View style={{marginBottom: 8}}>
-        <View style={styles.planecontent}>
-          <View style={{marginRight: 16}}>
-            <View style={styles.numCircle}>
-              <MText fontSize={13} color={fcolor.white}>
-                {index + 1}
-              </MText>
-            </View>
-            <RText fontSize={8} color={fcolor.gray4}>
-              {item.time}
-            </RText>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}>
-            <View style={{flexDirection: 'row'}}>
-              <BText fontSize={15} style={{marginRight: 16}}>
-                {item.locationTitle}
-              </BText>
-              <TypeBox name={item.locationType} />
-            </View>
-            <View style={{marginRight: 10}}>
-              <ReservationBox state={item.state} />
-            </View>
-          </View>
-        </View>
-        <View style={styles.planecontent}>
-          <View
-            style={{
-              width: 22,
-              height: 44,
-              alignItems: 'center',
-              marginRight: 20,
-            }}>
-            {index < 3 ? (
-              <View
-                style={{
-                  width: 1,
-                  height: '100%',
-                  backgroundColor: fcolor.lblue1,
-                }}
-              />
-            ) : (
-              <View />
-            )}
-          </View>
-          <View style={styles.movePath}>
-            <MtC_Icon
-              name={item.movePath.type}
-              size={22}
-              color={fcolor.gray3}
-              style={{marginRight: 4}}
-            />
-            <MText fontSize={11} color={fcolor.gray4}>
-              {item.content}
-            </MText>
-          </View>
-        </View>
-      </View>
-    );
-  }, []);
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     getPlanlist();
+  //   }, [usercode]),
+  // );
 
   //추천 여행지
   const recomRenderItem = ({item, index}) => {
-    const notEnd = data[index + 1];
     return (
-      <View style={[{marginTop: 17}, notEnd ? {marginRight: 16} : null]}>
+      <View>
         <Image
           source={item.image}
           style={{width: 244, height: 142, borderRadius: 8}}
         />
-        <View style={{marginTop: 8, marginLeft: 7}}>
-          <BText fontSize={17} style={{marginBottom: 4}}>
-            {item.location}
-          </BText>
-          <MText fontSize={13}>{item.locationInfo}</MText>
+        <View style={{paddingVertical: 8, gap: 4}}>
+          <BText fontSize={17}>{item.location}</BText>
+          <MText fontSize={13} color={fcolor.gray3}>
+            {item.locationInfo}
+          </MText>
         </View>
       </View>
     );
@@ -216,47 +164,52 @@ function HomeScreen({navigation}: {navigation: any}) {
 
   return (
     <View style={{flex: 1, backgroundColor: fcolor.white}}>
-      <View style={[styles.container, {flex: 0.05}]}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingBottom: 12,
+          paddingTop: Platform.OS === 'ios' ? 60 : 20,
+          paddingHorizontal: 25,
+          backgroundColor: fcolor.white,
+        }}>
+        <Image
+          source={require('src/assets/images/home/logo_blue.png')}
+          style={{width: 89, height: 34}}
+        />
         <View
           style={{
             flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingBottom: 32,
-            paddingTop: 20,
+            justifyContent: 'center',
+            alignItems: 'center',
           }}>
-          <Image
-            source={require('src/assets/images/home/logo_blue.png')}
-            style={{width: 89, height: 34}}
-          />
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Notification')}>
-              <MtC_Icon name="bell" size={22} color={fcolor.gray4} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Friend')}>
-              <Mt_Icon
-                name="group"
-                size={25}
-                color={fcolor.gray4}
-                style={{marginLeft: 15}}
-              />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={() => navigation.navigate('Notification')}>
+            <MtC_Icon name="bell" size={22} color={fcolor.gray4} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Friend')}>
+            <Mt_Icon
+              name="group"
+              size={25}
+              color={fcolor.gray4}
+              style={{marginLeft: 15}}
+            />
+          </TouchableOpacity>
         </View>
       </View>
       <FlatList
         data={[]}
-        style={{flex: 1, marginBottom: 75}}
+        style={{flex: 1}}
         renderItem={null}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <>
-            <View style={[styles.container, {paddingBottom: 10}]}>
+            <View
+              style={{
+                paddingBottom: 10,
+                paddingHorizontal: 25,
+                paddingTop: 20,
+                backgroundColor: fcolor.white,
+              }}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -273,111 +226,59 @@ function HomeScreen({navigation}: {navigation: any}) {
                   </TouchableOpacity>
                 )}
               </View>
-
-              {/* 일정 */}
-              {have ? (
-                <View style={{marginTop: 8}}>
-                  <View style={{flexDirection: 'row', paddingBottom: 8}}>
-                    <BText fontSize={16} color={fcolor.gray4}>
-                      DAY {plan.dayNumber}
-                    </BText>
-                    <RText
-                      fontSize={15}
-                      color={fcolor.gray4}
-                      style={{marginLeft: 10}}>
-                      {plan.date}.{plan.dayOfWeek}
-                    </RText>
-                  </View>
-                  <FlatList
-                    data={planList}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => index.toString()}
-                  />
+              <View style={{justifyContent: 'center', marginVertical: 30}}>
+                <View style={{alignItems: 'center', gap: 4}}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('PlanMake')}>
+                    <Image
+                      source={require('src/assets/images/home/homeAddPlan.png')}
+                      style={{width: 128, height: 128, margin: 5}}
+                    />
+                  </TouchableOpacity>
+                  <MText fontSize={14} color={fcolor.gray4}>
+                    아직 일정이 없어요.
+                  </MText>
+                  <MText fontSize={14} color={fcolor.gray4}>
+                    플래닝과 함께 일정을 세워볼까요?
+                  </MText>
                 </View>
-              ) : (
-                <View style={{justifyContent: 'center', marginVertical: 30}}>
-                  <View style={{alignItems: 'center'}}>
-                    <TouchableOpacity
-                      onPress={() => navigation.navigate('PlanMake')}>
-                      <Image
-                        source={require('src/assets/images/home/homeAddPlan.png')}
-                        style={{width: 128, height: 128, margin: 5}}
-                      />
-                    </TouchableOpacity>
-                    <MText fontSize={14} color={fcolor.gray4}>
-                      아직 일정이 없어요.
-                    </MText>
-                    <MText fontSize={14} color={fcolor.gray4}>
-                      플래닝과 함께 일정을 세워볼까요?
-                    </MText>
-                  </View>
-                </View>
-              )}
+              </View>
             </View>
-            <View style={[styles.container, styles.recommend]}>
+            <View style={{height: 3, backgroundColor: fcolor.gray1}} />
+            <View
+              style={{
+                paddingHorizontal: 25,
+                paddingVertical: 20,
+              }}>
               <BText
                 fontSize={17}
                 style={{fontWeight: 'bold', marginBottom: 5}}>
                 {have
                   ? plan?.place + '에서 가볼만한 곳'
-                  : user?.nickname + '님을 위한 추천여행지'}
+                  : userData?.nickname + '님을 위한 추천여행지'}
               </BText>
               <MText fontSize={13} color={fcolor.gray4}>
                 {have
                   ? '현재 여행중인 ' + plan?.place + '에서 여기는 어때요?'
-                  : user?.travelType + ' 형 여행자들이 좋아하는 여행지예요.'}
+                  : userData?.travelType + ' 여행자들이 좋아하는 여행지예요.'}
               </MText>
-              <FlatList
-                data={have ? data1 : data}
-                renderItem={recomRenderItem}
-                keyExtractor={(item, index) => index.toString()}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-              />
             </View>
+            <FlatList
+              data={have ? data1 : data}
+              renderItem={recomRenderItem}
+              keyExtractor={(item, index) => index.toString()}
+              horizontal={true}
+              // style={{paddingHorizontal: 25}}
+              contentContainerStyle={{paddingHorizontal: 16, gap: 16}}
+              showsHorizontalScrollIndicator={false}
+            />
           </>
         }
       />
+
       <BottomBar activeRoute="Home" />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: fcolor.white,
-    padding: 25,
-  },
-  planecontent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  numCircle: {
-    width: 22,
-    height: 22,
-    backgroundColor: fcolor.blue,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 2,
-  },
-  movePath: {
-    flex: 1,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: fcolor.gray1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8,
-  },
-  recommend: {
-    flex: 0.95,
-    borderTopWidth: 4,
-    borderColor: fcolor.gray1,
-    paddingTop: 20,
-  },
-});
 
 export default HomeScreen;

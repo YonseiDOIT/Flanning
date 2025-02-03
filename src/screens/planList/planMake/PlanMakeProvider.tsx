@@ -24,7 +24,7 @@ export const PlanMakeProvider = ({children}) => {
       dayList: [], //여행날짜
     }, // Step3의 데이터
     step4: {
-      userList:[]//친구 목록
+      userList: [], //친구 목록
     }, // Step4의 데이터
   });
 
@@ -46,10 +46,14 @@ export const PlanMakeProvider = ({children}) => {
         handleStepNext,
         setPlanMData,
       }}>
-      <View style={{
-    flex: 1,
-    paddingTop: Platform.OS === 'ios' ? 30 : 10,
-    backgroundColor: fcolor.white,}}>{children}</View>
+      <View
+        style={{
+          flex: 1,
+          paddingTop: Platform.OS === 'ios' ? 30 : 10,
+          backgroundColor: fcolor.white,
+        }}>
+        {children}
+      </View>
     </PlanMContext.Provider>
   );
 };

@@ -15,9 +15,11 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import fcolor from 'src/assets/colors/fcolors';
 import RText from './RText';
 import {useNavigation, useNavigationState} from '@react-navigation/native';
+import {useAuth} from 'src/context';
 
 const BottomBar = () => {
   const navigation = useNavigation();
+  const {signOut} = useAuth();
   const routeName = useNavigationState(
     state => state.routes[state.index]?.name,
   );
@@ -62,7 +64,9 @@ const BottomBar = () => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.icon}
-        onPress={() => navigation.navigate('Profile')}>
+        onPress={() => {
+          signOut();
+        }}>
         <Icon name="person" size={25} color={fcolor.gray4} />
         <RText style={{marginTop: 5}} color={fcolor.gray4} fontSize={10}>
           내 계정

@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
+  Alert,
   Animated,
   FlatList,
   Image,
@@ -18,11 +19,12 @@ import RText from 'src/components/common/RText';
 import {firestore} from 'src/utils/firebase';
 import {useUser} from 'src/context';
 import {FieldValue} from '@react-native-firebase/firestore';
+import {getUsercode} from 'src/components/common/getUserdata';
 
 // 일정 상세 페이지
 const PlanStep4Screen = ({navigation}) => {
   //저장된 유저명
-  const {usercode} = useUser();
+  const {userData} = useUser();
 
   const {planMData, handleStepNext, setPlanMData} = usePlanM();
   let planMContext = usePlanM();
@@ -137,52 +139,50 @@ const PlanStep4Screen = ({navigation}) => {
   };
 
   //db에 저장
-  const planMStore = async () => {
+  const planMStore = async postData => {
     try {
-      if (!planMData.step1.title) {
-        planMData.step1.title = planMData.step2.place;
+      if (postData.title === '') {
+        postData.title = postData.area;
       }
-      console.log(planMData);
 
-      const fetchData = {
-        title: planMData.step1.title,
-        area: planMData.step2.place,
-        dayList: planMData.step3.dayList,
-        creator: usercode,
-        createdAt: new Date(),
-        userList: planMData.step4.userList,
-      };
       const docRef = await firestore().collection('plan').doc(); // 무작위 ID 생성
-      await docRef.set(fetchData);
-      for (let i = 0; i < planMData.step3.dayList.length; i++) {
+      await docRef.set(postData);
+      for (let i = 0; i < postData.dayList.length; i++) {
         const dayId = planMData.step3.dayList[i]; // dayList의 각 요소 가져오기
         await docRef.collection('planList').doc(dayId);
       }
-      return docRef.id;
+      return true;
     } catch (error) {
       console.error('데이터 저장 중 에러 발생');
-      return null;
+      return false;
     }
   };
 
   const planMEnd = async () => {
-    const planId = await planMStore();
+    const now = new Date();
+    const koreaTime = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    console.log(userData);
 
-    if (planId) {
-      await firestore()
-        .collection('users')
-        .doc(usercode)
-        .update('plan', FieldValue.arrayUnion(planId));
+    const usercode = await getUsercode(userData.email);
 
-      await firestore()
-        .collection('users')
-        .doc(usercode)
-        .update('mainPlan', FieldValue.arrayUnion(planId));
+    const postData = {
+      title: planMData.step1.title,
+      area: planMData.step2.place,
+      dayList: planMData.step3.dayList,
+      creator: usercode,
+      createdAt: koreaTime.toISOString(), // 한국시간으로 저장
+      userList: planMData.step4.userList,
+    };
 
+    const fetchResult = await planMStore(postData);
+
+    if (fetchResult) {
       navigation.reset({
         index: 0,
         routes: [{name: 'Home'}],
       });
+    } else {
+      Alert.alert('데이터 저장 실패');
     }
   };
 

@@ -1,0 +1,143 @@
+{
+  "강원특별자치도": [
+    {
+      "name": "원주시",
+      "polygon": [
+        {"latitude": 37.85, "longitude": 128.15},
+        {"latitude": 37.85, "longitude": 128.25},
+        {"latitude": 37.75, "longitude": 128.25},
+        {"latitude": 37.75, "longitude": 128.15}
+      ]
+    },
+    {
+      "name": "강릉시",
+      "polygon": [
+        {"latitude": 37.86, "longitude": 128.16},
+        {"latitude": 37.86, "longitude": 128.26},
+        {"latitude": 37.76, "longitude": 128.26},
+        {"latitude": 37.76, "longitude": 128.16}
+      ]
+    },
+    {
+      "name": "동해시",
+      "polygon": [
+        {"latitude": 37.87, "longitude": 128.17},
+        {"latitude": 37.87, "longitude": 128.27},
+        {"latitude": 37.77, "longitude": 128.27},
+        {"latitude": 37.77, "longitude": 128.17}
+      ]
+    },
+    {
+      "name": "속초시",
+      "polygon": [
+        {"latitude": 37.88, "longitude": 128.18},
+        {"latitude": 37.88, "longitude": 128.28},
+        {"latitude": 37.78, "longitude": 128.28},
+        {"latitude": 37.78, "longitude": 128.18}
+      ]
+    },
+    {
+      "name": "춘천시",
+      "polygon": [
+        {"latitude": 37.89, "longitude": 128.19},
+        {"latitude": 37.89, "longitude": 128.29},
+        {"latitude": 37.79, "longitude": 128.29},
+        {"latitude": 37.79, "longitude": 128.19}
+      ]
+    }
+  ],
+  "서울특별시": [
+    {
+      "name": "강남구",
+      "polygon": [
+        {"latitude": 37.55, "longitude": 126.95},
+        {"latitude": 37.55, "longitude": 127.05},
+        {"latitude": 37.45, "longitude": 127.05},
+        {"latitude": 37.45, "longitude": 126.95}
+      ]
+    },
+    {
+      "name": "서초구",
+      "polygon": [
+        {"latitude": 37.56, "longitude": 126.96},
+        {"latitude": 37.56, "longitude": 127.06},
+        {"latitude": 37.46, "longitude": 127.06},
+        {"latitude": 37.46, "longitude": 126.96}
+      ]
+    },
+    {
+      "name": "송파구",
+      "polygon": [
+        {"latitude": 37.57, "longitude": 126.97},
+        {"latitude": 37.57, "longitude": 127.07},
+        {"latitude": 37.47, "longitude": 127.07},
+        {"latitude": 37.47, "longitude": 126.97}
+      ]
+    },
+    {
+      "name": "강북구",
+      "polygon": [
+        {"latitude": 37.58, "longitude": 126.98},
+        {"latitude": 37.58, "longitude": 127.08},
+        {"latitude": 37.48, "longitude": 127.08},
+        {"latitude": 37.48, "longitude": 126.98}
+      ]
+    },
+    {
+      "name": "마포구",
+      "polygon": [
+        {"latitude": 37.59, "longitude": 126.99},
+        {"latitude": 37.59, "longitude": 127.09},
+        {"latitude": 37.49, "longitude": 127.09},
+        {"latitude": 37.49, "longitude": 126.99}
+      ]
+    }
+  ],
+  "경기도": [
+    {
+      "name": "수원시",
+      "polygon": [
+        {"latitude": 37.35, "longitude": 127.45},
+        {"latitude": 37.35, "longitude": 127.55},
+        {"latitude": 37.25, "longitude": 127.55},
+        {"latitude": 37.25, "longitude": 127.45}
+      ]
+    },
+    {
+      "name": "성남시",
+      "polygon": [
+        {"latitude": 37.36, "longitude": 127.46},
+        {"latitude": 37.36, "longitude": 127.56},
+        {"latitude": 37.26, "longitude": 127.56},
+        {"latitude": 37.26, "longitude": 127.46}
+      ]
+    },
+    {
+      "name": "고양시",
+      "polygon": [
+        {"latitude": 37.37, "longitude": 127.47},
+        {"latitude": 37.37, "longitude": 127.57},
+        {"latitude": 37.27, "longitude": 127.57},
+        {"latitude": 37.27, "longitude": 127.47}
+      ]
+    },
+    {
+      "name": "부천시",
+      "polygon": [
+        {"latitude": 37.38, "longitude": 127.48},
+        {"latitude": 37.38, "longitude": 127.58},
+        {"latitude": 37.28, "longitude": 127.58},
+        {"latitude": 37.28, "longitude": 127.48}
+      ]
+    },
+    {
+      "name": "용인시",
+      "polygon": [
+        {"latitude": 37.39, "longitude": 127.49},
+        {"latitude": 37.39, "longitude": 127.59},
+        {"latitude": 37.29, "longitude": 127.59},
+        {"latitude": 37.29, "longitude": 127.49}
+      ]
+    }
+  ]
+}
