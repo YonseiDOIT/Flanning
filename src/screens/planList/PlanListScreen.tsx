@@ -201,7 +201,8 @@ const PlanListScreen = () => {
       </ScrollView>
       <PlusButton
         onPress={() => {
-          navigation.navigate('PlanMake');
+          navigation.navigate('LocationAdd');
+          // navigation.navigate('PlanMake');
         }}
       />
       <BottomBar />

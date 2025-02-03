@@ -94,5 +94,7 @@
   "travel_agency": "여행사",
   "university": "대학교",
   "veterinary_care": "동물병원",
-  "zoo": "동물원"
+  "zoo": "동물원",
+  "point_of_interest": "기타",
+  "natural_feature": "자연"
 }

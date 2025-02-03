@@ -5,6 +5,7 @@ import {
   Linking,
   Platform,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -102,7 +103,11 @@ const LocationItem = ({
           }}>
           <View style={styles.locationHeaderContainer}>
             <View style={styles.locationTitleContainer}>
-              <BText fontSize={18}>{location.locationTitle}</BText>
+              <View
+                style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
+                <BText fontSize={18}>{location?.locationIcon}</BText>
+                <BText fontSize={18}>{location.locationTitle}</BText>
+              </View>
               <View style={styles.locationTypeContainer}>
                 <RText color={fcolor.lblue4}>{location.locationType}</RText>
               </View>
@@ -134,9 +139,15 @@ const LocationItem = ({
             <>
               <View style={styles.locationLine} />
               <View style={styles.locationDistanceText}>
-                <RText fontSize={8} color={fcolor.lblue4}>
+                <Text
+                  style={{
+                    fontSize: 7,
+                    color: fcolor.lblue4,
+                  }}
+                  numberOfLines={1}
+                  ellipsizeMode="clip">
                   {location.distanceToNext}
-                </RText>
+                </Text>
               </View>
             </>
           ) : null}

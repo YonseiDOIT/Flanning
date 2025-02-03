@@ -1,26 +1,16 @@
 // @ts-nocheck
 import {Link, useNavigation, useRoute} from '@react-navigation/native';
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useEffect, useMemo} from 'react';
 import {
   Animated,
   Easing,
-  FlatList,
-  Keyboard,
   Linking,
-  Modal,
   Platform,
   StyleSheet,
-  TextInput,
   View,
 } from 'react-native';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import {
-  ScrollView,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
+import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import BText from 'src/components/common/BText';
-import FontASIcon from 'react-native-vector-icons/FontAwesome';
 import fcolor from 'src/assets/colors/fcolors';
 import MText from 'src/components/common/MText';
 import BackHeader from 'src/components/common/BackHeader';
@@ -32,11 +22,15 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import LinkIcon from 'src/components/common/icons/LinkIcon';
 import TrashIcon from 'src/components/common/icons/TrashIcon';
 import globalStyles from 'src/assets/styles/globalStyles';
-import {usePlan} from 'src/context';
 import {firestore} from 'src/utils/firebase';
 import placeType from 'src/assets/json/placeType.json';
+import EmojiPicker from 'rn-emoji-keyboard';
+import TrafficItem from './components/TrafficItem';
+import MemoItem from './components/MemoItem';
+import MemoIconModal from './components/MemoIconModal';
+import LinkModal from './components/LinkModal';
+import {TrafficIconModal} from './components/TrafficIconModal';
 
-const emojiList = ['🍽️', '🍕', '☕', '🏨', '🛒', '🏝️', '🎡', '🚗'];
 const stateList = [
   {
     name: '표시 안함',
@@ -55,7 +49,6 @@ const stateList = [
 const LocationAddScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const {planDetailData} = usePlan();
   const {place, dateList, planItem} = route.params;
   // const place = {
   //   location: '대한민국 강원특별자치도 원주시 중앙로 28',
@@ -64,8 +57,12 @@ const LocationAddScreen = () => {
   //   locationType: 'restaurant',
   // };
   // const dateList = ['2025-01-21', '2025-01-22', '2025-01-23'];
-  // 선택된 이모지 저장
-  const [selectedEmoji, setSelectedEmoji] = useState(null);
+  // const planItem = {
+  //   id: '123',
+  //   title: '플래닝 테스트',
+  //   dayList: ['2025-01-21', '2025-01-22', '2025-01-23'],
+  //   area: '강원특별자치도',
+  // };
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
   const mapRef = useRef(null);
   const [addPlace, setAddPlace] = useState({
@@ -83,13 +80,24 @@ const LocationAddScreen = () => {
   });
   const [isTimePickerVisible, setTimePickerVisible] = useState(false);
   const [isLinkModalVisible, setIsLinkModalVisible] = useState(false);
+  const [isMemoIconModalVisible, setIsMemoIconModalVisible] = useState(false);
+  const [isTrafficIconModalVisible, setIsTrafficIconModalVisible] =
+    useState(false);
+  const [selectedMemoIconIndex, setSelectedMemoIconIndex] = useState(null);
+  const [selectedTrafficIconIndex, setSelectedTrafficIconIndex] =
+    useState(null);
   const [deleteLinkModeIndex, setDeleteLinkModeIndex] = useState(null);
-
+  const [deleteMemoModeIndex, setDeleteMemoModeIndex] = useState(null);
+  const [deleteTrafficModeIndex, setDeleteTrafficModeIndex] = useState(null);
   const backgroundOpacity = useRef(new Animated.Value(0)).current;
   const modalTranslateY = useRef(new Animated.Value(500)).current;
 
   useEffect(() => {
-    if (isLinkModalVisible) {
+    if (
+      isLinkModalVisible ||
+      isMemoIconModalVisible ||
+      isTrafficIconModalVisible
+    ) {
       Animated.parallel([
         Animated.timing(backgroundOpacity, {
           toValue: 1,
@@ -122,7 +130,7 @@ const LocationAddScreen = () => {
         setIsLinkModalVisible(false);
       });
     }
-  }, [isLinkModalVisible]);
+  }, [isLinkModalVisible, isMemoIconModalVisible, isTrafficIconModalVisible]);
 
   useEffect(() => {
     if (mapRef.current && place.locationMap) {
@@ -153,10 +161,32 @@ const LocationAddScreen = () => {
     setTimePickerVisible(false);
   };
 
+  const getDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distanceKm = R * c;
+    const distanceM = distanceKm * 1000;
+
+    return {distanceKm, distanceM};
+  };
+
   const handleAddPlace = async (place, planItem) => {
     const planId = planItem.id;
 
     const filteredType = placeType[place.locationType];
+
+    const isValidArray = arr =>
+      Array.isArray(arr) &&
+      arr.length > 0 &&
+      arr.some(item => Object.values(item).some(value => value !== ''));
 
     const placeData = {
       locationTitle: place.locationTitle,
@@ -167,8 +197,8 @@ const LocationAddScreen = () => {
       time: place.selectedTime,
       state: place.selectedState,
       referenceLink: place.referenceLink,
-      memo: place.memo,
-      movePath: place.movePath,
+      memo: isValidArray(place.memo) ? place.memo : [],
+      movePath: isValidArray(place.movePath) ? place.movePath : [],
     };
 
     const planListRef = firestore()
@@ -176,6 +206,45 @@ const LocationAddScreen = () => {
       .doc(planId)
       .collection('planList')
       .doc(place.selectedDate);
+
+    // 이전 데이터 값 가져오기
+    try {
+      const docSnapshot = await planListRef.get();
+      let prevData = null;
+      let distanceToNext = 0;
+
+      if (docSnapshot.exists) {
+        const planArray = docSnapshot.data().plan || [];
+
+        if (planArray.length > 0) {
+          prevData = planArray[planArray.length - 1];
+          const distanceResult = getDistance(
+            prevData.locationMap.latitude,
+            prevData.locationMap.longitude,
+            place.locationMap.latitude,
+            place.locationMap.longitude,
+          );
+          if (distanceResult.distanceKm < 1) {
+            distanceToNext = distanceResult.distanceM.toFixed(0) + 'm';
+          } else if (distanceResult.distanceKm.toFixed(1) < 9.9) {
+            distanceToNext = distanceResult.distanceKm.toFixed(1) + 'km';
+          } else {
+            distanceToNext = distanceResult.distanceKm.toFixed(0) + 'km';
+          }
+
+          planArray[planArray.length - 1] = {
+            ...prevData,
+            distanceToNext: distanceToNext,
+          };
+
+          await planListRef.update({
+            plan: planArray,
+          });
+        }
+      }
+    } catch (e) {
+      console.error('이전 데이터 값 불러오기 오류:', e);
+    }
 
     try {
       const docSnapshot = await planListRef.get();
@@ -203,7 +272,11 @@ const LocationAddScreen = () => {
       <ScrollView>
         {/* 장소 정보 */}
         <View style={styles.placeInfoContainer}>
-          <TouchableOpacity onPress={() => {}} style={styles.emojiButton}>
+          <TouchableOpacity
+            onPress={() => {
+              setEmojiPickerVisible(true);
+            }}
+            style={styles.emojiButton}>
             {addPlace.selectedEmoji ? (
               <BText fontSize={24}>{addPlace.selectedEmoji}</BText>
             ) : (
@@ -444,8 +517,12 @@ const LocationAddScreen = () => {
                 key={`memo-${idx}`}
                 memo={memo}
                 setAddPlace={setAddPlace}
+                setSelectedMemoIconIndex={setSelectedMemoIconIndex}
                 addPlace={addPlace}
+                setIsMemoIconModalVisible={setIsMemoIconModalVisible}
                 index={idx}
+                deleteMemoModeIndex={deleteMemoModeIndex}
+                setDeleteMemoModeIndex={setDeleteMemoModeIndex}
               />
             ))}
             {addPlace.memo.length === 0 ||
@@ -457,6 +534,10 @@ const LocationAddScreen = () => {
                 setAddPlace={setAddPlace}
                 addPlace={addPlace}
                 index={addPlace.memo.length}
+                setIsMemoIconModalVisible={setIsMemoIconModalVisible}
+                setSelectedMemoIconIndex={setSelectedMemoIconIndex}
+                deleteMemoModeIndex={deleteMemoModeIndex}
+                setDeleteMemoModeIndex={setDeleteMemoModeIndex}
               />
             ) : null}
           </View>
@@ -481,6 +562,10 @@ const LocationAddScreen = () => {
                 setAddPlace={setAddPlace}
                 addPlace={addPlace}
                 index={idx}
+                setIsTrafficIconModalVisible={setIsTrafficIconModalVisible}
+                setSelectedTrafficIconIndex={setSelectedTrafficIconIndex}
+                deleteTrafficModeIndex={deleteTrafficModeIndex}
+                setDeleteTrafficModeIndex={setDeleteTrafficModeIndex}
               />
             ))}
             {addPlace.movePath.length === 0 ||
@@ -493,6 +578,10 @@ const LocationAddScreen = () => {
                 setAddPlace={setAddPlace}
                 addPlace={addPlace}
                 index={addPlace.movePath.length}
+                setIsTrafficIconModalVisible={setIsTrafficIconModalVisible}
+                setSelectedTrafficIconIndex={setSelectedTrafficIconIndex}
+                deleteTrafficModeIndex={deleteTrafficModeIndex}
+                setDeleteTrafficModeIndex={setDeleteTrafficModeIndex}
               />
             ) : null}
           </View>
@@ -509,9 +598,13 @@ const LocationAddScreen = () => {
                 globalStyles.buttonBase,
                 {
                   backgroundColor: fcolor.blue,
+                  // isValidMemoAndTraffic
+                  //   ? fcolor.blue
+                  //   : fcolor.gray2,
                   flex: 1,
                 },
               ]}
+              // disabled={!isValidMemoAndTraffic}
               onPress={() => {
                 handleAddPlace(addPlace, planItem);
               }}>
@@ -565,6 +658,21 @@ const LocationAddScreen = () => {
           />
         )}
       </ScrollView>
+
+      <EmojiPicker
+        open={isEmojiPickerVisible}
+        onEmojiSelected={emoji => {
+          setAddPlace(prev => ({
+            ...prev,
+            selectedEmoji: emoji.emoji,
+          }));
+        }}
+        onClose={() => {
+          setEmojiPickerVisible(false);
+        }}
+      />
+
+      {/* 링크 추가 모달 */}
       {isLinkModalVisible && (
         <>
           <Animated.View
@@ -579,290 +687,73 @@ const LocationAddScreen = () => {
             ]}>
             <TouchableOpacity
               onPress={() => {
-                setIsLinkModalVisible(false);
+                console.log('링크 모달 닫기');
+                // setIsLinkModalVisible(false);
               }}
             />
           </Animated.View>
           <LinkModal
             isLinkModalVisible={isLinkModalVisible}
             setIsLinkModalVisible={setIsLinkModalVisible}
-            backgroundOpacity={backgroundOpacity}
-            modalTranslateY={modalTranslateY}
             setAddPlace={setAddPlace}
           />
         </>
       )}
-    </View>
-  );
-};
 
-// 링크 추가 모달
-const LinkModal = ({
-  isLinkModalVisible,
-  setIsLinkModalVisible,
-  backgroundOpacity,
-  modalTranslateY,
-  setAddPlace,
-}) => {
-  const [link, setLink] = useState({
-    title: '',
-    url: '',
-  });
-
-  if (!isLinkModalVisible) {
-    return null;
-  }
-
-  const handleChange = (text, type) => {
-    setLink(prev => ({...prev, [type]: text}));
-  };
-
-  const handleSave = () => {
-    if (!link.title.trim() || !link.url.trim()) {
-      return; // 제목 또는 URL이 비어 있으면 저장하지 않음
-    }
-    setIsLinkModalVisible(false);
-    setAddPlace(prev => ({
-      ...prev,
-      referenceLink: [...prev.referenceLink, link],
-    }));
-  };
-
-  return (
-    <Modal transparent visible={isLinkModalVisible} animationType="slide">
-      {/* 배경 애니메이션 */}
-
-      <Animated.View
-        style={[
-          styles.modalContainer,
-          {
-            transform: [{translateY: modalTranslateY}],
-          },
-        ]}>
-        <View style={{flex: 1, gap: 30}}>
-          <View>
-            <BText>장소와 관련된</BText>
-            <BText>링크를 추가해보세요</BText>
-          </View>
-          <View style={{flex: 1, gap: 20}}>
-            {/* 링크 제목 */}
-            <View style={{flexDirection: 'column', gap: 8}}>
-              <BText fontSize={20}>링크 제목</BText>
-              <TextInput
-                style={[globalStyles.inputBase]}
-                onChangeText={text => handleChange(text, 'title')}
-                placeholder={'최대 4글자까지 가능해요'}
-                placeholderTextColor={fcolor.gray3}
-                maxLength={4}
-                value={link.title}
-              />
-            </View>
-
-            {/* 링크 추가 */}
-            <View style={{flexDirection: 'column', gap: 8}}>
-              <BText fontSize={20}>URL 주소</BText>
-              <TextInput
-                style={[globalStyles.inputBase]}
-                onChangeText={text => handleChange(text, 'url')}
-                placeholder={'주소를 추가해주세요'}
-                placeholderTextColor={fcolor.gray3}
-                value={link.url}
-              />
-            </View>
-          </View>
-        </View>
-
-        {/* 버튼 */}
-        <View
-          style={{
-            gap: 10,
-          }}>
-          <TouchableOpacity
+      {/* 메모 아이콘 모달 */}
+      {isMemoIconModalVisible && (
+        <>
+          <Animated.View
             style={[
-              globalStyles.buttonBase,
+              styles.overlay,
               {
-                backgroundColor:
-                  !link.title.trim() || !link.url.trim()
-                    ? fcolor.gray2
-                    : fcolor.blue,
+                backgroundColor: backgroundOpacity.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.5)'],
+                }),
               },
-            ]}
-            disabled={!link.title.trim() || !link.url.trim()}
-            onPress={() => handleSave()}>
-            <MText color={fcolor.white}>장소 추가</MText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[globalStyles.buttonBase, {backgroundColor: fcolor.gray4}]}
-            onPress={() => {
-              setIsLinkModalVisible(false);
-            }}>
-            <MText color={fcolor.white}>닫기</MText>
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
-    </Modal>
-  );
-};
+            ]}>
+            <TouchableOpacity
+              onPress={() => {
+                console.log('아이콘 모달 닫기');
+              }}
+            />
+          </Animated.View>
+          <MemoIconModal
+            isMemoIconModalVisible={isMemoIconModalVisible}
+            setIsMemoIconModalVisible={setIsMemoIconModalVisible}
+            setAddPlace={setAddPlace}
+            index={selectedMemoIconIndex}
+          />
+        </>
+      )}
 
-// 메모 컴포넌트
-const MemoItem = ({memo, setAddPlace, addPlace, index}) => {
-  const [memoContent, setMemoContent] = useState(memo.content);
-  const [memoIcon, setMemoIcon] = useState(memo.icon);
-
-  const handleTextChange = text => {
-    setAddPlace(prev => {
-      const updatedMemo = [...prev.memo];
-
-      if (!updatedMemo[index]) {
-        updatedMemo[index] = {icon: '', content: text};
-      } else {
-        updatedMemo[index] = {...updatedMemo[index], content: text}; // 기존 icon 유지
-      }
-
-      return {...prev, memo: updatedMemo};
-    });
-  };
-
-  const handleIconChange = () => {
-    setAddPlace(prev => {
-      const updatedMemo = [...prev.memo];
-
-      if (!updatedMemo[index]) {
-        updatedMemo[index] = {icon: 'article', content: ''};
-      } else {
-        updatedMemo[index] = {...updatedMemo[index], icon: 'article'}; // 기존 content 유지
-      }
-
-      return {...prev, memo: updatedMemo};
-    });
-  };
-
-  return (
-    <View style={{flexDirection: 'row', gap: 8, alignItems: 'flex-start'}}>
-      <TouchableOpacity
-        onPress={handleIconChange}
-        // TODO: 메모 아이콘 추가 기능 구현 예정
-        style={{
-          flexDirection: 'row',
-          gap: 4,
-          width: 40,
-          height: 40,
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderRadius: 8,
-          backgroundColor: memo.icon === '' ? fcolor.gray1 : fcolor.blue,
-        }}>
-        <DefaultIcon width={26} height={26} fill={fcolor.gray3} />
-      </TouchableOpacity>
-
-      <View
-        style={{
-          flex: 1,
-          paddingVertical: 8,
-          paddingHorizontal: 10,
-          backgroundColor: memo.content === '' ? fcolor.gray1 : fcolor.blue,
-          borderRadius: 8,
-          minHeight: 40,
-        }}>
-        <TextInput
-          style={{
-            paddingHorizontal: 0,
-            paddingVertical: 0,
-            fontSize: 14,
-            backgroundColor: 'transparent',
-            textAlignVertical: 'center',
-            color: fcolor.white,
-            fontFamily: 'Pretendard-Medium',
-          }}
-          multiline={true}
-          placeholder="메모를 작성해주세요."
-          placeholderTextColor={fcolor.gray3}
-          value={memo.content}
-          onChangeText={handleTextChange}
-        />
-      </View>
-    </View>
-  );
-};
-
-// 교통정보 컴포넌트
-const TrafficItem = ({movePath, setAddPlace, addPlace, index}) => {
-  const [trafficIcon, setTrafficIcon] = useState(movePath.icon);
-  const [trafficDescription, setTrafficDescription] = useState(
-    movePath.description,
-  );
-
-  const handleTextChange = text => {
-    setAddPlace(prev => {
-      const updatedTraffic = [...prev.movePath];
-
-      if (!updatedTraffic[index]) {
-        updatedTraffic[index] = {icon: '', description: text};
-      } else {
-        updatedTraffic[index] = {...updatedTraffic[index], description: text}; // 기존 icon 유지
-      }
-
-      return {...prev, movePath: updatedTraffic};
-    });
-  };
-
-  const handleIconChange = () => {
-    setAddPlace(prev => {
-      const updatedTraffic = [...prev.movePath];
-
-      if (!updatedTraffic[index]) {
-        updatedTraffic[index] = {icon: 'article', description: ''};
-      } else {
-        updatedTraffic[index] = {...updatedTraffic[index], icon: 'article'}; // 기존 content 유지
-      }
-
-      return {...prev, movePath: updatedTraffic};
-    });
-  };
-
-  return (
-    <View style={{flexDirection: 'row', gap: 8, alignItems: 'flex-start'}}>
-      <TouchableOpacity
-        onPress={handleIconChange}
-        // TODO: 메모 아이콘 추가 기능 구현 예정
-        style={{
-          flexDirection: 'row',
-          gap: 4,
-          width: 40,
-          height: 40,
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderRadius: 8,
-          backgroundColor: movePath.icon === '' ? fcolor.gray1 : fcolor.blue,
-        }}>
-        <DefaultIcon width={26} height={26} fill={fcolor.gray3} />
-      </TouchableOpacity>
-      <View
-        style={{
-          flex: 1,
-          paddingVertical: 8,
-          paddingHorizontal: 10,
-          backgroundColor:
-            movePath.description === '' ? fcolor.gray1 : fcolor.blue,
-          borderRadius: 8,
-          minHeight: 40,
-        }}>
-        <TextInput
-          style={{
-            paddingHorizontal: 0,
-            paddingVertical: 0,
-            fontSize: 14,
-            textAlignVertical: 'center',
-            color: fcolor.white,
-            fontFamily: 'Pretendard-Medium',
-          }}
-          multiline={true}
-          placeholder="이 장소의 교통정보를 작성해주세요."
-          placeholderTextColor={fcolor.gray3}
-          value={movePath.description}
-          onChangeText={handleTextChange}
-        />
-      </View>
+      {isTrafficIconModalVisible && (
+        <>
+          <Animated.View
+            style={[
+              styles.overlay,
+              {
+                backgroundColor: backgroundOpacity.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.5)'],
+                }),
+              },
+            ]}>
+            <TouchableOpacity
+              onPress={() => {
+                console.log('교통 아이콘 모달 닫기');
+              }}
+            />
+          </Animated.View>
+          <TrafficIconModal
+            isTrafficIconModalVisible={isTrafficIconModalVisible}
+            setIsTrafficIconModalVisible={setIsTrafficIconModalVisible}
+            setAddPlace={setAddPlace}
+            index={selectedTrafficIconIndex}
+          />
+        </>
+      )}
     </View>
   );
 };
@@ -941,9 +832,6 @@ const styles = StyleSheet.create({
     padding: 30,
     paddingVertical: 40,
     justifyContent: 'space-between',
-  },
-  modalContent: {
-    // flex: 1,
   },
 });
 
