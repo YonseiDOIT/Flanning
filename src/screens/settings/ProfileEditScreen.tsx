@@ -88,7 +88,7 @@ const ProfileEditScreen = ({ navigation }) => {
         <TouchableOpacity
           style={[styles.clickbutton, globalStyles.centered, validationNext() ? { backgroundColor: fcolor.blue } : null]}
           disabled={!validationNext()}
-          onPress={() => showModal(0)}>
+          onPress={() => showModal(1)}>
           <MText fontSize={13} color={fcolor.white}>프로필 수정하기</MText>
         </TouchableOpacity>
       </View>

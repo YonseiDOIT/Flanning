@@ -125,7 +125,7 @@ const SettingScreen = ({ navigation }) => {
       </View>
 
 
-      <BottomBar homecolor={fcolor.blue} />
+      <BottomBar settingcolor={fcolor.blue} />
     </View>
   )
 };

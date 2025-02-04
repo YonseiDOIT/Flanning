@@ -17,11 +17,8 @@ export const addFriend = async (friendcode, usercode) => {
     const userCollection1 = firestore().collection("users").doc(friendcode);
     userCollection1.update("friend", FieldValue.arrayUnion(usercode));
 
-    // 새 친구를 추가하고 상태를 업데이트
-    Alert.alert(db.nickname, '친구 요청을 보냈어요!\n수락할 때까지 조금만 기다려주세요 😊');
   } else {
     console.log("없음");
-    Alert.alert('', '해당 친구코드는 없는 코드입니다.');
   }
 };
 
