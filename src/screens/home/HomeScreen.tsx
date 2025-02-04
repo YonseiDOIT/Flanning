@@ -284,7 +284,7 @@ function HomeScreen({ navigation }) {
                 {have ? plan?.place + "에서 가볼만한 곳" : user?.nickname + "님을 위한 추천여행지"}
               </BText>
               <MText fontSize={13} color={fcolor.gray4}>
-                {have ? "현재 여행중인 " + plan?.place + "에서 여기는 어때요?" : user?.travelType + " 형 여행자들이 좋아하는 여행지예요."}
+                {have ? "현재 여행중인 " + plan?.place + "에서 여기는 어때요?" : user?.travelType + " 여행자들이 좋아하는 여행지예요."}
               </MText>
               <FlatList
                 data={have ? data1 : data}

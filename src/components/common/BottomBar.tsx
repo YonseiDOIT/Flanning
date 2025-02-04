@@ -106,7 +106,8 @@ const BottomBar = ({
           리뷰
         </RText>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.icon}>
+      <TouchableOpacity style={styles.icon}
+        onPress={() => navigation.navigate('Setting')}>
         
         {user.userImage?
           <Image

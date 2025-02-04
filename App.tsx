@@ -45,6 +45,8 @@ import SignupScreen from './src/screens/auth/Signup/SignupScreen';
 import FriendListScreen from 'src/screens/home/friend/FriendListScreen';
 import FriendAddScreen from 'src/screens/home/friend/FriendAddScreen';
 import PlanMakeScreen from 'src/screens/planList/planMake/PlanMakeScreen';
+import SettingScreen from 'src/screens/settings/SettingScreen';
+import ProfileEditScreen from 'src/screens/settings/ProfileEditScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -71,6 +73,8 @@ const App = () => {
             <Stack.Screen name="PlanMake" component={PlanMakeScreen} />
             <Stack.Screen name="Review" component={ReviewScreen} />
             <Stack.Screen name="Community" component={CommunityScreen} />
+            <Stack.Screen name='Setting' component={SettingScreen}/>
+            <Stack.Screen name='profileEdit' component={ProfileEditScreen}/>
             {/*
       {/*
             <Stack.Screen name="signup" component={Signup} />
