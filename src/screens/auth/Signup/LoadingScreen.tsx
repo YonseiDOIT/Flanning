@@ -1,5 +1,5 @@
 // @ts-nocheck
-import {View, StyleSheet, Animated, Image, Alert} from 'react-native';
+import {View, StyleSheet, Animated, Image, Alert, Platform} from 'react-native';
 import fcolor from 'src/assets/colors/fcolors';
 import React, {useEffect, useRef, useState} from 'react';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -13,140 +13,20 @@ import MText from 'src/components/common/MText';
 import NeonGr from 'src/components/neongr';
 import {auth, firestore, storage} from 'src/utils/firebase';
 import {generateUniqueCode} from 'src/utils/validators';
-
-const travelTypeList = [
-  {
-    type: '설악산 등반형',
-    title: '새로운 경험이라면 무엇이든 설레!',
-    description: (
-      <View style={{alignItems: 'center', gap: 6}}>
-        <MText color={fcolor.gray4}>
-          액티비티와 자연 탐험을 좋아하는 여행자예요!
-        </MText>
-        <MText color={fcolor.gray4}>
-          낯선 환경에서 새로운 도전에 끌리는 편입니다.
-        </MText>
-      </View>
-    ),
-    img: require('src/assets/images/auth/TravelType_1.png'),
-  },
-  {
-    type: '불국사 탐방형',
-    title: '이 여행지만의 색깔이 궁금해!',
-    description: (
-      <View style={{alignItems: 'center', gap: 6}}>
-        <MText color={fcolor.gray4}>
-          그 지역만의 문화를 나만의 스타일로 즐기는 여행자예요!
-        </MText>
-        <MText color={fcolor.gray4}>
-          남들이 다 가는 곳보다는 새로운 나만의 장소를 찾고 싶답니다.
-        </MText>
-      </View>
-    ),
-    img: require('src/assets/images/auth/TravelType_2.png'),
-  },
-  {
-    type: '대관령 숲멍형',
-    title: '차분한 곳에서 휴식을 즐기고 싶어~',
-    description: (
-      <View style={{alignItems: 'center', gap: 6}}>
-        <MText color={fcolor.gray4}>
-          평화로운 곳에서 여행을 즐기고 싶은 여행자예요!
-        </MText>
-        <MText color={fcolor.gray4}>
-          사람이 많은 곳보다 한적한 곳에서 휴식을 취하는 편입니다.
-        </MText>
-      </View>
-    ),
-    img: require('src/assets/images/auth/TravelType_3.png'),
-  },
-  {
-    type: '한강공원 토크형',
-    title: '혼자보다는 함께할 때 더 즐거워!',
-    description: (
-      <View style={{alignItems: 'center', gap: 6}}>
-        <MText color={fcolor.gray4}>
-          여행 동행자와 끈끈한 관계를 형성하기를 원하는 여행자예요!
-        </MText>
-        <MText color={fcolor.gray4}>
-          새로운 사람들을 만날 수 있는 이벤트, 파티를 즐기는 편입니다.
-        </MText>
-      </View>
-    ),
-    img: require('src/assets/images/auth/TravelType_4.png'),
-  },
-  {
-    type: '광안리 셀럽형',
-    title: '요즘 여기가 그렇게 핫하다던데?',
-    description: (
-      <View style={{alignItems: 'center', gap: 6}}>
-        <MText color={fcolor.gray4}>
-          인기장소와 최신 트렌드에 민감한 여행자예요!
-        </MText>
-        <MText color={fcolor.gray4}>
-          SNS에 여행 경험을 공유하는 걸 중요하게 생각하고,
-        </MText>
-        <MText color={fcolor.gray4}>멋진 '인증샷' 촬영도 즐긴답니다.</MText>
-      </View>
-    ),
-    img: require('src/assets/images/auth/TravelType_5.png'),
-  },
-  {
-    type: '올레길 완주형',
-    title: '계획대로 알차게! 오늘도 가보자고!',
-    description: (
-      <View style={{alignItems: 'center', gap: 6}}>
-        <MText color={fcolor.gray4}>계획된 일정에 따르는 여행자예요!</MText>
-        <MText color={fcolor.gray4}>
-          여행지의 다양한 장소를 많이 방문하고자 합니다.
-        </MText>
-      </View>
-    ),
-    img: require('src/assets/images/auth/TravelType_6.png'),
-  },
-  {
-    type: '남해 섬 유랑형',
-    title: '지금 여행 가자고? 오히려 좋아~',
-    description: (
-      <View style={{alignItems: 'center', gap: 6}}>
-        <MText color={fcolor.gray4}>즉흥적으로 여행을 즐기는 여행자예요!</MText>
-        <MText color={fcolor.gray4}>
-          계획에 얽매이지 않고, 예기치 않은 이벤트와 활동을 통해
-        </MText>
-        <MText color={fcolor.gray4}>
-          활력을 느끼며 새로운 경험을 만끽한답니다.
-        </MText>
-      </View>
-    ),
-    img: require('src/assets/images/auth/TravelType_7.png'),
-  },
-  {
-    type: '낙동강 유영형',
-    title: '나는 뭐든 좋아~ 너의 선택에 맡길게!',
-    description: (
-      <View style={{alignItems: 'center', gap: 6}}>
-        <MText color={fcolor.gray4}>
-          어떤 여행이든 즐길 수 있는 융통성 있는 여행자예요!
-        </MText>
-        <MText color={fcolor.gray4}>
-          주변 사람들과 상황에 잘 맞춰 여행을 즐기고,
-        </MText>
-        <MText color={fcolor.gray4}>
-          변화하는 계획도 즐겁게 받아들이며 여행을 즐긴답니다.
-        </MText>
-      </View>
-    ),
-    img: require('src/assets/images/auth/TravelType_8.png'),
-  },
-];
+import RNFS from 'react-native-fs';
+import {useAuth} from 'src/context';
 
 // 스타일 분석하고 있는 것을 보여주는 로딩 페이지
 const LoadingScreen = () => {
-  const {handleStepNext, signupData, setUserTravelType, userTravelType} =
-    useSignup();
+  const {handleStepNext, signupData, setSignupData} = useSignup();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const coverWidthAnim = useRef(new Animated.Value(100)).current;
   const [currentLoadingIndex, setCurrentLoadingIndex] = useState(0);
+  const {setIsSigningup} = useAuth();
+
+  useEffect(() => {
+    setIsSigningup(true);
+  }, [setSignupData]);
 
   const signUpAuth = async () => {
     try {
@@ -169,8 +49,6 @@ const LoadingScreen = () => {
 
       const uniqueCode = generateUniqueCode();
 
-      // TODO: 설문에 따른 여행자 분류 모델 연동
-
       // 프로필 이미지가 있을 경우 업로드
       if (signupData.step3.userImage) {
         downloadURL = await uploadProfileImageToStorage(
@@ -178,7 +56,11 @@ const LoadingScreen = () => {
           signupData.step3.userImage,
         );
       } else {
-        // TODO: 여행자 분류에 따른 이미지 저장
+        // 프로필 이미지를 등록하지 않았으면 여행자 분류에 따른 이미지 업로드
+        downloadURL = await uploadProfileImageToStorage(
+          signupData.step2.email,
+          signupData.step5.img,
+        );
       }
 
       const fetchData = {
@@ -197,8 +79,7 @@ const LoadingScreen = () => {
           tripScheduleType: signupData.step4.tripScheduleType,
           tripNewPerson: signupData.step4.tripNewPerson,
         },
-        // TODO: 유저 유형 저장
-        // travelType: userTravelType.type,
+        travelType: signupData.step5.type,
       };
       await firestore().collection('users').doc(uniqueCode).set(fetchData);
       return true;
@@ -208,39 +89,58 @@ const LoadingScreen = () => {
     }
   };
 
-  const userTravelTypeStore = async () => {
-    try {
-      const userType = travelTypeList[2]; // 필요한 여행자 유형 설정
-      return userType; // 상태를 업데이트하지 않고 반환
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
-  };
-
   useEffect(() => {
-    const updateTravelType = async () => {
-      const userType = await userTravelTypeStore();
-      if (userType) {
-        setUserTravelType(userType); // 여기서 안전하게 상태 업데이트
-      }
-    };
-    updateTravelType();
-  }, []);
+    if (signupData.step5?.type) {
+      signUpStore();
+    }
+  }, [signupData.step5]);
 
-  const uploadProfileImageToStorage = async (userEmail, path) => {
+  const uploadProfileImageToStorage = async (userEmail, imageSource) => {
     try {
       const fileName = `${userEmail}.jpg`;
-
       const reference = storage().ref(`/profile/${fileName}`);
-      const task = reference.putFile(path);
+      let filePath;
 
+      if (typeof imageSource === 'string') {
+        // 사용자가 업로드한 로컬 파일 (예: 갤러리에서 선택한 이미지)
+        filePath = imageSource;
+      } else if (typeof imageSource === 'number') {
+        // require()로 가져온 정적 이미지
+        const resolvedImage = Image.resolveAssetSource(imageSource);
+
+        if (!resolvedImage || !resolvedImage.uri) {
+          throw new Error('이미지 리소스를 확인할 수 없습니다.');
+        }
+
+        if (Platform.OS === 'ios') {
+          // iOS에서는 정적 이미지를 로컬로 복사한 후 업로드해야 함
+          const localFilePath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+
+          // 🔹 정적 이미지 로컬로 저장
+          const downloadRes = await RNFS.downloadFile({
+            fromUrl: resolvedImage.uri, // 정적 이미지 URL
+            toFile: localFilePath, // 로컬 저장 경로
+          }).promise;
+
+          if (downloadRes.statusCode === 200) {
+            filePath = `file://${localFilePath}`;
+          } else {
+            throw new Error('로컬 파일 저장 실패');
+          }
+        } else {
+          filePath = resolvedImage.uri; // Android에서는 직접 업로드 가능
+        }
+      } else {
+        throw new Error('Invalid image source type');
+      }
+
+      const task = reference.putFile(filePath);
       await task;
 
       const downloadURL = await reference.getDownloadURL();
       return downloadURL;
     } catch (error) {
-      console.error(error);
+      console.error('Firebase Storage Upload Error:', error);
       throw error;
     }
   };
@@ -248,7 +148,7 @@ const LoadingScreen = () => {
   const [loadingList, setLoadingList] = useState([
     {
       title: '선호 여행지를 파악하는 중',
-      feature: signUpAuth,
+      feature: async () => signUpAuth(),
       loading: false,
     },
     {
@@ -258,7 +158,7 @@ const LoadingScreen = () => {
     },
     {
       title: '여행 스타일을 파악하는 중',
-      feature: signUpStore,
+      feature: async () => true,
       loading: false,
     },
     {

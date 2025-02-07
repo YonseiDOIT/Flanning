@@ -31,11 +31,12 @@ import {getUserdata} from 'src/components/common/getUserdata';
 import {daySlice, getDay, getTime} from 'src/components/common/dataManagement';
 import ReservationBox from 'src/components/common/reservationBox';
 import {usePlan} from 'src/context';
+import LocationItem from '../planList/components/LocationItem';
 
 function HomeScreen({navigation}: {navigation: any}) {
   //저장된 유저명
   const {userData} = useUser();
-  const {planListData} = usePlan();
+  const {planListData, planDetailData, fetchPlanDetailData} = usePlan();
   //닉네임
   const [user, setUser] = useState('');
 
@@ -43,13 +44,7 @@ function HomeScreen({navigation}: {navigation: any}) {
   const [have, setHave] = useState(false);
 
   //일정 제목 데이터
-  const [plan, setPlan] = useState({
-    title: '',
-    dayNumber: 0,
-    date: '',
-    dayOfWeek: '',
-    place: '',
-  });
+  const [plan, setPlan] = useState();
   //일정 리스트 데이터
   const [planList, setPlanList] = useState([]);
 
@@ -84,65 +79,12 @@ function HomeScreen({navigation}: {navigation: any}) {
       locationInfo: '아름다운 동백꽃과 푸른 바다가 어우러진 섬',
     },
   ];
-  //임시 가볼만한 곳 데이터
-  // const data1 = [
-  //   {
-  //     image: require('src/assets/images/home/recommandImage1.jpg'),
-  //     location: '올레길',
-  //     locationInfo: '자연을 만끽하며 걷는 트레킹 코스',
-  //   },
-  //   {
-  //     image: require('src/assets/images/home/recommandImage1.jpg'),
-  //     location: '올레길',
-  //     locationInfo: '자연을 만끽하며 걷는 트레킹 코스',
-  //   },
-  //   {
-  //     image: require('src/assets/images/home/recommandImage1.jpg'),
-  //     location: '올레길',
-  //     locationInfo: '자연을 만끽하며 걷는 트레킹 코스',
-  //   },
-  // ];
 
-  const getPlanlist = async () => {
-    try {
-      const userdata = await getUserdata(usercode);
-      const {have, mainPlan} = await havePlan(usercode);
-      setUser(userdata);
-      setHave(have);
-
-      if (have) {
-        const {dayNumber, planData, planData1} = await getPlan(mainPlan);
-        console.log(dayNumber);
-        const {date, dayOfWeek} = daySlice(planData.dayList[dayNumber - 1]);
-
-        setPlan({
-          title: planData.title,
-          dayNumber: dayNumber,
-          date: date,
-          dayOfWeek: dayOfWeek,
-          place: planData.place,
-        });
-
-        const planFour = planData1.slice(0, 4);
-        setPlanList(planFour);
-      }
-    } catch (error) {
-      console.log(error.message);
+  useEffect(() => {
+    if (planListData?.length > 0) {
+      fetchPlanDetailData(planListData[0].id);
     }
-  };
-
-  // useEffect(() => {
-  //   console.log(
-  //     '✅ PlanContext planData:\n',
-  //     JSON.stringify(planListData, null, 2),
-  //   );
-  // }, [planListData]);
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     getPlanlist();
-  //   }, [usercode]),
-  // );
+  }, [planListData]);
 
   //추천 여행지
   const recomRenderItem = ({item, index}) => {
@@ -206,45 +148,80 @@ function HomeScreen({navigation}: {navigation: any}) {
             <View
               style={{
                 paddingBottom: 10,
-                paddingHorizontal: 25,
                 paddingTop: 20,
                 backgroundColor: fcolor.white,
               }}>
               <View
                 style={{
                   flexDirection: 'row',
+                  paddingHorizontal: 25,
+                  paddingBottom: 25,
                   justifyContent: 'space-between',
                   alignItems: 'center',
                 }}>
                 <BText fontSize={17} style={{fontWeight: 'bold'}}>
-                  {have ? plan.title : '여행 떠나기'}
+                  {planListData && planListData.length > 0
+                    ? planListData[0].title
+                    : '여행 떠나기'}
                 </BText>
-                {have && (
+                {planListData && planListData.length > 0 ? (
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('main1')}>
-                    <RText color={fcolor.gray4}>상세보기{'>'}</RText>
+                    onPress={() =>
+                      navigation.navigate('PlanList', {direction: true})
+                    }>
+                    <RText color={fcolor.gray4}>상세보기 {'>'}</RText>
                   </TouchableOpacity>
-                )}
+                ) : null}
               </View>
-              <View style={{justifyContent: 'center', marginVertical: 30}}>
-                <View style={{alignItems: 'center', gap: 4}}>
+              {planListData && planListData.length > 0 ? (
+                <ScrollView
+                  style={{
+                    height: 300,
+                  }}>
+                  {Object.keys(planDetailData).map(key => {
+                    const firstDayInfo =
+                      planDetailData[key][planListData[0].dayList[0]];
+                    return firstDayInfo && firstDayInfo.length > 0
+                      ? firstDayInfo.map((item, idx) => (
+                          <LocationItem
+                            key={idx}
+                            location={item}
+                            idx={idx + 1}
+                            lastLocationIdx={firstDayInfo.length}
+                            isActive={true}
+                            isExpanded={false}
+                            onToggle={() => {}}
+                          />
+                        ))
+                      : null;
+                  })}
+                </ScrollView>
+              ) : (
+                <View style={{marginVertical: 30}}>
                   <TouchableOpacity
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 4,
+                    }}
                     onPress={() => navigation.navigate('PlanMake')}>
                     <Image
                       source={require('src/assets/images/home/homeAddPlan.png')}
-                      style={{width: 128, height: 128, margin: 5}}
+                      style={{width: 128, height: 128, marginTop: 10}}
                     />
+                    <MText fontSize={14} color={fcolor.gray4}>
+                      아직 여행 일정이 없습니다.
+                    </MText>
+                    <MText fontSize={14} color={fcolor.gray4}>
+                      플래닝과 함께 여행을 떠나볼까요?
+                    </MText>
                   </TouchableOpacity>
-                  <MText fontSize={14} color={fcolor.gray4}>
-                    아직 일정이 없어요.
-                  </MText>
-                  <MText fontSize={14} color={fcolor.gray4}>
-                    플래닝과 함께 일정을 세워볼까요?
-                  </MText>
                 </View>
-              </View>
+              )}
             </View>
+
             <View style={{height: 3, backgroundColor: fcolor.gray1}} />
+
             <View
               style={{
                 paddingHorizontal: 25,
@@ -268,10 +245,10 @@ function HomeScreen({navigation}: {navigation: any}) {
               renderItem={recomRenderItem}
               keyExtractor={(item, index) => index.toString()}
               horizontal={true}
-              // style={{paddingHorizontal: 25}}
               contentContainerStyle={{paddingHorizontal: 16, gap: 16}}
               showsHorizontalScrollIndicator={false}
             />
+            <View style={{height: 200}} />
           </>
         }
       />

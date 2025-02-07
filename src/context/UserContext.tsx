@@ -14,34 +14,53 @@ export const UserProvider = ({children}) => {
   const [loading, setLoading] = useState(true);
   const {authData} = useAuth();
   const navigation = useNavigation();
-  useEffect(() => {
-    if (authData) {
-      const fetchUserData = async () => {
-        try {
-          const usercode = await getUsercode(authData.email);
-          const userQuery = await firestore()
-            .collection('users')
-            .doc(usercode)
-            .get();
-          if (userQuery.exists) {
-            setUserData(userQuery.data());
-          }
-        } catch (error) {
-          // 🔹 Firestore 서비스가 다운되었거나 사용 불가능한 경우 로그인 페이지 이동
-          if (error.code === 'firestore/unavailable') {
-            navigation.navigate('signin');
-          }
-        } finally {
-          setLoading(false);
-        }
-      };
 
-      fetchUserData();
-    } else {
-      console.log('authData is null');
-      setUserData(null);
-      setLoading(false);
-    }
+  useEffect(() => {
+    let unsubscribe = null;
+
+    const fetchUserData = async () => {
+      if (!authData) {
+        setUserData(null);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const usercode = await getUsercode(authData.email);
+        const userRef = firestore().collection('users').doc(usercode);
+
+        unsubscribe = userRef.onSnapshot(
+          snapshot => {
+            if (snapshot.exists) {
+              setUserData(snapshot.data());
+            } else {
+              console.warn('유저 데이터가 존재하지 않습니다.');
+              setUserData(null);
+            }
+          },
+          error => {
+            console.error('Firestore 리스너 에러:', error);
+            if (error.code === 'firestore/unavailable') {
+              navigation.navigate('signin');
+            }
+          },
+        );
+      } catch (error) {
+        console.error('유저 데이터 가져오는 중 오류 발생:', error);
+        setUserData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+
+    // 🔹 컴포넌트가 언마운트되면 리스너 해제
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, [authData]);
 
   if (loading) {

@@ -1,5 +1,5 @@
 // @ts-check
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {Image, Platform, TouchableOpacity, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -8,6 +8,7 @@ import BottomBar from 'src/components/common/BottomBar';
 import BText from 'src/components/common/BText';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import Font5Icon from 'react-native-vector-icons/FontAwesome5';
+import OctionsIcon from 'react-native-vector-icons/Octicons';
 import MText from 'src/components/common/MText';
 import RText from 'src/components/common/RText';
 import plan from './plan.json';
@@ -16,6 +17,10 @@ import notplan from './notplan.json';
 import notlocation from './notlocation.json';
 import PlusButton from 'src/components/common/PlusButton';
 import {usePlan} from 'src/context';
+import {useUser} from 'src/context';
+
+import {useAuth} from 'src/context';
+import {getUsercode} from 'src/components/common/getUserdata';
 
 const filterList = [
   {
@@ -33,21 +38,49 @@ const filterList = [
 // 일정 목록 페이지
 const PlanListScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const {direction} = route.params;
   const [filter, setFilter] = useState(0);
-  const [planData, setPlanData] = useState([]);
   const {planListData} = usePlan();
+  const [planData, setPlanData] = useState([]);
+  const {userData} = useUser();
+  const {authData} = useAuth();
+  const [userCode, setUserCode] = useState(null);
 
   useEffect(() => {
     let sortedPlans = [...planListData];
     if (filter === 0) {
       // 출발일 순
-      sortedPlans.sort((a, b) => a.dayList[0] - b.dayList[0]);
+      sortedPlans.sort(
+        (a, b) =>
+          new Date(a.dayList[0]).getTime() - new Date(b.dayList[0]).getTime(),
+      );
     } else if (filter === 1) {
       // 최신 등록 순
-      sortedPlans.sort((a, b) => b.createdAt - a.createdAt);
+      sortedPlans.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
     }
     setPlanData(sortedPlans);
-  }, [filter]);
+  }, [filter, planListData]);
+
+  useEffect(() => {
+    const getUserCode = async () => {
+      if (authData) {
+        const userCodeResult = await getUsercode(authData.email);
+        setUserCode(userCodeResult);
+
+        if (direction) {
+          navigation.navigate('PlanDetail', {
+            planItem: planListData[0],
+            userCode: userCodeResult,
+          });
+        }
+      }
+    };
+    getUserCode();
+  }, [userData]);
 
   return (
     <View style={{flex: 1, backgroundColor: '#FFFFFF'}}>
@@ -108,12 +141,12 @@ const PlanListScreen = () => {
         }}>
         {planData.length > 0 ? (
           planData.map((planItem, idx) => {
-            const lastDateIdx = planItem.dayList.length - 1;
+            const lastDateIdx = planItem?.dayList.length - 1;
             return (
               <TouchableOpacity
                 key={`plan-${planItem.date}-${idx}`}
                 onPress={() => {
-                  navigation.navigate('PlanDetail', {planItem});
+                  navigation.navigate('PlanDetail', {planItem, userCode});
                 }}
                 style={{
                   backgroundColor: fcolor.white,
@@ -127,7 +160,57 @@ const PlanListScreen = () => {
                     gap: 10,
                     justifyContent: 'space-between',
                   }}>
-                  <BText fontSize={20}>{planItem.title}</BText>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <BText fontSize={20}>{planItem.title}</BText>
+                    {planItem.creator === userCode ? (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 4,
+                          width: 62,
+                          height: 22,
+                          backgroundColor: fcolor.orange2,
+                          borderRadius: 4,
+                        }}>
+                        <OctionsIcon
+                          name="person"
+                          size={12}
+                          color={fcolor.orange}
+                        />
+                        <BText fontSize={12} color={fcolor.orange}>
+                          소유자
+                        </BText>
+                      </View>
+                    ) : (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 4,
+                          width: 62,
+                          height: 22,
+                          backgroundColor: fcolor.lblue3,
+                          borderRadius: 4,
+                        }}>
+                        <OctionsIcon
+                          name="people"
+                          size={12}
+                          color={fcolor.lblue4}
+                        />
+                        <BText fontSize={12} color={fcolor.lblue4}>
+                          참여자
+                        </BText>
+                      </View>
+                    )}
+                  </View>
                   <View
                     style={{
                       alignItems: 'flex-start',
@@ -201,8 +284,7 @@ const PlanListScreen = () => {
       </ScrollView>
       <PlusButton
         onPress={() => {
-          navigation.navigate('LocationAdd');
-          // navigation.navigate('PlanMake');
+          navigation.navigate('PlanMake');
         }}
       />
       <BottomBar />

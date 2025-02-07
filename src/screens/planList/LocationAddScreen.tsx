@@ -30,10 +30,11 @@ import MemoItem from './components/MemoItem';
 import MemoIconModal from './components/MemoIconModal';
 import LinkModal from './components/LinkModal';
 import {TrafficIconModal} from './components/TrafficIconModal';
+import {getDistance} from 'src/utils/distance';
 
 const stateList = [
   {
-    name: '표시 안함',
+    name: '선택안함',
     value: 0,
   },
   {
@@ -50,19 +51,7 @@ const LocationAddScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const {place, dateList, planItem} = route.params;
-  // const place = {
-  //   location: '대한민국 강원특별자치도 원주시 중앙로 28',
-  //   locationMap: {latitude: 37.3463543, longitude: 127.9540423},
-  //   locationTitle: '금성식당',
-  //   locationType: 'restaurant',
-  // };
-  // const dateList = ['2025-01-21', '2025-01-22', '2025-01-23'];
-  // const planItem = {
-  //   id: '123',
-  //   title: '플래닝 테스트',
-  //   dayList: ['2025-01-21', '2025-01-22', '2025-01-23'],
-  //   area: '강원특별자치도',
-  // };
+
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
   const mapRef = useRef(null);
   const [addPlace, setAddPlace] = useState({
@@ -159,23 +148,6 @@ const LocationAddScreen = () => {
     const minutes = date.getMinutes().toString().padStart(2, '0');
     setAddPlace(prev => ({...prev, selectedTime: `${hours}:${minutes}`}));
     setTimePickerVisible(false);
-  };
-
-  const getDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371;
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distanceKm = R * c;
-    const distanceM = distanceKm * 1000;
-
-    return {distanceKm, distanceM};
   };
 
   const handleAddPlace = async (place, planItem) => {
@@ -687,7 +659,7 @@ const LocationAddScreen = () => {
             ]}>
             <TouchableOpacity
               onPress={() => {
-                console.log('링크 모달 닫기');
+                // console.log('링크 모달 닫기');
                 // setIsLinkModalVisible(false);
               }}
             />
@@ -715,7 +687,7 @@ const LocationAddScreen = () => {
             ]}>
             <TouchableOpacity
               onPress={() => {
-                console.log('아이콘 모달 닫기');
+                // console.log('아이콘 모달 닫기');
               }}
             />
           </Animated.View>
@@ -742,7 +714,7 @@ const LocationAddScreen = () => {
             ]}>
             <TouchableOpacity
               onPress={() => {
-                console.log('교통 아이콘 모달 닫기');
+                // console.log('교통 아이콘 모달 닫기');
               }}
             />
           </Animated.View>

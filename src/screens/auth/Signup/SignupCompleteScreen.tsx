@@ -13,16 +13,18 @@ import MText from 'src/components/common/MText';
 import BText from 'src/components/common/BText';
 import {auth} from 'src/utils/firebase';
 import NeonGr from 'src/components/neongr';
+import {useAuth} from 'src/context';
 
 // 회원가입 완료 시 보여줄 분류 페이지
 const SignupCompleteScreen = ({navigation}) => {
-  const {signupData, userTravelType} = useSignup();
+  const {signupData} = useSignup();
+  const {setIsSigningup} = useAuth();
 
   const handleShare = async () => {
     try {
       const result = await Share.share({
         title: '나의 Flanning 여행 스타일',
-        message: `${signupData.step3.nickname}님의 여행 스타일은 "${userTravelType.type}"입니다 🌟 ${userTravelType.title}! 친구에게 공유하여 여행 스타일을 알아보세요!`,
+        message: `${signupData.step3.nickname}님의 여행 스타일은 "${signupData.step5.type}"입니다 🌟 ${signupData.step5.title}! 친구에게 공유하여 여행 스타일을 알아보세요!`,
       });
 
       if (result.action === Share.sharedAction) {
@@ -62,23 +64,20 @@ const SignupCompleteScreen = ({navigation}) => {
           paddingHorizontal: 30,
         }}>
         <NeonGr style={{paddingHorizontal: 10}}>
-          {/* TODO: 머신러닝 모델 연동 후 결과 출력 */}
-          <BText fontSize={22}>{userTravelType.type}</BText>
+          <BText fontSize={22}>{signupData.step5.type}</BText>
         </NeonGr>
         <Image
-          source={userTravelType.img}
+          source={signupData.step5.img}
           style={{width: 240, height: 240, borderRadius: 10}}
         />
-        <BText fontSize={18}>{userTravelType.title}</BText>
-        {userTravelType.description}
+        <BText fontSize={18}>{signupData.step5.title}</BText>
+        {signupData.step5.description}
       </View>
 
       <View
         style={{
           paddingHorizontal: 30,
-          // position: 'absolute',
           width: '100%',
-          // bottom: -100,
         }}>
         <TouchableOpacity
           style={[
@@ -87,10 +86,11 @@ const SignupCompleteScreen = ({navigation}) => {
             {backgroundColor: fcolor.blue},
           ]}
           onPress={() => {
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'Intro'}],
-            });
+            setIsSigningup(false);
+            // navigation.reset({
+            //   index: 0,
+            //   routes: [{name: 'Intro'}],
+            // });
           }}>
           <MText color={fcolor.white}>플래닝과 여행 떠나기</MText>
         </TouchableOpacity>

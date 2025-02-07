@@ -34,3 +34,10 @@ export const getUsercode = async userEmail => {
 
   return usercode;
 };
+
+export const getUsercodeByNickname = async nickname => {
+  const userCollection = await firestore().collection('users').get();
+  const userList = userCollection.docs.map(doc => doc.data());
+  const usercode = userList.find(user => user.nickname === nickname)?.id;
+  return usercode;
+};

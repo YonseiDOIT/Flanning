@@ -1,7 +1,5 @@
-// @ts-nocheck
-// @eslint-disable
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {Image, Modal, StyleSheet, TouchableOpacity, View} from 'react-native';
 import fcolor from 'src/assets/colors/fcolors';
 import globalStyles from 'src/assets/styles/globalStyles';
 
@@ -14,9 +12,9 @@ import {TextInput} from 'react-native-gesture-handler';
 import BText from 'src/components/common/BText';
 import MText from 'src/components/common/MText';
 import {useFocusEffect} from '@react-navigation/native';
-import {useUser} from 'src/context';
+import {useAuth, useUser} from 'src/context';
 import {addFriend} from 'src/components/common/getFriend';
-import {getUserdata} from 'src/components/common/getUserdata';
+import {getUsercode, getUserdata} from 'src/components/common/getUserdata';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {firestore} from 'src/utils/firebase';
 import {addNotification} from 'src/components/common/addNotification';
@@ -24,68 +22,77 @@ import {addNotification} from 'src/components/common/addNotification';
 // 일정 상세 페이지
 const FriendAddScreen = ({navigation}) => {
   //유저코드 가져오기
-  const {usercode} = useUser();
+  // const {usercode} = useUser();
+
+  const [userCode, setUserCode] = useState('');
+  const {userData} = useUser();
+  const {authData} = useAuth();
 
   const [friendCode, setFriendCode] = useState('');
-  const [user, setUser] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState({title: '', message: ''});
 
   useEffect(() => {
-    const getSome = async () => {
-      try {
-        const userData = await getUserdata(usercode);
-        setUser(userData); // userData를 설정
-      } catch (error) {
-        console.error('친구 데이터를 가져오는 중 오류 발생:', error);
+    const getUserCode = async () => {
+      if (authData) {
+        const userCodeResult = await getUsercode(authData.email);
+        setUserCode(userCodeResult);
       }
     };
-
-    getSome();
+    getUserCode();
   }, []);
 
   //코드복사
   const copyCode = text => {
     try {
       Clipboard.setString(text);
-      Alert.alert('내코드가 복사되었습니다.');
+      setModalMessage({
+        title: '복사 성공',
+        message: '나의 코드가 복사되었습니다.',
+      });
     } catch (error) {
-      Alert.alert('복사에 실패했습니다.');
+      setModalMessage({title: '복사 실패', message: '복사에 실패했습니다.'});
     }
+    setModalVisible(true);
   };
 
   //친구신청
   const requestFrd = async friendCode => {
-    const usersCollection = await firestore()
-      .collection('users')
-      .doc(friendCode)
-      .get();
-    const db = usersCollection.data();
-
-    const dateNow = new Date();
-    const numYear = dateNow.getFullYear();
-    let year = numYear.toString();
-    year = year.slice(2);
-
-    const date =
-      year + '년 ' + dateNow.getMonth() + '월 ' + dateNow.getDay() + '일';
-
-    addNotification(
-      friendCode,
-      '친구',
-      '친구신청',
-      user.nickname + '님이 친구신청을 했어요',
-      date,
-      1,
-    );
-
-    //친구요청 알럿
-    Alert.alert(
-      db.nickname,
-      '친구 요청을 보냈어요!\n수락할 때까지 조금만 기다려주세요 😊',
-    );
+    try {
+      const usersCollection = await firestore()
+        .collection('users')
+        .doc(friendCode)
+        .get();
+      const db = usersCollection.data();
+      const dateNow = new Date();
+      const numYear = dateNow.getFullYear();
+      let year = numYear.toString();
+      year = year.slice(2);
+      const date =
+        year + '년 ' + dateNow.getMonth() + '월 ' + dateNow.getDay() + '일';
+      addNotification(
+        friendCode,
+        '친구',
+        '친구신청',
+        userData.nickname + '님이 친구신청을 했어요',
+        date,
+        1,
+      );
+      setModalMessage({
+        title: db.nickname,
+        message: '친구 요청을 보냈어요!\n수락할 때까지 조금만 기다려주세요 😊',
+      });
+    } catch (error) {
+      setModalMessage({
+        title: '친구 추가를 완료하지 못했어요',
+        message: '이 친구코드는 없는 친구코드에요.\n다시 확인해주세요!',
+      });
+    }
+    setModalVisible(true);
   };
 
   return (
-    <View style={globalStyles.container}>
+    <View style={[globalStyles.container, {paddingHorizontal: 25}]}>
       <View
         style={{
           flexDirection: 'row',
@@ -111,7 +118,7 @@ const FriendAddScreen = ({navigation}) => {
           onPress={() => ''}>
           <View style={[globalStyles.centered, styles.userImage]}>
             <Image
-              source={require('../../../assets/images/icon.png')}
+              source={{uri: userData.userImage}}
               style={styles.imagePreview}
               resizeMode="cover"
             />
@@ -127,10 +134,10 @@ const FriendAddScreen = ({navigation}) => {
               내 코드
             </BText>
             <MText fontSize={13} color={fcolor.gray4}>
-              {user.nickname} #{usercode}
+              {userData.nickname} #{userCode}
             </MText>
           </View>
-          <TouchableOpacity onPress={() => copyCode(usercode)}>
+          <TouchableOpacity onPress={() => copyCode(userCode)}>
             <Icon name="content-copy" size={24} color={fcolor.gray4} />
           </TouchableOpacity>
         </View>
@@ -156,12 +163,77 @@ const FriendAddScreen = ({navigation}) => {
             친구 신청하기
           </MText>
         </TouchableOpacity>
+        {/* 프로필 수정 */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}>
+          <View
+            style={[
+              styles.modalBackground,
+              {
+                alignItems: 'center',
+                justifyContent: 'center',
+              },
+            ]}>
+            <View style={styles.modalContent}>
+              <BText fontSize={17} style={{fontWeight: 'bold'}}>
+                {modalMessage.title}
+              </BText>
+              <MText
+                fontSize={13}
+                style={{marginTop: 8, marginBottom: 16, textAlign: 'center'}}>
+                {modalMessage.message}
+              </MText>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setModalVisible(false)}>
+                <BText fontSize={17} color={fcolor.blue}>
+                  확인
+                </BText>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  kakaoButton: {
+    width: 136,
+    height: 38,
+    borderRadius: 8,
+    backgroundColor: fcolor.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 28,
+    top: 100,
+  },
+  modalContent: {
+    width: 270,
+    backgroundColor: 'white',
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 27,
+    paddingBottom: 8,
+  },
+  modalButton: {
+    width: '100%',
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderTopWidth: 0.3,
+    borderColor: fcolor.gray2,
+  },
   userImageContainer: {
     position: 'relative',
     marginVertical: 30,

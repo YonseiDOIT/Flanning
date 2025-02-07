@@ -4,6 +4,7 @@
 import {
   FlatList,
   Image,
+  Platform,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -16,16 +17,30 @@ import globalStyles from 'src/assets/styles/globalStyles';
 import FontASIcon from 'react-native-vector-icons/FontAwesome';
 import {useCallback, useEffect, useState} from 'react';
 import {deleteFriend, getFriend} from 'src/components/common/getFriend';
-import {useUser} from 'src/context';
+import {useAuth, useUser} from 'src/context';
 import {useFocusEffect} from '@react-navigation/native';
 import {Swipeable} from 'react-native-gesture-handler';
 import MText from 'src/components/common/MText';
+import {getUsercode} from 'src/components/common/getUserdata';
 
 // 일정 상세 페이지
 const FriendListScreen = ({navigation}) => {
   //유저코드 가져오기
-  const {usercode} = useUser();
   const [friendList, setFriendList] = useState('');
+
+  const [userCode, setUserCode] = useState('');
+  const {userData} = useUser();
+  const {authData} = useAuth();
+
+  useEffect(() => {
+    const getUserCode = async () => {
+      if (authData) {
+        const userCodeResult = await getUsercode(authData.email);
+        setUserCode(userCodeResult);
+      }
+    };
+    getUserCode();
+  }, [userData]);
 
   // 오른쪽 스와이프 시 동작할 요소
   const renderRightActions = ({item}) => {
@@ -33,7 +48,7 @@ const FriendListScreen = ({navigation}) => {
       <TouchableOpacity
         style={styles.rightAction}
         onPress={() => {
-          [deleteFriend(item.code, usercode), getList()];
+          [deleteFriend(item.code, userCode), getList()];
         }}>
         <MText fontSize={15} color={fcolor.white}>
           삭제하기
@@ -43,14 +58,13 @@ const FriendListScreen = ({navigation}) => {
   };
 
   const renderItem = ({item, index}) => {
-    console.log(item.code);
     return (
       <View style={{backgroundColor: fcolor.white, marginVertical: 2}}>
         <Swipeable renderRightActions={() => renderRightActions({item})}>
           <View style={styles.friendBox}>
-            <View style={{flexDirection: 'row', paddingHorizontal: 30}}>
+            <View style={{flexDirection: 'row', paddingHorizontal: 25}}>
               <Image
-                source={require('../../../assets/images/icon.png')}
+                source={{uri: item.userImage}}
                 style={{
                   width: 56,
                   height: 56,
@@ -83,22 +97,33 @@ const FriendListScreen = ({navigation}) => {
 
   const getList = async () => {
     try {
-      const data = await getFriend(usercode);
-      setFriendList(data);
+      const data = await getFriend(userCode);
+      if (data) {
+        setFriendList(data);
+      } else {
+        setFriendList([]);
+      }
     } catch (error) {
-      console.log(error.message);
+      console.error(error.message);
     }
   };
 
   useFocusEffect(
     useCallback(() => {
       getList();
-    }, []),
+    }, [userCode, userData]),
   );
 
   return (
     <View style={globalStyles.backBase}>
-      <View style={globalStyles.container}>
+      <View
+        style={[
+          {
+            padding: 30,
+            paddingTop: Platform.OS === 'ios' ? 30 : 0,
+            paddingHorizontal: 25,
+          },
+        ]}>
         <View
           style={{
             flexDirection: 'row',
@@ -118,14 +143,13 @@ const FriendListScreen = ({navigation}) => {
           친구 목록
         </RText>
       </View>
-      <View style={{flex: 4.7}}>
-        <View style={{backgroundColor: fcolor.gray1, paddingVertical: 2}}>
-          <FlatList
-            data={friendList}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
+      <View style={{height: 3, backgroundColor: fcolor.gray1}} />
+      <View style={{flex: 1}}>
+        <FlatList
+          data={friendList}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+        />
       </View>
     </View>
   );

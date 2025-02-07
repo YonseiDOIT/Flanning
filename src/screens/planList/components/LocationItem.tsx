@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {
   Image,
   Linking,
+  Modal,
   Platform,
   StyleSheet,
   Text,
@@ -30,6 +31,8 @@ import CameraIcon from 'src/components/common/icons/memo/CameraIcon';
 import CardIcon from 'src/components/common/icons/memo/CardIcon';
 import CheckBoxIcon from 'src/components/common/icons/memo/CheckBoxIcon';
 import CartIcon from 'src/components/common/icons/memo/CartIcon';
+import {usePlan} from 'src/context/PlanContext';
+import {useRoute} from '@react-navigation/native';
 
 const trafficIcons = {
   bus: <BusIcon width={24} height={24} fill={fcolor.gray3} />,
@@ -53,13 +56,19 @@ const memoIcons = {
 const LocationItem = ({
   location,
   idx,
+  selectedDate,
   lastLocationIdx,
   isActive,
   onPress,
   isExpanded,
   onToggle,
+  planItemId,
 }) => {
   const [isItemExpanded, setIsItemExpanded] = useState(isExpanded);
+  const {updatePlanState} = usePlan();
+  const route = useRoute();
+
+  const [isStateModalVisible, setIsStateModalVisible] = useState(false);
 
   // 외부에서 전체 토글 상태 변경 시, 내부 상태 반영
   useEffect(() => {
@@ -97,16 +106,23 @@ const LocationItem = ({
         </TouchableOpacity>
         <View
           style={{
+            flex: 1,
             flexDirection: 'row',
             alignItems: 'flex-start',
-            flex: 1,
           }}>
           <View style={styles.locationHeaderContainer}>
             <View style={styles.locationTitleContainer}>
               <View
-                style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                  gap: 4,
+                }}>
                 <BText fontSize={18}>{location?.locationIcon}</BText>
-                <BText fontSize={18}>{location.locationTitle}</BText>
+                <View style={{}}>
+                  <BText fontSize={18}>{location.locationTitle}</BText>
+                </View>
               </View>
               <View style={styles.locationTypeContainer}>
                 <RText color={fcolor.lblue4}>{location.locationType}</RText>
@@ -114,6 +130,11 @@ const LocationItem = ({
             </View>
             {location.state === 0 ? null : (
               <TouchableOpacity
+                onPress={
+                  route.name === 'PlanDetail'
+                    ? () => setIsStateModalVisible(true)
+                    : () => {}
+                }
                 style={[
                   styles.stateButton,
                   {
@@ -181,7 +202,7 @@ const LocationItem = ({
               </View>
             </View>
           )}
-          {location.memo.length > 0 && (
+          {location.memo?.length > 0 && (
             <View
               style={{
                 marginBottom: 8,
@@ -210,7 +231,7 @@ const LocationItem = ({
             </View>
           )}
 
-          {location.movePath.length > 0 && (
+          {location.movePath?.length > 0 && (
             <TouchableOpacity
               style={[
                 styles.locationMovePathContainer,
@@ -256,6 +277,70 @@ const LocationItem = ({
               )}
             </TouchableOpacity>
           )}
+
+          <Modal
+            transparent={true}
+            visible={isStateModalVisible}
+            animationType="fade"
+            onRequestClose={() => {
+              setIsStateModalVisible(false);
+            }}>
+            <View
+              style={[
+                styles.modalContainer,
+                {
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                },
+              ]}>
+              <View style={styles.modalContent}>
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    paddingVertical: 20,
+                    paddingHorizontal: 20,
+                  }}>
+                  {location.state === 1 ? (
+                    <BText fontSize={17}>예약 완료로 변경하시겠습니까?</BText>
+                  ) : (
+                    <BText fontSize={17}>예약 전으로 변경하시겠습니까?</BText>
+                  )}
+                </View>
+                <View style={{flexDirection: 'row', width: '100%'}}>
+                  <TouchableOpacity
+                    style={styles.modalButton}
+                    onPress={() => {
+                      const result = updatePlanState(
+                        planItemId,
+                        selectedDate,
+                        idx,
+                      );
+                      if (result) {
+                        setIsStateModalVisible(false);
+                      }
+                    }}>
+                    <BText fontSize={17} color={fcolor.blue}>
+                      변경
+                    </BText>
+                  </TouchableOpacity>
+                  <View
+                    style={{
+                      width: 1,
+                      height: '100%',
+                      backgroundColor: fcolor.gray1,
+                    }}
+                  />
+                  <TouchableOpacity
+                    style={styles.modalButton}
+                    onPress={() => setIsStateModalVisible(false)}>
+                    <BText fontSize={17} color={fcolor.blue}>
+                      취소
+                    </BText>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
         </View>
       </View>
     </View>
@@ -306,7 +391,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
     padding: 10,
-    // paddingVertical: 10,
     borderRadius: 8,
     flex: 1,
   },
@@ -331,9 +415,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   locationTitleContainer: {
+    // flex: 1,
+    width: '50%',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 20,
   },
   locationTypeContainer: {
     alignItems: 'center',
@@ -341,6 +427,28 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingHorizontal: 6,
     paddingVertical: 4,
+  },
+
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    width: '60%',
+    backgroundColor: 'white',
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalButton: {
+    flex: 1,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderTopWidth: 0.3,
+    borderColor: fcolor.gray2,
   },
 });
 

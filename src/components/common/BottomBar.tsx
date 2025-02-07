@@ -15,11 +15,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import fcolor from 'src/assets/colors/fcolors';
 import RText from './RText';
 import {useNavigation, useNavigationState} from '@react-navigation/native';
-import {useAuth} from 'src/context';
+import {useAuth, useUser} from 'src/context';
 
 const BottomBar = () => {
   const navigation = useNavigation();
   const {signOut} = useAuth();
+  const {userData} = useUser();
   const routeName = useNavigationState(
     state => state.routes[state.index]?.name,
   );
@@ -42,7 +43,7 @@ const BottomBar = () => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.icon}
-        onPress={() => navigation.navigate('Plan')}>
+        onPress={() => navigation.navigate('PlanList', {direction: false})}>
         <Icon name="checklist" size={25} color={getIconColor('PlanList')} />
         <RText
           style={{marginTop: 5}}
@@ -65,10 +66,27 @@ const BottomBar = () => {
       <TouchableOpacity
         style={styles.icon}
         onPress={() => {
-          signOut();
+          navigation.navigate('Setting');
         }}>
-        <Icon name="person" size={25} color={fcolor.gray4} />
-        <RText style={{marginTop: 5}} color={fcolor.gray4} fontSize={10}>
+        {userData?.userImage ? (
+          <Image
+            source={{uri: userData?.userImage}}
+            style={{width: 25, height: 25, borderRadius: 200}}
+          />
+        ) : (
+          <View
+            style={{
+              width: 25,
+              height: 25,
+              borderRadius: 200,
+              backgroundColor: fcolor.gray2,
+            }}
+          />
+        )}
+        <RText
+          style={{marginTop: 5}}
+          color={getIconColor('Setting')}
+          fontSize={10}>
           내 계정
         </RText>
       </TouchableOpacity>

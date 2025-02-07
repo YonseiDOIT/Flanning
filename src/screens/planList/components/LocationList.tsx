@@ -10,7 +10,7 @@ import MapView, {Marker} from 'react-native-maps';
 import CustomMarker from 'src/components/common/CustomMarker';
 import LocationItem from './LocationItem';
 
-const LocationList = ({selectedDate, locationList, onScroll}) => {
+const LocationList = ({selectedDate, locationList, onScroll, planItemId}) => {
   const currentLocationList = locationList[selectedDate] || [];
   const lastLocationIdx = currentLocationList.length;
   const [isToggleAllEnabled, setIsToggleAllEnabled] = useState(false);
@@ -141,7 +141,9 @@ const LocationList = ({selectedDate, locationList, onScroll}) => {
             <LocationItem
               key={`location-${idx}`}
               lastLocationIdx={lastLocationIdx}
+              planItemId={planItemId}
               isExpanded={expandedItems[idx]}
+              selectedDate={selectedDate}
               location={location}
               idx={idx + 1}
               isActive={activeIdx === idx}

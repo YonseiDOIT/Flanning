@@ -92,7 +92,6 @@ const LocationAddModal = ({
         <TouchableOpacity
           style={styles.overlayTouchable}
           onPress={() => {
-            console.log('배경 터치');
             onClose();
           }}
         />

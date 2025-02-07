@@ -24,29 +24,16 @@ const months = [
   '12',
 ];
 
-function Calendar({handleChange, planMData}) {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+function Calendar({
+  handleChange,
+  planMData,
+  setCurrentMonth,
+  currentMonth,
+  setShow,
+}) {
   const [selectedStart, setSelectedStart] = useState(null);
   const [selectedEnd, setSelectedEnd] = useState(null);
   const [selectedDates, setSelectedDates] = useState([]);
-  const [show, setShow] = useState(false);
-  const [date, setDate] = useState(new Date());
-
-  const showPicker = useCallback(value => setShow(value), []);
-
-  const onValueChange = useCallback(
-    (event, newDate) => {
-      if (!newDate) {
-        showPicker(false); // ✅ MonthPicker 닫기만 수행 (취소된 경우)
-        return;
-      }
-
-      showPicker(false);
-      setDate(newDate);
-      setCurrentMonth(newDate); // ✅ MonthPicker에서 선택한 월로 이동
-    },
-    [showPicker],
-  );
 
   const formatDate = date => date.toISOString().split('T')[0]; // "YYYY-MM-DD" 형식 변환
 
@@ -122,7 +109,7 @@ function Calendar({handleChange, planMData}) {
       );
       setSelectedDates(planMData.step3.dayList);
     }
-  }, [planMData.step3.dayList]);
+  }, [planMData.step3.dayList, setCurrentMonth]);
 
   return (
     <View style={styles.container}>
@@ -131,7 +118,7 @@ function Calendar({handleChange, planMData}) {
           onPress={() => setShow(true)}
           style={{flexDirection: 'row', alignItems: 'center'}}>
           <BText color={fcolor.black} fontSize={16} style={styles.monthLabel}>
-            {currentMonth.getFullYear()}년 {months[currentMonth.getMonth()]}월
+            {currentMonth?.getFullYear()}년 {months[currentMonth?.getMonth()]}월
           </BText>
           <Mt_Icon name="keyboard-arrow-down" size={20} color={fcolor.blue} />
         </TouchableOpacity>
@@ -208,14 +195,6 @@ function Calendar({handleChange, planMData}) {
             </View>
           ))}
       </View>
-      {show && (
-        <MonthPicker
-          onChange={onValueChange}
-          value={currentMonth}
-          locale="ko"
-          style={{width: '100%', position: 'absolute', bottom: 0}}
-        />
-      )}
     </View>
   );
 }
