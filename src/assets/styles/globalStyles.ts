@@ -32,6 +32,17 @@ const commonStyles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 5,
   },
+  shadowOrderItem: {
+    shadowColor: fcolor.black,
+    shadowOffset: {width: 0, height: 10},
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  backBase: {
+    flex: 1,
+    backgroundColor: fcolor.white,
+  },
 });
 
 export default commonStyles;

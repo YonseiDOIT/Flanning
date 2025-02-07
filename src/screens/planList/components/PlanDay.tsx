@@ -10,13 +10,11 @@ import {Animated} from 'react-native';
 const PlanDay = ({
   selectedDate,
   setSelectedDate,
-  locationList,
+  dateList,
   planDayOpacity,
   planDayHeight,
   planDayMarginBottom,
 }) => {
-  const dateKeys = Object.keys(locationList);
-
   return (
     <Animated.View
       style={{
@@ -36,7 +34,7 @@ const PlanDay = ({
         }}>
         <NeonBl>
           <MText fontSize={16}>{`DAY ${
-            dateKeys.indexOf(selectedDate) + 1
+            dateList.indexOf(selectedDate) + 1
           }`}</MText>
         </NeonBl>
         <MText color={fcolor.gray4}>{`${selectedDate} (${new Date(
@@ -51,7 +49,7 @@ const PlanDay = ({
         style={{
           flexDirection: 'row',
         }}>
-        {dateKeys.map((date, idx) => {
+        {dateList.map((date, idx) => {
           const isActive = date === selectedDate;
           const month = date.split('-')[1];
           const day = date.split('-')[2];

@@ -108,6 +108,132 @@ const questionList = [
   },
 ];
 
+const travelTypeList = {
+  '설악산 등반형': {
+    type: '설악산 등반형',
+    title: '새로운 경험이라면 무엇이든 설레!',
+    description: (
+      <View style={{alignItems: 'center', gap: 6}}>
+        <MText color={fcolor.gray4}>
+          액티비티와 자연 탐험을 좋아하는 여행자예요!
+        </MText>
+        <MText color={fcolor.gray4}>
+          낯선 환경에서 새로운 도전에 끌리는 편입니다.
+        </MText>
+      </View>
+    ),
+    img: require('src/assets/images/auth/TravelType_1.png'),
+  },
+  '불국사 탐방형': {
+    type: '불국사 탐방형',
+    title: '이 여행지만의 색깔이 궁금해!',
+    description: (
+      <View style={{alignItems: 'center', gap: 6}}>
+        <MText color={fcolor.gray4}>
+          그 지역만의 문화를 나만의 스타일로 즐기는 여행자예요!
+        </MText>
+        <MText color={fcolor.gray4}>
+          남들이 다 가는 곳보다는 새로운 나만의 장소를 찾고 싶답니다.
+        </MText>
+      </View>
+    ),
+    img: require('src/assets/images/auth/TravelType_2.png'),
+  },
+  '대관령 숲멍형': {
+    type: '대관령 숲멍형',
+    title: '차분한 곳에서 휴식을 즐기고 싶어~',
+    description: (
+      <View style={{alignItems: 'center', gap: 6}}>
+        <MText color={fcolor.gray4}>
+          평화로운 곳에서 여행을 즐기고 싶은 여행자예요!
+        </MText>
+        <MText color={fcolor.gray4}>
+          사람이 많은 곳보다 한적한 곳에서 휴식을 취하는 편입니다.
+        </MText>
+      </View>
+    ),
+    img: require('src/assets/images/auth/TravelType_3.png'),
+  },
+  '한강공원 토크형': {
+    type: '한강공원 토크형',
+    title: '혼자보다는 함께할 때 더 즐거워!',
+    description: (
+      <View style={{alignItems: 'center', gap: 6}}>
+        <MText color={fcolor.gray4}>
+          여행 동행자와 끈끈한 관계를 형성하기를 원하는 여행자예요!
+        </MText>
+        <MText color={fcolor.gray4}>
+          새로운 사람들을 만날 수 있는 이벤트, 파티를 즐기는 편입니다.
+        </MText>
+      </View>
+    ),
+    img: require('src/assets/images/auth/TravelType_4.png'),
+  },
+  '광안리 셀럽형': {
+    type: '광안리 셀럽형',
+    title: '요즘 여기가 그렇게 핫하다던데?',
+    description: (
+      <View style={{alignItems: 'center', gap: 6}}>
+        <MText color={fcolor.gray4}>
+          인기장소와 최신 트렌드에 민감한 여행자예요!
+        </MText>
+        <MText color={fcolor.gray4}>
+          SNS에 여행 경험을 공유하는 걸 중요하게 생각하고,
+        </MText>
+        <MText color={fcolor.gray4}>멋진 '인증샷' 촬영도 즐긴답니다.</MText>
+      </View>
+    ),
+    img: require('src/assets/images/auth/TravelType_5.png'),
+  },
+  '올레길 완주형': {
+    type: '올레길 완주형',
+    title: '계획대로 알차게! 오늘도 가보자고!',
+    description: (
+      <View style={{alignItems: 'center', gap: 6}}>
+        <MText color={fcolor.gray4}>계획된 일정에 따르는 여행자예요!</MText>
+        <MText color={fcolor.gray4}>
+          여행지의 다양한 장소를 많이 방문하고자 합니다.
+        </MText>
+      </View>
+    ),
+    img: require('src/assets/images/auth/TravelType_6.png'),
+  },
+  '남해 섬 유랑형': {
+    type: '남해 섬 유랑형',
+    title: '지금 여행 가자고? 오히려 좋아~',
+    description: (
+      <View style={{alignItems: 'center', gap: 6}}>
+        <MText color={fcolor.gray4}>즉흥적으로 여행을 즐기는 여행자예요!</MText>
+        <MText color={fcolor.gray4}>
+          계획에 얽매이지 않고, 예기치 않은 이벤트와 활동을 통해
+        </MText>
+        <MText color={fcolor.gray4}>
+          활력을 느끼며 새로운 경험을 만끽한답니다.
+        </MText>
+      </View>
+    ),
+    img: require('src/assets/images/auth/TravelType_7.png'),
+  },
+  '낙동강 유영형': {
+    type: '낙동강 유영형',
+    title: '나는 뭐든 좋아~ 너의 선택에 맡길게!',
+    description: (
+      <View style={{alignItems: 'center', gap: 6}}>
+        <MText color={fcolor.gray4}>
+          어떤 여행이든 즐길 수 있는 융통성 있는 여행자예요!
+        </MText>
+        <MText color={fcolor.gray4}>
+          주변 사람들과 상황에 잘 맞춰 여행을 즐기고,
+        </MText>
+        <MText color={fcolor.gray4}>
+          변화하는 계획도 즐겁게 받아들이며 여행을 즐긴답니다.
+        </MText>
+      </View>
+    ),
+    img: require('src/assets/images/auth/TravelType_8.png'),
+  },
+};
+
 const Step5Screen = () => {
   const {handleStepNext, signupData, setSignupData} = useSignup();
   const [surveyStep, setSurveyStep] = useState(0);
@@ -173,11 +299,51 @@ const Step5Screen = () => {
     }
   };
 
-  const onClickNextStep = () => {
+  const onClickNextStep = async () => {
     if (surveyStep < questionList.length - 1) {
       setSurveyStep(prev => prev + 1);
     } else {
-      handleStepNext();
+      console.log('signupData', signupData);
+      try {
+        const typeSurvey = {
+          Q1: signupData.step4.tripType,
+          Q2: signupData.step4.tripReason,
+          Q3: signupData.step4.tripLocationType,
+          Q4: signupData.step4.tripCompanionsType,
+          Q5: signupData.step4.tripActivityType,
+          Q6: signupData.step4.tripPlanningType,
+          Q7: signupData.step4.tripScheduleType,
+          Q8: signupData.step4.tripNewPerson,
+        };
+
+        const response = await fetch('http://127.0.0.1:8000/predictionType', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(typeSurvey),
+        });
+        const data = await response.json();
+
+        if (data) {
+          const resultType = travelTypeList[data.predicted_type];
+
+          setSignupData(prev => ({
+            ...prev,
+            step5: {
+              type: resultType.type,
+              title: resultType.title,
+              description: resultType.description,
+              img: resultType.img,
+            },
+          }));
+          if (response) {
+            handleStepNext();
+          }
+        }
+      } catch (error) {
+        console.error('회원가입 실패:', error);
+      }
     }
   };
 

@@ -1,12 +1,7 @@
 import React from 'react';
 import {Svg, Path} from 'react-native-svg';
 
-const CameraIcon = ({
-  width = 24,
-  height = 24,
-  fill = 'currentColor',
-  style,
-}) => {
+const CardIcon = ({width = 24, height = 24, fill = 'currentColor', style}) => {
   return (
     <Svg
       width={width}
@@ -22,4 +17,4 @@ const CameraIcon = ({
   );
 };
 
-export default CameraIcon;
+export default CardIcon;

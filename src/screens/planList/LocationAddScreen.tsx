@@ -1,20 +1,16 @@
 // @ts-nocheck
-import {useNavigation, useRoute} from '@react-navigation/native';
-import React, {useState, useRef, useEffect} from 'react';
+import {Link, useNavigation, useRoute} from '@react-navigation/native';
+import React, {useState, useRef, useEffect, useMemo} from 'react';
 import {
   Animated,
-  FlatList,
-  Keyboard,
-  Modal,
+  Easing,
+  Linking,
   Platform,
   StyleSheet,
-  TextInput,
   View,
 } from 'react-native';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import BText from 'src/components/common/BText';
-import FontASIcon from 'react-native-vector-icons/FontAwesome';
 import fcolor from 'src/assets/colors/fcolors';
 import MText from 'src/components/common/MText';
 import BackHeader from 'src/components/common/BackHeader';
@@ -24,33 +20,38 @@ import CustomMarker from 'src/components/common/CustomMarker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import LinkIcon from 'src/components/common/icons/LinkIcon';
+import TrashIcon from 'src/components/common/icons/TrashIcon';
 import globalStyles from 'src/assets/styles/globalStyles';
+import {firestore} from 'src/utils/firebase';
+import placeType from 'src/assets/json/placeType.json';
+import EmojiPicker from 'rn-emoji-keyboard';
+import TrafficItem from './components/TrafficItem';
+import MemoItem from './components/MemoItem';
+import MemoIconModal from './components/MemoIconModal';
+import LinkModal from './components/LinkModal';
+import {TrafficIconModal} from './components/TrafficIconModal';
+import {getDistance} from 'src/utils/distance';
 
-const emojiList = ['🍽️', '🍕', '☕', '🏨', '🛒', '🏝️', '🎡', '🚗'];
 const stateList = [
   {
-    name: '예약 전',
+    name: '선택안함',
     value: 0,
   },
   {
-    name: '예약 완료',
+    name: '예약 전',
     value: 1,
+  },
+  {
+    name: '예약 완료',
+    value: 2,
   },
 ];
 
 const LocationAddScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const {place, dateList} = route.params;
-  // const place = {
-  //   location: '대한민국 강원특별자치도 원주시 중앙로 28',
-  //   locationMap: {latitude: 37.3463543, longitude: 127.9540423},
-  //   locationTitle: '금성식당',
-  //   locationType: 'restaurant',
-  // };
-  // const dateList = ['2025-01-21', '2025-01-22', '2025-01-23'];
-  // 선택된 이모지 저장
-  const [selectedEmoji, setSelectedEmoji] = useState(null);
+  const {place, dateList, planItem} = route.params;
+
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
   const mapRef = useRef(null);
   const [addPlace, setAddPlace] = useState({
@@ -61,12 +62,64 @@ const LocationAddScreen = () => {
     selectedEmoji: null,
     selectedDate: dateList[0],
     selectedTime: null,
-    selectedState: null,
-    referenceLink: [{}],
-    memo: [{content: '', icon: ''}],
-    traffic: [{}],
+    selectedState: 0,
+    referenceLink: [],
+    memo: [],
+    movePath: [],
   });
   const [isTimePickerVisible, setTimePickerVisible] = useState(false);
+  const [isLinkModalVisible, setIsLinkModalVisible] = useState(false);
+  const [isMemoIconModalVisible, setIsMemoIconModalVisible] = useState(false);
+  const [isTrafficIconModalVisible, setIsTrafficIconModalVisible] =
+    useState(false);
+  const [selectedMemoIconIndex, setSelectedMemoIconIndex] = useState(null);
+  const [selectedTrafficIconIndex, setSelectedTrafficIconIndex] =
+    useState(null);
+  const [deleteLinkModeIndex, setDeleteLinkModeIndex] = useState(null);
+  const [deleteMemoModeIndex, setDeleteMemoModeIndex] = useState(null);
+  const [deleteTrafficModeIndex, setDeleteTrafficModeIndex] = useState(null);
+  const backgroundOpacity = useRef(new Animated.Value(0)).current;
+  const modalTranslateY = useRef(new Animated.Value(500)).current;
+
+  useEffect(() => {
+    if (
+      isLinkModalVisible ||
+      isMemoIconModalVisible ||
+      isTrafficIconModalVisible
+    ) {
+      Animated.parallel([
+        Animated.timing(backgroundOpacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+          easing: Easing.ease,
+        }),
+        Animated.timing(modalTranslateY, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+          easing: Easing.ease,
+        }),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(backgroundOpacity, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+          easing: Easing.ease,
+        }),
+        Animated.timing(modalTranslateY, {
+          toValue: 500,
+          duration: 300,
+          useNativeDriver: true,
+          easing: Easing.ease,
+        }),
+      ]).start(() => {
+        setIsLinkModalVisible(false);
+      });
+    }
+  }, [isLinkModalVisible, isMemoIconModalVisible, isTrafficIconModalVisible]);
 
   useEffect(() => {
     if (mapRef.current && place.locationMap) {
@@ -82,11 +135,105 @@ const LocationAddScreen = () => {
     }
   }, []);
 
+  const handleDeleteLink = index => {
+    setAddPlace(prev => ({
+      ...prev,
+      referenceLink: prev.referenceLink.filter((_, idx) => idx !== index),
+    }));
+    setDeleteLinkModeIndex(null);
+  };
+
   const handleConfirmTime = date => {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     setAddPlace(prev => ({...prev, selectedTime: `${hours}:${minutes}`}));
     setTimePickerVisible(false);
+  };
+
+  const handleAddPlace = async (place, planItem) => {
+    const planId = planItem.id;
+
+    const filteredType = placeType[place.locationType];
+
+    const isValidArray = arr =>
+      Array.isArray(arr) &&
+      arr.length > 0 &&
+      arr.some(item => Object.values(item).some(value => value !== ''));
+
+    const placeData = {
+      locationTitle: place.locationTitle,
+      location: place.location,
+      locationType: filteredType,
+      locationMap: place.locationMap,
+      locationIcon: place.selectedEmoji,
+      time: place.selectedTime,
+      state: place.selectedState,
+      referenceLink: place.referenceLink,
+      memo: isValidArray(place.memo) ? place.memo : [],
+      movePath: isValidArray(place.movePath) ? place.movePath : [],
+    };
+
+    const planListRef = firestore()
+      .collection('plan')
+      .doc(planId)
+      .collection('planList')
+      .doc(place.selectedDate);
+
+    // 이전 데이터 값 가져오기
+    try {
+      const docSnapshot = await planListRef.get();
+      let prevData = null;
+      let distanceToNext = 0;
+
+      if (docSnapshot.exists) {
+        const planArray = docSnapshot.data().plan || [];
+
+        if (planArray.length > 0) {
+          prevData = planArray[planArray.length - 1];
+          const distanceResult = getDistance(
+            prevData.locationMap.latitude,
+            prevData.locationMap.longitude,
+            place.locationMap.latitude,
+            place.locationMap.longitude,
+          );
+          if (distanceResult.distanceKm < 1) {
+            distanceToNext = distanceResult.distanceM.toFixed(0) + 'm';
+          } else if (distanceResult.distanceKm.toFixed(1) < 9.9) {
+            distanceToNext = distanceResult.distanceKm.toFixed(1) + 'km';
+          } else {
+            distanceToNext = distanceResult.distanceKm.toFixed(0) + 'km';
+          }
+
+          planArray[planArray.length - 1] = {
+            ...prevData,
+            distanceToNext: distanceToNext,
+          };
+
+          await planListRef.update({
+            plan: planArray,
+          });
+        }
+      }
+    } catch (e) {
+      console.error('이전 데이터 값 불러오기 오류:', e);
+    }
+
+    try {
+      const docSnapshot = await planListRef.get();
+
+      if (docSnapshot.exists) {
+        await planListRef.update({
+          plan: firestore.FieldValue.arrayUnion(placeData),
+        });
+      } else {
+        await planListRef.set({
+          plan: [placeData],
+        });
+      }
+      navigation.goBack();
+    } catch (e) {
+      console.error('🔥 LocationAddScreen error (handleAddPlace):', e);
+    }
   };
 
   return (
@@ -97,7 +244,11 @@ const LocationAddScreen = () => {
       <ScrollView>
         {/* 장소 정보 */}
         <View style={styles.placeInfoContainer}>
-          <TouchableOpacity onPress={() => {}} style={styles.emojiButton}>
+          <TouchableOpacity
+            onPress={() => {
+              setEmojiPickerVisible(true);
+            }}
+            style={styles.emojiButton}>
             {addPlace.selectedEmoji ? (
               <BText fontSize={24}>{addPlace.selectedEmoji}</BText>
             ) : (
@@ -170,7 +321,9 @@ const LocationAddScreen = () => {
 
           {/* 시간 설정 */}
           <View style={{flexDirection: 'column', gap: 10}}>
-            <BText fontSize={20}>시간 설정</BText>
+            <View style={{flexDirection: 'row', gap: 4}}>
+              <BText fontSize={20}>시간 설정</BText>
+            </View>
             <View style={{flexDirection: 'row', gap: 8}}>
               <TouchableOpacity
                 style={{
@@ -218,24 +371,30 @@ const LocationAddScreen = () => {
                       paddingVertical: 10,
                       borderRadius: 8,
                       backgroundColor: isActive
-                        ? state.value === 0
+                        ? state.value === 1
                           ? fcolor.orange2
-                          : fcolor.green2
+                          : state.value === 2
+                          ? fcolor.green2
+                          : fcolor.gray2
                         : fcolor.gray1,
                       borderWidth: 2,
                       borderColor: isActive
-                        ? state.value === 0
+                        ? state.value === 1
                           ? fcolor.orange
-                          : fcolor.green3
+                          : state.value === 2
+                          ? fcolor.green3
+                          : fcolor.gray4
                         : fcolor.gray1,
                     }}>
                     <BText
                       fontSize={14}
                       color={
                         isActive
-                          ? state.value === 0
+                          ? state.value === 1
                             ? fcolor.orange
-                            : fcolor.green3
+                            : state.value === 2
+                            ? fcolor.green3
+                            : fcolor.gray4
                           : fcolor.gray3
                       }>
                       {state.name}
@@ -250,34 +409,65 @@ const LocationAddScreen = () => {
           <View style={{flexDirection: 'column', gap: 10}}>
             <BText fontSize={20}>링크 추가</BText>
             <View style={{flexDirection: 'row', gap: 8}}>
-              <TouchableOpacity
-                onPress={() => {
-                  console.log('링크 추가');
-                }}
-                // onPress={() =>
-                //   setAddPlace(prev => ({
-                //     ...prev,
-                //     referenceLink: [
-                //       ...prev.referenceLink,
-                //     ],
-                //   }))
-                // }
-                style={{
-                  flexDirection: 'row',
-                  gap: 4,
-                  width: 40,
-                  // paddingHorizontal: 12,
-                  height: 40,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 8,
-                  backgroundColor: fcolor.gray1,
-                }}>
-                <LinkIcon width={20} height={20} fill={fcolor.gray3} />
-                {/* <BText fontSize={14} color={fcolor.gray3}>
-                  숙소 위치
-                </BText> */}
-              </TouchableOpacity>
+              {addPlace.referenceLink.length > 0 &&
+                addPlace.referenceLink.map((link, idx) => (
+                  <TouchableOpacity
+                    key={`link-${idx}`}
+                    onPress={() => {
+                      if (deleteLinkModeIndex === idx) {
+                        handleDeleteLink(idx);
+                      } else {
+                        Linking.openURL(link.url);
+                      }
+                    }}
+                    onLongPress={() => {
+                      if (deleteLinkModeIndex === idx) {
+                        setDeleteLinkModeIndex(null);
+                      } else {
+                        setDeleteLinkModeIndex(idx);
+                      }
+                    }}
+                    style={{
+                      flexDirection: 'row',
+                      gap: 4,
+                      paddingHorizontal: 12,
+                      height: 40,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 8,
+                      backgroundColor:
+                        deleteLinkModeIndex === idx
+                          ? fcolor.gray4
+                          : fcolor.blue,
+                    }}>
+                    {deleteLinkModeIndex === idx ? (
+                      <TrashIcon width={20} height={20} fill={fcolor.white} />
+                    ) : (
+                      <LinkIcon width={20} height={20} fill={fcolor.white} />
+                    )}
+                    <BText fontSize={14} color={fcolor.white}>
+                      {deleteLinkModeIndex === idx ? '삭제하기' : link.title}
+                    </BText>
+                  </TouchableOpacity>
+                ))}
+              {addPlace.referenceLink.length < 3 && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setIsLinkModalVisible(true);
+                  }}
+                  style={{
+                    flexDirection: 'row',
+                    gap: 4,
+                    width: 40,
+                    height: 40,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: 8,
+                    backgroundColor: fcolor.gray1,
+                  }}>
+                  <LinkIcon width={20} height={20} fill={fcolor.gray3} />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 
@@ -299,20 +489,29 @@ const LocationAddScreen = () => {
                 key={`memo-${idx}`}
                 memo={memo}
                 setAddPlace={setAddPlace}
+                setSelectedMemoIconIndex={setSelectedMemoIconIndex}
                 addPlace={addPlace}
+                setIsMemoIconModalVisible={setIsMemoIconModalVisible}
                 index={idx}
+                deleteMemoModeIndex={deleteMemoModeIndex}
+                setDeleteMemoModeIndex={setDeleteMemoModeIndex}
               />
             ))}
-            {/* {addPlace.memo.length === 0 ||
-              (addPlace.memo[addPlace.memo.length - 1].content &&
-                addPlace.memo[addPlace.memo.length - 1].icon && (
-                  <MemoItem
-                    memo={{content: '', icon: ''}}
-                    setAddPlace={setAddPlace}
-                    addPlace={addPlace}
-                    index={addPlace.memo.length}
-                  />
-                ))} */}
+            {addPlace.memo.length === 0 ||
+            (addPlace.memo.length < 3 &&
+              addPlace.memo[addPlace.memo.length - 1].icon !== '' &&
+              addPlace.memo[addPlace.memo.length - 1].content !== '') ? (
+              <MemoItem
+                memo={{icon: '', content: ''}}
+                setAddPlace={setAddPlace}
+                addPlace={addPlace}
+                index={addPlace.memo.length}
+                setIsMemoIconModalVisible={setIsMemoIconModalVisible}
+                setSelectedMemoIconIndex={setSelectedMemoIconIndex}
+                deleteMemoModeIndex={deleteMemoModeIndex}
+                setDeleteMemoModeIndex={setDeleteMemoModeIndex}
+              />
+            ) : null}
           </View>
 
           {/* 교통 정보 추가 */}
@@ -328,56 +527,35 @@ const LocationAddScreen = () => {
                 아이콘을 선택해야 교통정보가 저장됩니다.
               </MText>
             </View>
-            <View
-              style={{flexDirection: 'row', gap: 8, alignItems: 'flex-start'}}>
-              <TouchableOpacity
-                onPress={() => {
-                  console.log('교통정보 추가');
-                }}
-                // TODO: 메모 아이콘 추가 기능 구현 예정
-                // onPress={() =>
-                //   setAddPlace(prev => ({
-                //     ...prev,
-                //     referenceLink: [
-                //       ...prev.referenceLink,
-                //     ],
-                //   }))
-                // }
-                style={{
-                  flexDirection: 'row',
-                  gap: 4,
-                  width: 40,
-                  height: 40,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 8,
-                  backgroundColor: fcolor.gray1,
-                }}>
-                <DefaultIcon width={26} height={26} fill={fcolor.gray3} />
-              </TouchableOpacity>
-              <View
-                style={{
-                  flex: 1,
-                  paddingVertical: 8,
-                  paddingHorizontal: 10,
-                  backgroundColor: fcolor.gray1,
-                  borderRadius: 8,
-                  minHeight: 40,
-                }}>
-                <TextInput
-                  style={{
-                    paddingHorizontal: 0,
-                    paddingVertical: 0,
-                    fontSize: 14,
-                    backgroundColor: fcolor.gray1,
-                    textAlignVertical: 'center',
-                  }}
-                  multiline={true}
-                  placeholder="이 장소의 교통정보를 작성해주세요."
-                  placeholderTextColor={fcolor.gray3}
-                />
-              </View>
-            </View>
+            {addPlace.movePath.map((movePath, idx) => (
+              <TrafficItem
+                key={`traffic-${idx}`}
+                movePath={movePath}
+                setAddPlace={setAddPlace}
+                addPlace={addPlace}
+                index={idx}
+                setIsTrafficIconModalVisible={setIsTrafficIconModalVisible}
+                setSelectedTrafficIconIndex={setSelectedTrafficIconIndex}
+                deleteTrafficModeIndex={deleteTrafficModeIndex}
+                setDeleteTrafficModeIndex={setDeleteTrafficModeIndex}
+              />
+            ))}
+            {addPlace.movePath.length === 0 ||
+            (addPlace.movePath.length < 3 &&
+              addPlace.movePath[addPlace.movePath.length - 1].icon !== '' &&
+              addPlace.movePath[addPlace.movePath.length - 1].description !==
+                '') ? (
+              <TrafficItem
+                movePath={{icon: '', description: ''}}
+                setAddPlace={setAddPlace}
+                addPlace={addPlace}
+                index={addPlace.movePath.length}
+                setIsTrafficIconModalVisible={setIsTrafficIconModalVisible}
+                setSelectedTrafficIconIndex={setSelectedTrafficIconIndex}
+                deleteTrafficModeIndex={deleteTrafficModeIndex}
+                setDeleteTrafficModeIndex={setDeleteTrafficModeIndex}
+              />
+            ) : null}
           </View>
 
           {/* 장소 추가 버튼 */}
@@ -390,24 +568,18 @@ const LocationAddScreen = () => {
             <TouchableOpacity
               style={[
                 globalStyles.buttonBase,
-                {backgroundColor: fcolor.blue, flex: 1},
+                {
+                  backgroundColor: fcolor.blue,
+                  // isValidMemoAndTraffic
+                  //   ? fcolor.blue
+                  //   : fcolor.gray2,
+                  flex: 1,
+                },
               ]}
+              // disabled={!isValidMemoAndTraffic}
               onPress={() => {
-                console.log('addPlace', addPlace);
-              }}
-              // onPress={() => {
-              //   // onClose();
-              //   if (isAddType === 'plan') {
-              //     navigation.navigate('LocationAdd', {
-              //       place,
-              //       navigation,
-              //       dateList,
-              //     });
-              //   } else {
-              //     console.log('place', place);
-              //   }
-              // }}
-            >
+                handleAddPlace(addPlace, planItem);
+              }}>
               <MText color={fcolor.white}>장소 추가</MText>
             </TouchableOpacity>
           </View>
@@ -458,97 +630,102 @@ const LocationAddScreen = () => {
           />
         )}
       </ScrollView>
-    </View>
-  );
-};
 
-const MemoItem = ({memo, setAddPlace, addPlace, index}) => {
-  return (
-    <View style={{flexDirection: 'row', gap: 8, alignItems: 'flex-start'}}>
-      <TouchableOpacity
-        onPress={() => {
-          // setAddPlace(prev => ({
-          //   ...prev,
-          //   memo: prev.memo.filter(item => item.icon !== memo.icon),
-          // }));
-          const updatedMemo = [...addPlace.memo];
-          console.log('updatedMemo', updatedMemo);
-          console.log('index', index);
-
-          // 🔥 메모 아이콘이 없으면 'article'로 설정
-          // if (!updatedMemo[index]) {
-          //   updatedMemo[index] = {content: text, icon: ''};
-          // } else {
-          //   updatedMemo[index].icon = '';
-          // }
-
-          updatedMemo[index].icon = 'article';
-          setAddPlace(prev => ({...prev, memo: updatedMemo}));
-          console.log('메모 추가');
+      <EmojiPicker
+        open={isEmojiPickerVisible}
+        onEmojiSelected={emoji => {
+          setAddPlace(prev => ({
+            ...prev,
+            selectedEmoji: emoji.emoji,
+          }));
         }}
-        // TODO: 메모 아이콘 추가 기능 구현 예정
-        // onPress={() =>
-        //   setAddPlace(prev => ({
-        //     ...prev,
-        //     referenceLink: [
-        //       ...prev.referenceLink,
-        //     ],
-        //   }))
-        // }
-        style={{
-          flexDirection: 'row',
-          gap: 4,
-          width: 40,
-          height: 40,
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderRadius: 8,
-          backgroundColor: fcolor.gray1,
-        }}>
-        <DefaultIcon width={26} height={26} fill={fcolor.gray3} />
-      </TouchableOpacity>
-      <View
-        style={{
-          flex: 1,
-          paddingVertical: 8,
-          paddingHorizontal: 10,
-          backgroundColor: fcolor.gray1,
-          borderRadius: 8,
-          minHeight: 40,
-        }}>
-        <TextInput
-          style={{
-            paddingHorizontal: 0,
-            paddingVertical: 0,
-            fontSize: 14,
-            backgroundColor: 'transparent',
-            textAlignVertical: 'center',
-            color: fcolor.white,
-          }}
-          multiline={true}
-          placeholder="메모를 작성해주세요."
-          placeholderTextColor={fcolor.gray3}
-          value={memo[index]?.content}
-          onChangeText={text => {
-            const updatedMemo = [...addPlace.memo];
+        onClose={() => {
+          setEmojiPickerVisible(false);
+        }}
+      />
 
-            console.log('updatedMemo', updatedMemo);
-            console.log('index', index);
+      {/* 링크 추가 모달 */}
+      {isLinkModalVisible && (
+        <>
+          <Animated.View
+            style={[
+              styles.overlay,
+              {
+                backgroundColor: backgroundOpacity.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.5)'],
+                }),
+              },
+            ]}>
+            <TouchableOpacity
+              onPress={() => {
+                // console.log('링크 모달 닫기');
+                // setIsLinkModalVisible(false);
+              }}
+            />
+          </Animated.View>
+          <LinkModal
+            isLinkModalVisible={isLinkModalVisible}
+            setIsLinkModalVisible={setIsLinkModalVisible}
+            setAddPlace={setAddPlace}
+          />
+        </>
+      )}
 
-            // if (!updatedMemo[index]) {
-            //   updatedMemo[index] = {content: text, icon: memo.icon || ''};
-            // } else {
-            //   updatedMemo[index].content = text;
-            // }
+      {/* 메모 아이콘 모달 */}
+      {isMemoIconModalVisible && (
+        <>
+          <Animated.View
+            style={[
+              styles.overlay,
+              {
+                backgroundColor: backgroundOpacity.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.5)'],
+                }),
+              },
+            ]}>
+            <TouchableOpacity
+              onPress={() => {
+                // console.log('아이콘 모달 닫기');
+              }}
+            />
+          </Animated.View>
+          <MemoIconModal
+            isMemoIconModalVisible={isMemoIconModalVisible}
+            setIsMemoIconModalVisible={setIsMemoIconModalVisible}
+            setAddPlace={setAddPlace}
+            index={selectedMemoIconIndex}
+          />
+        </>
+      )}
 
-            console.log(`updatedMemo${index}`, updatedMemo[index]);
-
-            updatedMemo[index].content = text;
-
-            setAddPlace(prev => ({...prev, memo: updatedMemo}));
-          }}
-        />
-      </View>
+      {isTrafficIconModalVisible && (
+        <>
+          <Animated.View
+            style={[
+              styles.overlay,
+              {
+                backgroundColor: backgroundOpacity.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.5)'],
+                }),
+              },
+            ]}>
+            <TouchableOpacity
+              onPress={() => {
+                // console.log('교통 아이콘 모달 닫기');
+              }}
+            />
+          </Animated.View>
+          <TrafficIconModal
+            isTrafficIconModalVisible={isTrafficIconModalVisible}
+            setIsTrafficIconModalVisible={setIsTrafficIconModalVisible}
+            setAddPlace={setAddPlace}
+            index={selectedTrafficIconIndex}
+          />
+        </>
+      )}
     </View>
   );
 };
@@ -600,6 +777,33 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  // 링크 추가모달
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'flex-end',
+    zIndex: 10,
+  },
+  overlayTouchable: {
+    flex: 1,
+  },
+  modalContainer: {
+    flex: 1,
+    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+    height: '60%',
+    backgroundColor: fcolor.white,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 30,
+    paddingVertical: 40,
+    justifyContent: 'space-between',
   },
 });
 

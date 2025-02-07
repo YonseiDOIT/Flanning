@@ -7,7 +7,9 @@ const AppProvider = ({children}: {children: React.ReactNode}) => {
   return (
     <NavigationContainer>
       <AuthProvider>
-        <UserProvider>{children}</UserProvider>
+        <UserProvider>
+          <PlanProvider>{children}</PlanProvider>
+        </UserProvider>
       </AuthProvider>
     </NavigationContainer>
   );

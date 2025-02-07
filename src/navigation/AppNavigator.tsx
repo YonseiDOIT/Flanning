@@ -19,7 +19,7 @@ const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
   // const user = useAuth();
-  const authData = useAuth();
+  const {authData} = useAuth();
 
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
