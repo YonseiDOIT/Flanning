@@ -6,7 +6,7 @@
 효율적이며 편리한 공동 여행 플래닝 앱서비스
 
 ## Flanning 시연 영상
-
+[https://youtu.be/hRqcj8GSnEM?si=-0NQhe4O7DEpthqE](https://youtu.be/hRqcj8GSnEM?si=-0NQhe4O7DEpthqE)
 
 ## 👩‍💻 구성원
 * 신선림 - PM
